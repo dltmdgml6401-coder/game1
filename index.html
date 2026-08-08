@@ -1,809 +1,149 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>심연의 카드배틀 (Abyssal Card Battle 1v1)</title>
-    <!-- Phaser 3 CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
-    <!-- Canvas Confetti CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
-        body {
-            background-color: #0b0d12;
-            color: #ffffff;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
-        #game-container {
-            width: 1100px;
-            height: 700px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(138, 43, 226, 0.3);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid #2a2e3d;
-            position: relative;
-        }
-        .instructions {
-            margin-top: 15px;
-            color: #8a94a6;
-            font-size: 14px;
-            text-align: center;
-        }
-        
-        /* HTML Tooltip for Augments */
-        #augment-tooltip {
-            position: absolute;
-            display: none;
-            background: rgba(15, 20, 30, 0.95);
-            border: 2px solid #388bfd;
-            border-radius: 8px;
-            padding: 12px 16px;
-            width: 220px;
-            pointer-events: none;
-            z-index: 1000;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.8);
-            transition: opacity 0.15s ease;
-        }
-        #augment-tooltip .tooltip-tier {
-            font-size: 11px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            margin-bottom: 4px;
-        }
-        #augment-tooltip .tooltip-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #f0f6fc;
-            margin-bottom: 6px;
-        }
-        #augment-tooltip .tooltip-desc {
-            font-size: 13px;
-            color: #8b949e;
-            line-height: 1.4;
-        }
-    </style>
-</head>
-<body>
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
-    <div id="game-container"></div>
-    <!-- 증강 마우스 호버 시 뜰 HTML 툴팁 레이어 -->
-    <div id="augment-tooltip">
-        <div class="tooltip-tier" id="tt-tier">SILVER</div>
-        <div class="tooltip-title" id="tt-title">증강 이름</div>
-        <div class="tooltip-desc" id="tt-desc">증강 설명 정보</div>
-    </div>
+public class GameManager : MonoBehaviour
+{
+    [Header("Turn Settings")]
+    public float maxTurnTime = 45f;
+    private float currentTurnTime;
+    private bool isTurnActive = false;
+    private bool hasTauntedForDelay = false;
 
-    <div class="instructions">
-        🃏 <b>심연의 카드배틀 1v1</b> | 우측 증강 마우스 호버 지원 & 족보 형성 카드 실시간 하이라이트
-    </div>
+    [Header("Discard Settings")]
+    public int maxDiscardCount = 3;
+    private int currentDiscardCount;
 
-<script>
-// ==========================================
-// 1. SOUND SYSTEM (Web Audio API Synthesizer)
-// ==========================================
-class SoundFX {
-    constructor() {
-        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [Header("UI References")]
+    public TextMeshProUGUI timerText;
+    public Image timerBar;
+    public TextMeshProUGUI aiDialogueText;
+    public Transform cardHandContainer; // 카드들이 생성되는 부모 Panel
+    public GameObject cardPrefab;
+
+    [Header("Data")]
+    public List<string> playerHand = new List<string>();
+
+    void Start()
+    {
+        currentDiscardCount = maxDiscardCount;
+        StartPlayerTurn();
     }
 
-    playCardSelect() {
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(400, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.08);
-        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.08);
-    }
+    void Update()
+    {
+        if (!isTurnActive) return;
 
-    playChipSound(pitch = 1.0) {
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(1200 * pitch, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(400 * pitch, this.ctx.currentTime + 0.05);
-        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.05);
-    }
+        // 턴 타이머 진행
+        currentTurnTime -= Time.deltaTime;
+        UpdateTimerUI();
 
-    playWinSound() {
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-        const now = this.ctx.currentTime;
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, idx) => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
-            gain.gain.setValueAtTime(0.2, now + idx * 0.08);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.2);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now + idx * 0.08);
-            osc.stop(now + idx * 0.08 + 0.2);
-        });
-    }
-
-    playLoseSound() {
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-        const now = this.ctx.currentTime;
-        const notes = [300, 260, 220, 180];
-        notes.forEach((freq, idx) => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(freq, now + idx * 0.12);
-            gain.gain.setValueAtTime(0.2, now + idx * 0.12);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.15);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now + idx * 0.12);
-            osc.stop(now + idx * 0.12 + 0.15);
-        });
-    }
-
-    playPlatinumSound() {
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-        const now = this.ctx.currentTime;
-        [800, 1000, 1200, 1600].forEach((freq, i) => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now + i * 0.05);
-            gain.gain.setValueAtTime(0.25, now + i * 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.3);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now + i * 0.05);
-            osc.stop(now + i * 0.05 + 0.3);
-        });
-    }
-}
-
-const sfx = new SoundFX();
-
-// ==========================================
-// 2. AUGMENT DATABASE (18 UNIQUE AUGMENTS)
-// ==========================================
-const AUGMENTS = [
-    // SILVER
-    { id: 's_draw', tier: 'SILVER', name: '손길의 확장', desc: '기본 드로우 카드 1장을 추가로 더 뽑습니다.', type: 'DRAW', val: 1 },
-    { id: 's_bonus_chips', tier: 'SILVER', name: '은빛 칩', desc: '모든 족보 완성 시 기본 점수 +100점을 추가 획득합니다.', type: 'BONUS_CHIPS', val: 100 },
-    { id: 's_pair_boost', tier: 'SILVER', name: '쌍둥이의 힘', desc: '원 페어 또는 투 페어 완성 시 +150점 보너스를 받습니다.', type: 'HAND_BOOST', hand: 'Pair', val: 150 },
-    { id: 's_discard_plus', tier: 'SILVER', name: '여유의 정제', desc: '카드 버리기 기회를 매 판 +1회 추가합니다.', type: 'DISCARD', val: 1 },
-    { id: 's_low_rank_boost', tier: 'SILVER', name: '숫자 자극', desc: '낮은 카드(2~7) 보유 시 카드당 +20점을 추가합니다.', type: 'LOW_BOOST', val: 20 },
-
-    // GOLD
-    { id: 'g_mult_flush', tier: 'GOLD', name: '플러시 마스터', desc: '플러시 족보 완성 시 최종 점수가 x1.8배 증가합니다.', type: 'HAND_MULT', hand: 'Flush', val: 1.8 },
-    { id: 'g_mult_straight', tier: 'GOLD', name: '스트레이트 맹주', desc: '스트레이트 족보 완성 시 최종 점수가 x2.0배 증가합니다.', type: 'HAND_MULT', hand: 'Straight', val: 2.0 },
-    { id: 'g_peek_ai', tier: 'GOLD', name: '마인드 리딩', desc: 'AI의 숨겨진 카드 중 가장 높은 2장을 눈으로 봅니다.', type: 'PEEK', count: 2 },
-    { id: 'g_gold_chips', tier: 'GOLD', name: '황금 보물 상자', desc: '모든 족보의 기본 점수가 +300점 추가 증가합니다.', type: 'BONUS_CHIPS', val: 300 },
-    { id: 'g_royal_assist', tier: 'GOLD', name: '조커의 축복', desc: 'A, K, Q, J, 10 카드 보유 시 개당 +50점 보너스.', type: 'HIGH_BOOST', val: 50 },
-
-    // PLATINUM
-    { id: 'p_multiplier', tier: 'PLATINUM', name: '신들의 연금술', desc: '모든 완성 족보의 최종 점수가 x2.5배 폭증합니다!', type: 'GLOBAL_MULT', val: 2.5 },
-    { id: 'p_full_steal', tier: 'PLATINUM', name: '영혼의 강탈자', desc: 'AI 카드 중 가장 높은 카드 1장을 내 손으로 빼앗아옵니다.', type: 'STEAL_BEST', count: 1 },
-    { id: 'p_wild_flush', tier: 'PLATINUM', name: '무지개 피버', desc: '문양 조건이 완화되어 모든 플러시가 자동으로 유효화됩니다.', type: 'SUPER_FLUSH', val: 1 },
-    { id: 'p_god_hand', tier: 'PLATINUM', name: '신의 손길', desc: '카드 드로우 +3장 & 버리기 기회 +2회가 동시 증가합니다!', type: 'GOD_DRAW', draw: 3, discard: 2 },
-    { id: 'p_instant_flush', tier: 'PLATINUM', name: '만능 재봉사', desc: '내 손의 모든 카드 문양이 가장 많은 문양으로 일괄 통일됩니다.', type: 'UNIFY_SUIT' }
-];
-
-// ==========================================
-// 3. POKER ENGINE (EVALUATOR WITH USED CARDS DETECTOR)
-// ==========================================
-const SUITS = ['♠', '♥', '♦', '♣'];
-const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-const RANK_VALUES = { '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '10':10, 'J':11, 'Q':12, 'K':13, 'A':14 };
-
-class Deck {
-    constructor() {
-        this.cards = [];
-        this.reset();
-    }
-    reset() {
-        this.cards = [];
-        for (let s of SUITS) {
-            for (let r of RANKS) {
-                this.cards.push({ suit: s, rank: r, value: RANK_VALUES[r], id: Math.random().toString(36).substr(2, 9) });
-            }
+        // [도발 조건 1] 시간이 30% 남았는데 고민 중일 때 (1회만 발동)
+        if (!hasTauntedForDelay && currentTurnTime <= maxTurnTime * 0.3f)
+        {
+            hasTauntedForDelay = true;
+            TriggerAIDialogue("고민을 너무 오래 하시네... 컴퓨터 열받게 하려고 일부러 이러시나요? ㅋㅋ");
         }
-        this.shuffle();
-    }
-    shuffle() {
-        for (let i = this.cards.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+
+        // [시간 초과] 강제 확정
+        if (currentTurnTime <= 0f)
+        {
+            currentTurnTime = 0f;
+            isTurnActive = false;
+            TriggerAIDialogue("시간 초과! 생각할 시간을 너무 많이 드렸나 보네요.");
+            ConfirmTurn();
         }
     }
-    draw() {
-        if (this.cards.length === 0) this.reset();
-        return this.cards.pop();
-    }
-}
 
-function evaluateHand(cards, augments = []) {
-    if (!cards || cards.length < 1) return { name: '하이 카드', score: 50, usedIds: [] };
-
-    let sorted = [...cards].sort((a, b) => b.value - a.value);
-
-    // Apply Unify Suit augment
-    const hasUnify = augments.some(a => a.type === 'UNIFY_SUIT');
-    let effectiveCards = sorted.map(c => ({ ...c }));
-    if (hasUnify) {
-        const suitCounts = {};
-        effectiveCards.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
-        let maxSuit = '♠'; let maxC = 0;
-        for (let s in suitCounts) { if (suitCounts[s] > maxC) { maxC = suitCounts[s]; maxSuit = s; } }
-        effectiveCards.forEach(c => c.suit = maxSuit);
+    public void StartPlayerTurn()
+    {
+        currentTurnTime = maxTurnTime;
+        isTurnActive = true;
+        hasTauntedForDelay = false;
+        RenderHandUI();
     }
 
-    let suitCounts = {};
-    let rankCounts = {};
-    effectiveCards.forEach(c => {
-        suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1;
-        rankCounts[c.value] = (rankCounts[c.value] || 0) + 1;
-    });
-
-    let flushSuit = Object.keys(suitCounts).find(s => suitCounts[s] >= 5);
-    let isFlush = !!flushSuit || augments.some(a => a.type === 'SUPER_FLUSH');
-
-    // Check Straight
-    let uniqueValues = [...new Set(effectiveCards.map(c => c.value))].sort((a, b) => b - a);
-    let isStraight = false;
-    let straightHigh = 0;
-    let straightRanks = [];
-
-    for (let i = 0; i <= uniqueValues.length - 5; i++) {
-        if (uniqueValues[i] - uniqueValues[i+4] === 4) {
-            isStraight = true;
-            straightHigh = uniqueValues[i];
-            straightRanks = [uniqueValues[i], uniqueValues[i+1], uniqueValues[i+2], uniqueValues[i+3], uniqueValues[i+4]];
-            break;
-        }
-    }
-    if (!isStraight && uniqueValues.includes(14) && uniqueValues.includes(2) && uniqueValues.includes(3) && uniqueValues.includes(4) && uniqueValues.includes(5)) {
-        isStraight = true;
-        straightHigh = 5;
-        straightRanks = [14, 2, 3, 4, 5];
-    }
-
-    let counts = Object.entries(rankCounts)
-        .map(([val, cnt]) => ({ val: parseInt(val), cnt }))
-        .sort((a,b) => b.cnt - a.cnt || b.val - a.val);
-
-    let handName = '하이 카드';
-    let baseScore = 50;
-    let usedCards = [];
-
-    if (isFlush && isStraight && straightHigh === 14) {
-        handName = '로열 스트레이트 플러시';
-        baseScore = 2000;
-        usedCards = effectiveCards.filter(c => straightRanks.includes(c.value));
-    } else if (isFlush && isStraight) {
-        handName = '스트레이트 플러시';
-        baseScore = 1200;
-        usedCards = effectiveCards.filter(c => straightRanks.includes(c.value));
-    } else if (counts[0].cnt >= 4) {
-        handName = '포카드';
-        baseScore = 800;
-        usedCards = effectiveCards.filter(c => c.value === counts[0].val);
-    } else if (counts[0].cnt === 3 && counts[1] && counts[1].cnt >= 2) {
-        handName = '풀하우스';
-        baseScore = 500;
-        usedCards = effectiveCards.filter(c => c.value === counts[0].val || c.value === counts[1].val);
-    } else if (isFlush) {
-        handName = '플러시';
-        baseScore = 400;
-        usedCards = flushSuit ? effectiveCards.filter(c => c.suit === flushSuit).slice(0, 5) : effectiveCards.slice(0, 5);
-    } else if (isStraight) {
-        handName = '스트레이트';
-        baseScore = 350;
-        usedCards = effectiveCards.filter(c => straightRanks.includes(c.value));
-    } else if (counts[0].cnt === 3) {
-        handName = '트리플';
-        baseScore = 220;
-        usedCards = effectiveCards.filter(c => c.value === counts[0].val);
-    } else if (counts[0].cnt === 2 && counts[1] && counts[1].cnt === 2) {
-        handName = '투 페어';
-        baseScore = 140;
-        usedCards = effectiveCards.filter(c => c.value === counts[0].val || c.value === counts[1].val);
-    } else if (counts[0].cnt === 2) {
-        handName = '원 페어';
-        baseScore = 80;
-        usedCards = effectiveCards.filter(c => c.value === counts[0].val);
-    } else {
-        usedCards = [sorted[0]]; // High card
-    }
-
-    let cardSum = usedCards.reduce((acc, c) => acc + c.value, 0);
-    let totalScore = baseScore + cardSum * 5;
-
-    let multiplier = 1.0;
-    augments.forEach(aug => {
-        if (aug.type === 'BONUS_CHIPS') totalScore += aug.val;
-        if (aug.type === 'GLOBAL_MULT') multiplier *= aug.val;
-        if (aug.type === 'HAND_MULT' && handName.includes(aug.hand)) multiplier *= aug.val;
-        if (aug.type === 'HAND_BOOST' && handName.includes(aug.hand)) totalScore += aug.val;
-        if (aug.type === 'LOW_BOOST') {
-            let lowCount = effectiveCards.filter(c => c.value <= 7).length;
-            totalScore += lowCount * aug.val;
-        }
-        if (aug.type === 'HIGH_BOOST') {
-            let highCount = effectiveCards.filter(c => c.value >= 10).length;
-            totalScore += highCount * aug.val;
-        }
-    });
-
-    return {
-        name: handName,
-        score: Math.floor(totalScore * multiplier),
-        usedIds: usedCards.map(c => c.id)
-    };
-}
-
-// ==========================================
-// 4. PHASER SCENES
-// ==========================================
-
-class MainGameScene extends Phaser.Scene {
-    constructor() {
-        super('MainGameScene');
-    }
-
-    init(data) {
-        this.stage = data.stage || 1;
-        this.playerAugments = data.playerAugments || [];
-        this.playerHand = [];
-        this.aiHand = [];
-        this.discardsLeft = 3; // 기본 버리기 횟수 3회
-        this.deck = new Deck();
-        this.gameState = 'PLAYER_TURN';
-
-        this.extraDraw = 0;
-        this.playerAugments.forEach(a => {
-            if (a.type === 'DRAW') this.extraDraw += a.val;
-            if (a.type === 'DISCARD') this.discardsLeft += a.val;
-            if (a.type === 'GOD_DRAW') { this.extraDraw += a.draw; this.discardsLeft += a.discard; }
-        });
-
-        this.maxHandSize = 5 + this.extraDraw;
-    }
-
-    create() {
-        this.cameras.main.setBackgroundColor('#0d1117');
-        
-        // Main Game Board
-        let graphics = this.add.graphics();
-        graphics.fillStyle(0x161b22, 1);
-        graphics.fillRoundedRect(20, 20, 820, 660, 16);
-        graphics.lineStyle(2, 0x30363d, 1);
-        graphics.strokeRoundedRect(20, 20, 820, 660, 16);
-
-        // Header / Stage Info
-        this.add.text(40, 35, `STAGE ${this.stage} / 8`, { font: 'bold 26px Arial', fill: '#00f0ff' });
-        let aiDifficultyText = ['기초 AI', '학습 AI', '확률 계산 AI', '전략가 AI', '치팅 AI', '심연의 환영', '악마의 도박사', '최종 보스'];
-        this.add.text(200, 40, `적: ${aiDifficultyText[this.stage-1]}`, { font: '18px Arial', fill: '#ff4d4d' });
-
-        // Left AI & Player Titles
-        this.add.text(430, 110, '🤖 AI HAND', { font: 'bold 18px Arial', fill: '#ff6b6b' }).setOrigin(0.5);
-        this.add.text(430, 380, '👤 YOUR HAND', { font: 'bold 18px Arial', fill: '#58a6ff' }).setOrigin(0.5);
-
-        // Right Side Augment UI Panel & Hover Event Setup
-        this.createRightAugmentPanel();
-
-        // Control Buttons
-        this.createButtons();
-
-        // Deal Cards
-        this.dealInitialCards();
-
-        // Initial Evaluation
-        this.updatePlayerScoreDisplay();
-    }
-
-    createRightAugmentPanel() {
-        // Augment Panel Container
-        let pBg = this.add.graphics();
-        pBg.fillStyle(0x161b22, 1);
-        pBg.fillRoundedRect(860, 20, 220, 660, 16);
-        pBg.lineStyle(2, 0x30363d, 1);
-        pBg.strokeRoundedRect(860, 20, 220, 660, 16);
-
-        this.add.text(970, 45, '⚡ 보유 증강 목록', { font: 'bold 18px Arial', fill: '#f0883e' }).setOrigin(0.5);
-
-        if (this.playerAugments.length === 0) {
-            this.add.text(970, 100, '장착된 증강이 없습니다', { font: '13px Arial', fill: '#8b949e' }).setOrigin(0.5);
+    // [버그 수정 포인트] 카드 버리기 로직
+    public void DiscardCard(int index)
+    {
+        if (currentDiscardCount <= 0)
+        {
+            TriggerAIDialogue("더 이상 버릴 수 없습니다!");
             return;
         }
 
-        const tooltip = document.getElementById('augment-tooltip');
-        const ttTier = document.getElementById('tt-tier');
-        const ttTitle = document.getElementById('tt-title');
-        const ttDesc = document.getElementById('tt-desc');
+        if (index >= 0 && index < playerHand.Count)
+        {
+            playerHand.RemoveAt(index); // 1. 데이터 삭제
+            currentDiscardCount--;
 
-        this.playerAugments.forEach((aug, idx) => {
-            let y = 90 + idx * 75;
-            let container = this.add.container(970, y);
-
-            let tierColor = aug.tier === 'PLATINUM' ? 0xa371f7 : (aug.tier === 'GOLD' ? 0xd4a72c : 0x8b949e);
-            let slotBg = this.add.rectangle(0, 0, 190, 60, 0x21262d).setInteractive({ useHandCursor: true });
-            slotBg.setStrokeStyle(2, tierColor);
-
-            let nameTxt = this.add.text(-80, -12, aug.name, { font: 'bold 15px Arial', fill: '#ffffff' });
-            let tierTxt = this.add.text(-80, 10, aug.tier, { font: '11px Arial', fill: `#${tierColor.toString(16)}` });
-
-            container.add([slotBg, nameTxt, tierTxt]);
-
-            // Mouse Hover Tooltip Event
-            slotBg.on('pointerover', () => {
-                slotBg.setFillStyle(0x30363d);
-                ttTier.innerText = aug.tier;
-                ttTier.style.color = aug.tier === 'PLATINUM' ? '#a371f7' : (aug.tier === 'GOLD' ? '#d4a72c' : '#8b949e');
-                ttTitle.innerText = aug.name;
-                ttDesc.innerText = aug.desc;
-
-                let canvasBounds = this.sys.game.canvas.getBoundingClientRect();
-                tooltip.style.left = (canvasBounds.left + 860 - 230) + 'px';
-                tooltip.style.top = (canvasBounds.top + y - 20) + 'px';
-                tooltip.style.display = 'block';
-            });
-
-            slotBg.on('pointerout', () => {
-                slotBg.setFillStyle(0x21262d);
-                tooltip.style.display = 'none';
-            });
-        });
-    }
-
-    createButtons() {
-        // Discard Button
-        this.btnDiscard = this.add.container(330, 630);
-        let bgD = this.add.rectangle(0, 0, 170, 45, 0x21262d).setInteractive({ useHandCursor: true });
-        bgD.setStrokeStyle(2, 0x8b949e);
-        let txtD = this.add.text(0, 0, `버리고 뽑기 (${this.discardsLeft})`, { font: '15px Arial', fill: '#ffffff' }).setOrigin(0.5);
-        this.btnDiscard.add([bgD, txtD]);
-
-        bgD.on('pointerdown', () => this.handleDiscard());
-        bgD.on('pointerover', () => bgD.setFillStyle(0x30363d));
-        bgD.on('pointerout', () => bgD.setFillStyle(0x21262d));
-
-        // Showdown Button
-        this.btnShowdown = this.add.container(530, 630);
-        let bgS = this.add.rectangle(0, 0, 170, 45, 0x238636).setInteractive({ useHandCursor: true });
-        bgS.setStrokeStyle(2, 0x2ea043);
-        let txtS = this.add.text(0, 0, '승부 하기!', { font: 'bold 18px Arial', fill: '#ffffff' }).setOrigin(0.5);
-        this.btnShowdown.add([bgS, txtS]);
-
-        bgS.on('pointerdown', () => this.handleShowdown());
-        bgS.on('pointerover', () => bgS.setFillStyle(0x2ea043));
-        bgS.on('pointerout', () => bgS.setFillStyle(0x238636));
-    }
-
-    dealInitialCards() {
-        for (let i = 0; i < this.maxHandSize; i++) {
-            this.playerHand.push({ card: this.deck.draw(), selected: false, obj: null });
-        }
-        for (let i = 0; i < 5; i++) {
-            this.aiHand.push({ card: this.deck.draw(), revealed: false, obj: null });
-        }
-
-        // Apply Peek/Steal Augment logic
-        let peekAug = this.playerAugments.find(a => a.type === 'PEEK');
-        if (peekAug) {
-            for (let i = 0; i < Math.min(peekAug.count, this.aiHand.length); i++) {
-                this.aiHand[i].revealed = true;
-            }
-        }
-
-        let stealAug = this.playerAugments.find(a => a.type === 'STEAL_BEST');
-        if (stealAug && this.aiHand.length > 0) {
-            this.aiHand.sort((a,b) => b.card.value - a.card.value);
-            let stolen = this.aiHand.shift();
-            this.playerHand.push({ card: stolen.card, selected: false, obj: null });
-            this.aiHand.push({ card: this.deck.draw(), revealed: false, obj: null });
-        }
-
-        this.renderPlayerCards();
-        this.renderAICards();
-    }
-
-    renderPlayerCards() {
-        let startX = 430 - (this.playerHand.length * 85) / 2 + 42;
-        
-        // Evaluate hand to get connected cards
-        let evalResult = evaluateHand(this.playerHand.map(i => i.card), this.playerAugments);
-
-        this.playerHand.forEach((item, index) => {
-            if (item.obj) item.obj.destroy();
-
-            let isUsedInHand = evalResult.usedIds.includes(item.card.id);
-            let targetX = startX + index * 85;
-            
-            // Highlight: Lift up used cards slightly for hand visual feedback
-            let targetY = item.selected ? 440 : (isUsedInHand ? 465 : 485);
-
-            let cardContainer = this.createCardObject(item.card, true, isUsedInHand, item.selected);
-            cardContainer.setPosition(targetX, targetY);
-            
-            let bgRect = cardContainer.first;
-            bgRect.setInteractive({ useHandCursor: true });
-            bgRect.on('pointerdown', () => {
-                if (this.gameState !== 'PLAYER_TURN') return;
-                item.selected = !item.selected;
-                sfx.playCardSelect();
-                this.renderPlayerCards();
-                this.updatePlayerScoreDisplay();
-            });
-
-            item.obj = cardContainer;
-        });
-    }
-
-    renderAICards() {
-        let startX = 430 - (this.aiHand.length * 85) / 2 + 42;
-        this.aiHand.forEach((item, index) => {
-            if (item.obj) item.obj.destroy();
-
-            let targetX = startX + index * 85;
-            let targetY = 190;
-
-            let cardContainer = this.createCardObject(item.card, item.revealed, false, false);
-            cardContainer.setPosition(targetX, targetY);
-            item.obj = cardContainer;
-        });
-    }
-
-    createCardObject(card, revealed, isHighlighted = false, isSelected = false) {
-        let container = this.add.container(0, 0);
-        let bg = this.add.rectangle(0, 0, 75, 110, revealed ? 0xffffff : 0x1f293d);
-
-        // Visual Highlight Logic
-        if (isSelected) {
-            bg.setStrokeStyle(3, 0xf0883e); // Selected for discard (Orange)
-        } else if (isHighlighted) {
-            bg.setStrokeStyle(3, 0x388bfd); // Connected in active hand (Blue Glow)
-        } else {
-            bg.setStrokeStyle(2, revealed ? 0xd0d7de : 0x38444d);
-        }
-
-        container.add(bg);
-
-        if (revealed) {
-            let isRed = card.suit === '♥' || card.suit === '♦';
-            let color = isRed ? '#d73a49' : '#24292e';
-            
-            // Dim unused cards slightly
-            if (!isHighlighted && !isSelected) {
-                bg.setFillStyle(0xe1e4e8);
+            // [도발 조건 2] 버리기 횟수 전량 소진
+            if (currentDiscardCount == 0)
+            {
+                TriggerAIDialogue("카드를 다 버리시네ㅋㅋ 이제 남은 걸로 어떻게 하실 건가요?");
             }
 
-            let txtRank = this.add.text(-28, -45, card.rank, { font: 'bold 18px Arial', fill: color });
-            let txtSuit = this.add.text(-28, -22, card.suit, { font: '20px Arial', fill: color });
-            let txtCenterSuit = this.add.text(5, 10, card.suit, { font: '32px Arial', fill: color }).setOrigin(0.5);
-            container.add([txtRank, txtSuit, txtCenterSuit]);
-        } else {
-            let pattern = this.add.text(0, 0, '♠♥\n♣♦', { font: '14px Arial', fill: '#3b4252', align: 'center' }).setOrigin(0.5);
-            container.add(pattern);
+            // 2. UI 완전 갱신 (잔상 제거)
+            RenderHandUI();
+        }
+    }
+
+    // 잔상 없이 손패 UI를 새로 그리는 함수
+    private void RenderHandUI()
+    {
+        // 핵심: 기존에 존재하던 카드 UI 오브젝트를 완전히 Destroy하여 잔상 제거
+        foreach (Transform child in cardHandContainer)
+        {
+            Destroy(child.gameObject);
         }
 
-        return container;
-    }
+        // 새 데이터 기반으로 카드 UI 생성
+        for (int i = 0; i < playerHand.Count; i++)
+        {
+            int cardIndex = i; // 람다/클로저 이슈 방지용 변수 복사
+            GameObject newCard = Instantiate(cardPrefab, cardHandContainer);
+            
+            // 카드 텍스트 설정 (자식 TextMeshProUGUI 찾기 예시)
+            TextMeshProUGUI cardText = newCard.GetComponentInChildren<TextMeshProUGUI>();
+            if (cardText != null) cardText.text = playerHand[cardIndex];
 
-    updatePlayerScoreDisplay() {
-        let result = evaluateHand(this.playerHand.map(i => i.card), this.playerAugments);
-
-        if (this.scoreText) this.scoreText.destroy();
-        this.scoreText = this.add.text(430, 560, `현재 족보: ${result.name} 🔥 [${result.score}점]`, {
-            font: 'bold 20px Arial',
-            fill: '#e3b341'
-        }).setOrigin(0.5);
-    }
-
-    handleDiscard() {
-        if (this.discardsLeft <= 0) return;
-        let selectedItems = this.playerHand.filter(i => i.selected);
-        if (selectedItems.length === 0) return;
-
-        this.discardsLeft--;
-        sfx.playCardSelect();
-
-        this.playerHand = this.playerHand.filter(i => !i.selected);
-        while (this.playerHand.length < this.maxHandSize) {
-            this.playerHand.push({ card: this.deck.draw(), selected: false, obj: null });
-        }
-
-        this.renderPlayerCards();
-        this.updatePlayerScoreDisplay();
-
-        this.btnDiscard.list[1].setText(`버리고 뽑기 (${this.discardsLeft})`);
-    }
-
-    handleShowdown() {
-        this.gameState = 'SHOWDOWN';
-        this.btnDiscard.setVisible(false);
-        this.btnShowdown.setVisible(false);
-
-        // AI Card Flip Reveal
-        this.aiHand.forEach((item, idx) => {
-            item.revealed = true;
-            this.tweens.add({
-                targets: item.obj,
-                scaleX: 0,
-                duration: 150,
-                delay: idx * 100,
-                onComplete: () => {
-                    item.obj.destroy();
-                    let newObj = this.createCardObject(item.card, true, false, false);
-                    newObj.setPosition(item.obj.x, item.obj.y);
-                    newObj.setScale(0, 1);
-                    item.obj = newObj;
-
-                    this.tweens.add({
-                        targets: newObj,
-                        scaleX: 1,
-                        duration: 150
-                    });
-                    sfx.playChipSound(1.0 + idx * 0.1);
-                }
-            });
-        });
-
-        this.time.delayedCall(1000, () => {
-            this.calculateResult();
-        });
-    }
-
-    calculateResult() {
-        let playerResult = evaluateHand(this.playerHand.map(i => i.card), this.playerAugments);
-
-        let aiAugments = [];
-        if (this.stage >= 5) aiAugments.push({ type: 'BONUS_CHIPS', val: this.stage * 80 });
-        let aiResult = evaluateHand(this.aiHand.map(i => i.card), aiAugments);
-
-        let banner = this.add.rectangle(430, 330, 520, 240, 0x090d16, 0.95);
-        banner.setStrokeStyle(3, 0x58a6ff);
-
-        this.add.text(430, 240, `🎮 PLAYER: ${playerResult.name} [${playerResult.score}점]`, { font: 'bold 22px Arial', fill: '#58a6ff' }).setOrigin(0.5);
-        this.add.text(430, 280, `🤖 AI: ${aiResult.name} [${aiResult.score}점]`, { font: 'bold 22px Arial', fill: '#ff6b6b' }).setOrigin(0.5);
-
-        let isWin = playerResult.score >= aiResult.score;
-
-        this.add.text(430, 340, isWin ? '🎉 STAGE CLEAR! 🎉' : '💀 GAME OVER 💀', {
-            font: 'bold 30px Arial',
-            fill: isWin ? '#3fb950' : '#f85149'
-        }).setOrigin(0.5);
-
-        if (isWin) {
-            sfx.playWinSound();
-            if (typeof confetti === 'function') {
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            // 카드 클릭 시 버리기 버튼 연결 예시
+            Button cardBtn = newCard.GetComponent<Button>();
+            if (cardBtn != null)
+            {
+                cardBtn.onClick.RemoveAllListeners();
+                cardBtn.onClick.AddListener(() => DiscardCard(cardIndex));
             }
-
-            let nextBtn = this.add.rectangle(430, 400, 180, 45, 0x238636).setInteractive({ useHandCursor: true });
-            this.add.text(430, 400, this.stage === 8 ? '최종 승리!' : '증강 선택하기', { font: 'bold 18px Arial', fill: '#fff' }).setOrigin(0.5);
-
-            nextBtn.on('pointerdown', () => {
-                if (this.stage === 8) {
-                    alert('👑 축하합니다! 8단계를 모두 클리어하셨습니다!');
-                    this.scene.start('MainGameScene', { stage: 1, playerAugments: [] });
-                } else {
-                    this.scene.start('AugmentSelectScene', { stage: this.stage, playerAugments: this.playerAugments });
-                }
-            });
-        } else {
-            sfx.playLoseSound();
-            let retryBtn = this.add.rectangle(430, 400, 220, 45, 0xda3633).setInteractive({ useHandCursor: true });
-            this.add.text(430, 400, '처음부터 다시 도전', { font: 'bold 18px Arial', fill: '#fff' }).setOrigin(0.5);
-
-            retryBtn.on('pointerdown', () => {
-                this.scene.start('MainGameScene', { stage: 1, playerAugments: [] });
-            });
         }
+    }
+
+    private void UpdateTimerUI()
+    {
+        if (timerText != null) 
+            timerText.text = Mathf.CeilToInt(currentTurnTime).ToString() + "초";
+
+        if (timerBar != null)
+        {
+            timerBar.fillAmount = currentTurnTime / maxTurnTime;
+            // 시간이 얼마 안 남으면 빨간색으로 변경
+            timerBar.color = (currentTurnTime <= 10f) ? Color.red : Color.green;
+        }
+    }
+
+    public void TriggerAIDialogue(string message)
+    {
+        if (aiDialogueText != null)
+        {
+            aiDialogueText.text = message;
+            // 필요 시 대사 팝업 연출 코드를 여기에 추가
+        }
+    }
+
+    public void ConfirmTurn()
+    {
+        isTurnActive = false;
+        // Turn 확정 로직 진행...
     }
 }
-
-// ==========================================
-// 5. AUGMENT SELECTION SCENE
-// ==========================================
-class AugmentSelectScene extends Phaser.Scene {
-    constructor() {
-        super('AugmentSelectScene');
-    }
-
-    init(data) {
-        this.stage = data.stage;
-        this.playerAugments = data.playerAugments || [];
-    }
-
-    create() {
-        this.cameras.main.setBackgroundColor('#0b0e14');
-
-        this.add.text(550, 80, '✨ 증강 선택 (AUGMENT SELECT) ✨', { font: 'bold 32px Arial', fill: '#f0883e' }).setOrigin(0.5);
-        this.add.text(550, 120, '다음 스테이지에 적용할 강력한 능력을 하나 선택하세요.', { font: '16px Arial', fill: '#8b949e' }).setOrigin(0.5);
-
-        let randTier = Math.random();
-        let selectedTier = 'SILVER';
-        let isAllPlatinum = false;
-
-        if (randTier < 0.08 + (this.stage * 0.01)) {
-            selectedTier = 'PLATINUM';
-            isAllPlatinum = true;
-            sfx.playPlatinumSound();
-        } else if (randTier < 0.35) {
-            selectedTier = 'GOLD';
-        }
-
-        if (isAllPlatinum) {
-            this.add.text(550, 160, '💎 대박! 플래티넘 증강 3개가 등장했습니다! 💎', { font: 'bold 20px Arial', fill: '#a371f7' }).setOrigin(0.5);
-        }
-
-        let pool = AUGMENTS.filter(a => isAllPlatinum ? a.tier === 'PLATINUM' : (a.tier === selectedTier || a.tier === 'SILVER'));
-        pool = pool.sort(() => Math.random() - 0.5);
-        let choices = pool.slice(0, 3);
-
-        choices.forEach((aug, idx) => {
-            let x = 230 + idx * 320;
-            let y = 380;
-
-            let card = this.add.container(x, y);
-            let tierColor = aug.tier === 'PLATINUM' ? 0xa371f7 : (aug.tier === 'GOLD' ? 0xd4a72c : 0x8b949e);
-            let bg = this.add.rectangle(0, 0, 270, 360, 0x161b22).setInteractive({ useHandCursor: true });
-            bg.setStrokeStyle(3, tierColor);
-
-            let txtTier = this.add.text(0, -140, `[ ${aug.tier} ]`, { font: 'bold 16px Arial', fill: `#${tierColor.toString(16)}` }).setOrigin(0.5);
-            let txtName = this.add.text(0, -90, aug.name, { font: 'bold 22px Arial', fill: '#ffffff', wordWrap: { width: 240 } }).setOrigin(0.5);
-            let txtDesc = this.add.text(0, 10, aug.desc, { font: '16px Arial', fill: '#c9d1d9', align: 'center', wordWrap: { width: 220 } }).setOrigin(0.5);
-
-            let btnSelect = this.add.rectangle(0, 130, 200, 45, 0x238636);
-            let btnTxt = this.add.text(0, 130, '선택하기', { font: 'bold 18px Arial', fill: '#fff' }).setOrigin(0.5);
-
-            card.add([bg, txtTier, txtName, txtDesc, btnSelect, btnTxt]);
-
-            bg.on('pointerover', () => { card.setScale(1.05); });
-            bg.on('pointerout', () => { card.setScale(1.0); });
-            bg.on('pointerdown', () => {
-                sfx.playCardSelect();
-                this.playerAugments.push(aug);
-                this.scene.start('MainGameScene', { stage: this.stage + 1, playerAugments: this.playerAugments });
-            });
-        });
-    }
-}
-
-// ==========================================
-// 6. PHASER INITIALIZATION
-// ==========================================
-const config = {
-    type: Phaser.AUTO,
-    width: 1100,
-    height: 700,
-    parent: 'game-container',
-    scene: [MainGameScene, AugmentSelectScene]
-};
-
-const game = new Phaser.Game(config);
-</script>
-</body>
-</html>
