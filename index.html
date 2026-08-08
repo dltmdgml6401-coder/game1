@@ -2,118 +2,16 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>DOPAMINE POKER - Balatro Style</title>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-width: 90px;
-            --card-height: 130px;
-        }
-        body {
-            background-color: var(--bg-color);
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            user-select: none;
-            overflow: hidden;
-        }
-        #game-container {
-            background: #1e293b;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: center;
-            width: 800px;
-        }
-        .hud {
-            display: flex;
-            justify-content: space-between;
-            background: #0f172a;
-            padding: 15px 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-        .score-box { color: #f59e0b; }
-        .target-box { color: #ef4444; }
-        .mult-box { color: #10b981; }
-
-        .card-area {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            min-height: 140px;
-            margin-bottom: 20px;
-            perspective: 1000px;
-        }
-
-        .card {
-            width: var(--card-width);
-            height: var(--card-height);
-            background: white;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 8px;
-            box-sizing: border-box;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            font-weight: bold;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            position: relative;
-        }
-        .card:hover { transform: translateY(-10px); }
-        .card.selected { transform: translateY(-25px); box-shadow: 0 0 15px #f59e0b; }
-        .card.red { color: #dc2626; }
-        .card.black { color: #1e293b; }
-        .card .suit { font-size: 2rem; align-self: center; }
-
-        .btn-group { display: flex; gap: 15px; justify-content: center; }
-        button {
-            padding: 12px 28px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.1s;
-        }
-        button:active { transform: scale(0.95); }
-        .btn-play { background: #10b981; color: white; }
-        .btn-discard { background: #ef4444; color: white; }
-
-        /* 도파민 연출용 스코어 팝업 */
-        #dopamine-pop {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: #f59e0b;
-            height: 50px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
-        }
-        .shake { animation: shake 0.3s ease-in-out; }
-        @keyframes shake {
-            0% { transform: translate(0, 0); }
-            25% { transform: translate(-5px, 5px); }
-            50% { transform: translate(5px, -5px); }
-            75% { transform: translate(-5px, -5px); }
-            100% { transform: translate(0, 0); }
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOPAMINE POKER</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="game-container">
+    <h1>DOPAMINE POKER</h1>
     <div class="hud">
-        <div class="target-box">목표: <span id="target-score">1,000</span></div>
+        <div class="target-box">목표 점수: <span id="target-score">1,000</span></div>
         <div class="score-box">현재 점수: <span id="current-score">0</span></div>
         <div>남은 횟수: <span id="plays-left">4</span></div>
         <div>버리기: <span id="discards-left">3</span></div>
@@ -124,147 +22,11 @@
     <div class="card-area" id="hand-area"></div>
 
     <div class="btn-group">
-        <button class="btn-play" onclick="playHand()">족보 제출 (PLAY)</button>
-        <button class="btn-discard" onclick="discardSelected()">카드 버리기 (DISCARD)</button>
+        <button class="btn-play" id="play-btn">족보 제출 (PLAY)</button>
+        <button class="btn-discard" id="discard-btn">카드 버리기 (DISCARD)</button>
     </div>
 </div>
 
-<script>
-const SUITS = ['♠', '♥', '♦', '♣'];
-const VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-const SCORES = { '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '10':10, 'J':10, 'Q':10, 'K':10, 'A':11 };
-
-let deck = [], hand = [], selectedIndices = [];
-let score = 0, targetScore = 1000, plays = 4, discards = 3;
-
-function createDeck() {
-    deck = [];
-    for (let s of SUITS) {
-        for (let v of VALUES) {
-            deck.push({ suit: s, value: v, score: SCORES[v], color: (s === '♥' || s === '♦') ? 'red' : 'black' });
-        }
-    }
-    deck.sort(() => Math.random() - 0.5);
-}
-
-function drawHand() {
-    while (hand.length < 8 && deck.length > 0) {
-        hand.push(deck.pop());
-    }
-    renderHand();
-}
-
-function renderHand() {
-    const area = document.getElementById('hand-area');
-    area.innerHTML = '';
-    hand.forEach((card, idx) => {
-        const el = document.createElement('div');
-        el.className = `card ${card.color} ${selectedIndices.includes(idx) ? 'selected' : ''}`;
-        el.onclick = () => toggleSelect(idx);
-        el.innerHTML = `
-            <div>${card.value}</div>
-            <div class="suit">${card.suit}</div>
-            <div style="align-self: flex-end;">${card.value}</div>
-        `;
-        area.appendChild(el);
-    });
-}
-
-function toggleSelect(idx) {
-    if (selectedIndices.includes(idx)) {
-        selectedIndices = selectedIndices.filter(i => i !== idx);
-    } else {
-        if (selectedIndices.length < 5) selectedIndices.push(idx);
-    }
-    renderHand();
-}
-
-function evaluateHand(cards) {
-    const valCounts = {};
-    const suitCounts = {};
-    cards.forEach(c => {
-        valCounts[c.value] = (valCounts[c.value] || 0) + 1;
-        suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1;
-    });
-
-    const counts = Object.values(valCounts).sort((a,b) => b-a);
-    const isFlush = Object.values(suitCounts).some(c => c === 5);
-
-    let baseChips = cards.reduce((a, b) => a + b.score, 0);
-    let mult = 1;
-    let name = "하이 카드";
-
-    if (counts[0] === 4) { name = "포카드"; baseChips += 60; mult = 7; }
-    else if (counts[0] === 3 && counts[1] === 2) { name = "풀하우스"; baseChips += 40; mult = 4; }
-    else if (isFlush) { name = "플러시"; baseChips += 35; mult = 4; }
-    else if (counts[0] === 3) { name = "트리플"; baseChips += 30; mult = 3; }
-    else if (counts[0] === 2 && counts[1] === 2) { name = "투 페어"; baseChips += 20; mult = 2; }
-    else if (counts[0] === 2) { name = "원 페어"; baseChips += 10; mult = 2; }
-
-    return { name, chips: baseChips, mult, total: baseChips * mult };
-}
-
-function playHand() {
-    if (selectedIndices.length === 0 || plays <= 0) return;
-
-    const selectedCards = selectedIndices.map(i => hand[i]);
-    const result = evaluateHand(selectedCards);
-
-    score += result.total;
-    plays--;
-
-    // 도파민 시각 연출
-    const pop = document.getElementById('dopamine-pop');
-    pop.innerText = `${result.name}! +${result.total}점! (${result.chips} x ${result.mult}배)`;
-    document.getElementById('game-container').classList.add('shake');
-    setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 300);
-
-    // 사용된 카드 제거 및 새로 뽑기
-    hand = hand.filter((_, idx) => !selectedIndices.includes(idx));
-    selectedIndices = [];
-    
-    updateHUD();
-    drawHand();
-    checkGameState();
-}
-
-function discardSelected() {
-    if (selectedIndices.length === 0 || discards <= 0) return;
-    discards--;
-    hand = hand.filter((_, idx) => !selectedIndices.includes(idx));
-    selectedIndices = [];
-    updateHUD();
-    drawHand();
-}
-
-function updateHUD() {
-    document.getElementById('current-score').innerText = score.toLocaleString();
-    document.getElementById('target-score').innerText = targetScore.toLocaleString();
-    document.getElementById('plays-left').innerText = plays;
-    document.getElementById('discards-left').innerText = discards;
-}
-
-function checkGameState() {
-    if (score >= targetScore) {
-        setTimeout(() => {
-            alert(`🎉 클리어 성공! (최종 점수: ${score})\n다음 라운드로 진입합니다!`);
-            targetScore = Math.floor(targetScore * 1.8);
-            score = 0; plays = 4; discards = 3;
-            createDeck(); hand = []; selectedIndices = [];
-            updateHUD(); drawHand();
-        }, 100);
-    } else if (plays <= 0) {
-        setTimeout(() => {
-            alert(`💥 파산했습니다! 목표 점수를 채우지 못했습니다.\n게임이 리셋됩니다.`);
-            location.reload();
-        }, 100);
-    }
-}
-
-// 게임 시작
-createDeck();
-drawHand();
-updateHUD();
-</script>
+<script src="script.js"></script>
 </body>
 </html>
