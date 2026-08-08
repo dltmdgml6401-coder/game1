@@ -6,193 +6,204 @@
 <title>RISK ROYAL</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
+*{box-sizing:border-box}
 
-body {
-    margin: 0;
+body{
+    margin:0;
+    min-height:100vh;
     background:
-        radial-gradient(circle at 50% 30%, #1c2a27 0%, #0a0d11 55%, #050608 100%);
-    color: #f2f2f2;
-    font-family: Arial, "Noto Sans KR", sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
+        radial-gradient(circle at 50% 30%,#1b2b27 0%,#0a0d11 55%,#050608 100%);
+    color:#f2f2f2;
+    font-family:Arial,"Noto Sans KR",sans-serif;
+    overflow-x:hidden;
 }
 
-button {
-    font-family: inherit;
+button{
+    font-family:inherit;
 }
 
-.topbar {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    padding: 0 28px;
-    background: rgba(8, 11, 15, .95);
-    border-bottom: 1px solid #303742;
+.topbar{
+    height:70px;
+    display:flex;
+    align-items:center;
+    padding:0 28px;
+    background:rgba(8,11,15,.96);
+    border-bottom:1px solid #303742;
 }
 
-.logo {
-    font-size: 22px;
-    font-weight: 900;
-    letter-spacing: 5px;
+.logo{
+    font-size:22px;
+    font-weight:900;
+    letter-spacing:5px;
 }
 
-.logo span {
-    color: #d9b45d;
+.logo span{
+    color:#d9b45d;
 }
 
-.stage {
-    margin-left: auto;
-    border: 1px solid #3c4551;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 12px;
-    letter-spacing: 2px;
+.stage{
+    margin-left:auto;
+    border:1px solid #3c4551;
+    padding:8px 16px;
+    border-radius:8px;
+    font-size:12px;
+    letter-spacing:2px;
 }
 
-.stage b {
-    color: #e6c66e;
-    font-size: 18px;
+.stage b{
+    color:#e6c66e;
+    font-size:18px;
 }
 
-.timer {
-    margin-left: 25px;
-    width: 90px;
-    text-align: right;
+.timer{
+    margin-left:25px;
+    width:90px;
+    text-align:right;
 }
 
-.timer small {
-    display: block;
-    color: #7d8794;
-    font-size: 9px;
-    letter-spacing: 2px;
+.timer small{
+    display:block;
+    color:#7d8794;
+    font-size:9px;
+    letter-spacing:2px;
 }
 
-.timer strong {
-    color: #e5bf63;
-    font-size: 22px;
+.timer strong{
+    color:#e5bf63;
+    font-size:22px;
 }
 
-.game {
-    width: min(1450px, 96%);
-    margin: 25px auto;
-    display: grid;
-    grid-template-columns: 210px minmax(500px, 1fr) 280px;
-    gap: 20px;
+.game{
+    width:min(1450px,96%);
+    margin:25px auto;
+    display:grid;
+    grid-template-columns:210px minmax(500px,1fr) 280px;
+    gap:20px;
 }
 
 .ai-box,
-.augment-box {
-    background: #0e1319;
-    border: 1px solid #2c3540;
-    border-radius: 15px;
+.augment-box{
+    background:#0e1319;
+    border:1px solid #2c3540;
+    border-radius:15px;
 }
 
-.ai-box {
-    height: fit-content;
-    padding: 18px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
+.ai-box{
+    height:fit-content;
+    padding:18px;
+    display:flex;
+    gap:10px;
+    align-items:center;
 }
 
-.ai-avatar {
-    width: 43px;
-    height: 43px;
-    border-radius: 50%;
-    background: #1b222c;
-    border: 1px solid #505b68;
-    display: grid;
-    place-items: center;
-    font-size: 11px;
-    font-weight: 900;
+.ai-avatar{
+    width:43px;
+    height:43px;
+    border-radius:50%;
+    background:#1b222c;
+    border:1px solid #505b68;
+    display:grid;
+    place-items:center;
+    font-size:11px;
+    font-weight:900;
+    flex-shrink:0;
 }
 
-.ai-name {
-    font-size: 11px;
-    font-weight: 900;
+.ai-name{
+    font-size:11px;
+    font-weight:900;
 }
 
-.ai-talk {
-    color: #7d8795;
-    font-size: 10px;
-    margin-top: 5px;
+.ai-talk{
+    color:#7d8795;
+    font-size:10px;
+    margin-top:5px;
+    line-height:1.4;
 }
 
-.table {
-    min-height: 670px;
-    border: 1px solid #354039;
-    border-radius: 22px;
-    padding: 28px;
+.table{
+    min-height:670px;
+    border:1px solid #354039;
+    border-radius:22px;
+    padding:28px;
     background:
-        radial-gradient(ellipse at center, #1b3029, #0d1715 60%, #090d10);
+        radial-gradient(ellipse at center,#1b3029,#0d1715 60%,#090d10);
     box-shadow:
         inset 0 0 100px rgba(0,0,0,.55),
         0 20px 60px rgba(0,0,0,.5);
-    position: relative;
+    position:relative;
 }
 
-.hand-label {
-    color: #7d8794;
-    font-size: 10px;
-    letter-spacing: 2px;
-    margin-bottom: 12px;
+.hand-label{
+    color:#7d8794;
+    font-size:10px;
+    letter-spacing:2px;
+    margin-bottom:12px;
 }
 
-.hand-label span {
-    float: right;
-    color: #dcb960;
-    font-weight: bold;
+.hand-label span{
+    float:right;
+    color:#dcb960;
+    font-weight:bold;
 }
 
-.hand {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    min-height: 125px;
+.hand{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    min-height:125px;
 }
 
-.card {
-    width: 82px;
-    height: 116px;
-    background: linear-gradient(145deg, #ffffff, #dcdfe3);
-    border-radius: 9px;
-    color: #101318;
-    position: relative;
-    padding: 8px;
-    font-weight: 900;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: .15s;
-    box-shadow: 0 8px 20px rgba(0,0,0,.5);
+.card{
+    width:82px;
+    height:116px;
+    background:linear-gradient(145deg,#fff,#dcdfe3);
+    border-radius:9px;
+    color:#101318;
+    position:relative;
+    padding:8px;
+    font-weight:900;
+    cursor:pointer;
+    border:2px solid transparent;
+    transition:
+        transform .15s ease,
+        border-color .15s ease,
+        box-shadow .15s ease,
+        filter .15s ease;
+    box-shadow:0 8px 20px rgba(0,0,0,.5);
+    user-select:none;
+    z-index:1;
 }
 
-.card:hover {
-    transform: translateY(-7px);
+.card:hover{
+    transform:translateY(-7px);
+    z-index:3;
 }
 
-.card.selected {
-    transform: translateY(-15px);
-    border-color: #e4bd60;
-    box-shadow: 0 15px 30px rgba(210,170,75,.25);
+.card.selected{
+    transform:translateY(-17px);
+    border-color:#e4bd60;
+    box-shadow:
+        0 15px 30px rgba(210,170,75,.3),
+        0 0 15px rgba(228,189,96,.2);
+    filter:brightness(1.08);
+    z-index:4;
 }
 
-.card.red {
-    color: #b62f3b;
+.card.red{
+    color:#b62f3b;
 }
 
-.rank {
-    font-size: 23px;
+.rank{
+    font-size:23px;
 }
 
-.suit {
-    font-size: 30px;
-    margin-top: 8px;
+.suit{
+    font-size:30px;
+    margin-top:8px;
 }
 
-.card-back {
+.card-back{
     background:
         repeating-linear-gradient(
             45deg,
@@ -201,295 +212,308 @@ button {
             #1c242f 5px,
             #1c242f 10px
         );
-    border-color: #465160;
-    color: transparent;
+    border-color:#465160;
+    color:transparent;
+    cursor:default;
 }
 
-.vs {
-    text-align: center;
-    margin: 15px 0;
-    color: #606a76;
-    letter-spacing: 6px;
-    font-weight: bold;
+.vs{
+    text-align:center;
+    margin:15px 0;
+    color:#606a76;
+    letter-spacing:6px;
+    font-weight:bold;
 }
 
-.actions {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 9px;
-    margin-top: 28px;
+.actions{
+    display:flex;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:9px;
+    margin-top:28px;
 }
 
-button {
-    padding: 12px 18px;
-    border-radius: 8px;
-    border: 1px solid #3c4653;
-    background: #151b23;
-    color: #e4e7eb;
-    font-weight: bold;
-    cursor: pointer;
+button{
+    padding:12px 18px;
+    border-radius:8px;
+    border:1px solid #3c4653;
+    background:#151b23;
+    color:#e4e7eb;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.15s;
 }
 
-button:hover {
-    border-color: #d7b45e;
+button:hover:not(:disabled){
+    border-color:#d7b45e;
+    transform:translateY(-1px);
 }
 
-button:disabled {
-    opacity: .35;
-    cursor: not-allowed;
+button:disabled{
+    opacity:.35;
+    cursor:not-allowed;
 }
 
-button.primary {
-    background: linear-gradient(#e0bd64, #9e782d);
-    color: #111;
-    border-color: #edce79;
+button.primary{
+    background:linear-gradient(#e0bd64,#9e782d);
+    color:#111;
+    border-color:#edce79;
 }
 
-.help {
-    text-align: center;
-    margin-top: 15px;
-    color: #68727f;
-    font-size: 10px;
+.help{
+    text-align:center;
+    margin-top:15px;
+    color:#68727f;
+    font-size:10px;
 }
 
-.augment-box {
-    padding: 16px;
-    height: fit-content;
+.augment-box{
+    padding:16px;
+    height:fit-content;
 }
 
-.augment-title {
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: #8c96a4;
-    margin-bottom: 12px;
+.augment-title{
+    font-size:10px;
+    letter-spacing:2px;
+    color:#8c96a4;
+    margin-bottom:12px;
 }
 
-.empty {
-    text-align: center;
-    color: #596371;
-    font-size: 11px;
-    line-height: 1.6;
-    padding: 25px 5px;
+.empty{
+    text-align:center;
+    color:#596371;
+    font-size:11px;
+    line-height:1.6;
+    padding:25px 5px;
 }
 
-.augment {
-    position: relative;
-    padding: 13px;
-    margin-bottom: 9px;
-    border-radius: 11px;
-    background: #121820;
-    border: 1px solid #343e4b;
-    cursor: pointer;
+.augment{
+    position:relative;
+    padding:13px;
+    margin-bottom:9px;
+    border-radius:11px;
+    background:#121820;
+    border:1px solid #343e4b;
+    cursor:pointer;
+    transition:.15s;
 }
 
-.augment:hover {
-    border-color: #d9b75e;
+.augment:hover{
+    border-color:#d9b75e;
+    transform:translateX(-2px);
 }
 
-.augment-name {
-    font-size: 12px;
-    font-weight: 900;
+.augment-name{
+    font-size:12px;
+    font-weight:900;
 }
 
-.augment-uses {
-    float: right;
-    font-size: 10px;
-    color: #8993a0;
+.augment-uses{
+    float:right;
+    font-size:10px;
+    color:#8993a0;
 }
 
-.rarity {
-    margin-top: 4px;
-    font-size: 9px;
-    letter-spacing: 2px;
+.rarity{
+    margin-top:4px;
+    font-size:9px;
+    letter-spacing:2px;
 }
 
-.silver {
-    color: #b8c0c9;
+.silver{color:#b8c0c9}
+.gold{color:#e3bd51}
+.platinum{color:#e7efff}
+
+.tooltip{
+    position:absolute;
+    right:calc(100% + 12px);
+    top:0;
+    width:240px;
+    background:#080b10;
+    border:1px solid #404b58;
+    padding:13px;
+    border-radius:9px;
+    font-size:11px;
+    line-height:1.6;
+    color:#cbd2db;
+    opacity:0;
+    pointer-events:none;
+    transition:.15s;
+    z-index:20;
+    box-shadow:0 15px 40px #000;
 }
 
-.gold {
-    color: #e3bd51;
+.augment:hover .tooltip{
+    opacity:1;
 }
 
-.platinum {
-    color: #e7efff;
+.taunt{
+    position:absolute;
+    left:50%;
+    top:18px;
+    transform:translateX(-50%);
+    background:#28141a;
+    border:1px solid #a2404c;
+    color:#ffb4bd;
+    border-radius:20px;
+    padding:10px 18px;
+    font-size:11px;
+    font-weight:bold;
+    z-index:20;
+    animation:taunt .25s ease;
+    white-space:nowrap;
 }
 
-.tooltip {
-    position: absolute;
-    right: calc(100% + 12px);
-    top: 0;
-    width: 240px;
-    background: #080b10;
-    border: 1px solid #404b58;
-    padding: 13px;
-    border-radius: 9px;
-    font-size: 11px;
-    line-height: 1.6;
-    color: #cbd2db;
-    opacity: 0;
-    pointer-events: none;
-    transition: .15s;
-    z-index: 10;
+.hidden{
+    display:none!important;
 }
 
-.augment:hover .tooltip {
-    opacity: 1;
-}
-
-.taunt {
-    position: absolute;
-    left: 50%;
-    top: 18px;
-    transform: translateX(-50%);
-    background: #28141a;
-    border: 1px solid #a2404c;
-    color: #ffb4bd;
-    border-radius: 20px;
-    padding: 10px 18px;
-    font-size: 11px;
-    font-weight: bold;
-    z-index: 5;
-    animation: taunt .25s ease;
-}
-
-@keyframes taunt {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -10px);
+@keyframes taunt{
+    from{
+        opacity:0;
+        transform:translate(-50%,-10px);
     }
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-}
-
-.hidden {
-    display: none !important;
-}
-
-.modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.78);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    padding: 20px;
-}
-
-.modal-card {
-    width: min(780px, 95vw);
-    background: #10151d;
-    border: 1px solid #3d4652;
-    border-radius: 18px;
-    padding: 30px;
-    box-shadow: 0 30px 100px #000;
-}
-
-.modal-kicker {
-    text-align: center;
-    color: #d8b65e;
-    font-size: 10px;
-    letter-spacing: 4px;
-}
-
-.modal h1 {
-    text-align: center;
-    margin: 10px 0;
-}
-
-.modal p {
-    text-align: center;
-    color: #8993a0;
-    font-size: 12px;
-}
-
-.choices {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 25px;
-}
-
-.choice {
-    min-height: 170px;
-    padding: 18px;
-    border-radius: 12px;
-    border: 1px solid #394451;
-    background: #131a23;
-    cursor: pointer;
-    transition: .15s;
-}
-
-.choice:hover {
-    transform: translateY(-6px);
-    border-color: #d9b65b;
-}
-
-.choice.selected {
-    border-color: #e5c46e;
-    box-shadow: 0 0 25px rgba(220,180,80,.15);
-}
-
-.choice h3 {
-    font-size: 14px;
-}
-
-.choice p {
-    text-align: left;
-    line-height: 1.6;
-}
-
-.modal-button {
-    display: block;
-    margin: 20px auto 0;
-}
-
-.good {
-    animation: good .6s ease;
-}
-
-@keyframes good {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); filter: brightness(1.7); }
-    100% { transform: scale(1); }
-}
-
-@media(max-width:1050px) {
-    .game {
-        grid-template-columns: 1fr;
-    }
-
-    .tooltip {
-        left: 0;
-        right: auto;
-        top: calc(100% + 5px);
+    to{
+        opacity:1;
+        transform:translate(-50%,0);
     }
 }
 
-@media(max-width:600px) {
-    .card {
-        width: 58px;
-        height: 86px;
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.78);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:20px;
+}
+
+.modal-card{
+    width:min(780px,95vw);
+    background:#10151d;
+    border:1px solid #3d4652;
+    border-radius:18px;
+    padding:30px;
+    box-shadow:0 30px 100px #000;
+}
+
+.modal-kicker{
+    text-align:center;
+    color:#d8b65e;
+    font-size:10px;
+    letter-spacing:4px;
+}
+
+.modal h1{
+    text-align:center;
+    margin:10px 0;
+}
+
+.modal p{
+    text-align:center;
+    color:#8993a0;
+    font-size:12px;
+    line-height:1.6;
+}
+
+.choices{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-top:25px;
+}
+
+.choice{
+    min-height:170px;
+    padding:18px;
+    border-radius:12px;
+    border:1px solid #394451;
+    background:#131a23;
+    cursor:pointer;
+    transition:.15s;
+}
+
+.choice:hover{
+    transform:translateY(-6px);
+    border-color:#d9b65b;
+}
+
+.choice.selected{
+    border-color:#e5c46e;
+    box-shadow:0 0 25px rgba(220,180,80,.15);
+}
+
+.choice h3{
+    font-size:14px;
+}
+
+.choice p{
+    text-align:left;
+    line-height:1.6;
+}
+
+.modal-button{
+    display:block;
+    margin:20px auto 0;
+}
+
+.good{
+    animation:good .6s ease;
+}
+
+@keyframes good{
+    0%{transform:scale(1)}
+    50%{
+        transform:scale(1.05);
+        filter:brightness(1.7);
+    }
+    100%{transform:scale(1)}
+}
+
+@media(max-width:1050px){
+
+    .game{
+        grid-template-columns:1fr;
     }
 
-    .rank {
-        font-size: 18px;
+    .tooltip{
+        left:0;
+        right:auto;
+        top:calc(100% + 5px);
+    }
+}
+
+@media(max-width:600px){
+
+    .card{
+        width:58px;
+        height:86px;
     }
 
-    .suit {
-        font-size: 22px;
+    .rank{
+        font-size:18px;
     }
 
-    .table {
-        padding: 20px 10px;
+    .suit{
+        font-size:22px;
     }
 
-    .choices {
-        grid-template-columns: 1fr;
+    .table{
+        padding:20px 10px;
+    }
+
+    .choices{
+        grid-template-columns:1fr;
+    }
+
+    .logo{
+        font-size:16px;
+    }
+
+    .topbar{
+        padding:0 12px;
     }
 }
 </style>
@@ -498,6 +522,7 @@ button.primary {
 <body>
 
 <header class="topbar">
+
     <div class="logo">
         RISK <span>ROYAL</span>
     </div>
@@ -510,39 +535,76 @@ button.primary {
         <small>TIME</small>
         <strong id="timer">35.0</strong>
     </div>
+
 </header>
+
 
 <div class="game">
 
     <aside class="ai-box">
-        <div class="ai-avatar">AI</div>
+
+        <div class="ai-avatar">
+            AI
+        </div>
 
         <div>
-            <div class="ai-name">THE DEALER</div>
-            <div class="ai-talk" id="aiTalk">
+
+            <div class="ai-name">
+                THE DEALER
+            </div>
+
+            <div
+                class="ai-talk"
+                id="aiTalk"
+            >
                 널 이길 준비는 됐어.
             </div>
+
         </div>
+
     </aside>
+
 
     <main class="table">
 
-        <div id="taunt" class="taunt hidden"></div>
+        <div
+            id="taunt"
+            class="taunt hidden"
+        ></div>
+
 
         <div class="hand-label">
             AI HAND
         </div>
 
-        <div id="aiHand" class="hand"></div>
 
-        <div class="vs">VS</div>
+        <div
+            id="aiHand"
+            class="hand"
+        ></div>
 
-        <div class="hand-label">
-            YOUR HAND
-            <span id="playerRank">HIGH CARD</span>
+
+        <div class="vs">
+            VS
         </div>
 
-        <div id="playerHand" class="hand"></div>
+
+        <div class="hand-label">
+
+            YOUR HAND
+
+            <span id="playerRank">
+                HIGH CARD
+            </span>
+
+        </div>
+
+
+        <div
+            id="playerHand"
+            class="hand"
+        ></div>
+
 
         <div class="actions">
 
@@ -559,17 +621,22 @@ button.primary {
                 증강 사용
             </button>
 
-            <button id="submitBtn" class="primary">
+            <button
+                id="submitBtn"
+                class="primary"
+            >
                 제출
             </button>
 
         </div>
 
+
         <div class="help">
-            카드를 클릭해서 선택하세요 · 버리기는 최대 3회 · 증강은 오른쪽 패널에서 사용할 수 있습니다.
+            카드를 클릭해서 선택 · 다시 클릭하면 선택 해제 · 증강은 오른쪽 패널에서 사용
         </div>
 
     </main>
+
 
     <aside class="augment-box">
 
@@ -578,10 +645,13 @@ button.primary {
         </div>
 
         <div id="augmentList">
+
             <div class="empty">
                 아직 보유한 증강이 없습니다.<br>
-                스테이지를 클리어하면 선택할 수 있습니다.
+                스테이지를 클리어하면<br>
+                증강을 선택할 수 있습니다.
             </div>
+
         </div>
 
     </aside>
@@ -589,19 +659,31 @@ button.primary {
 </div>
 
 
-<div id="modal" class="modal hidden">
+<div
+    id="modal"
+    class="modal hidden"
+>
 
     <div class="modal-card">
 
-        <div class="modal-kicker" id="modalKicker"></div>
+        <div
+            class="modal-kicker"
+            id="modalKicker"
+        ></div>
 
         <h1 id="modalTitle"></h1>
 
         <p id="modalText"></p>
 
-        <div id="choices" class="choices"></div>
+        <div
+            id="choices"
+            class="choices"
+        ></div>
 
-        <button id="modalButton" class="primary modal-button">
+        <button
+            id="modalButton"
+            class="primary modal-button"
+        >
             계속
         </button>
 
@@ -612,21 +694,46 @@ button.primary {
 
 <script>
 
-const $ = id => document.getElementById(id);
+/* =====================================================
+   RISK ROYAL
+   Single-file GitHub Pages version
+===================================================== */
+
+const $ = id =>
+    document.getElementById(id);
 
 
-/* =========================
+/* =====================================================
    CARD DATA
-========================= */
+===================================================== */
 
 const SUITS = [
-    { symbol:"♠", color:"black" },
-    { symbol:"♥", color:"red" },
-    { symbol:"♦", color:"red" },
-    { symbol:"♣", color:"black" }
+
+    {
+        symbol:"♠",
+        color:"black"
+    },
+
+    {
+        symbol:"♥",
+        color:"red"
+    },
+
+    {
+        symbol:"♦",
+        color:"red"
+    },
+
+    {
+        symbol:"♣",
+        color:"black"
+    }
+
 ];
 
+
 const RANKS = [
+
     ["2",2],
     ["3",3],
     ["4",4],
@@ -640,14 +747,23 @@ const RANKS = [
     ["Q",12],
     ["K",13],
     ["A",14]
+
 ];
+
+
+/* =====================================================
+   GAME STATE
+===================================================== */
 
 let deck = [];
 
 let playerHand = [];
+
 let aiHand = [];
 
 let selectedCards = new Set();
+
+let activeAugments = [];
 
 let stage = 1;
 
@@ -661,26 +777,33 @@ let timerInterval = null;
 
 let gamePhase = "playing";
 
-let activeAugments = [];
+let tenSecondTauntShown = false;
 
 
-/* =========================
+/* =====================================================
    AUGMENTS
-========================= */
+===================================================== */
 
 const AUGMENTS = [
 
     {
         id:"suit-change",
+
         name:"수트 개조",
+
         rarity:"silver",
+
         description:
-        "카드 1장의 수트를 원하는 수트로 변경합니다. 변경된 수트는 실제 플러시 판정에 적용됩니다.",
+        "카드 1장을 선택하고 원하는 수트로 변경합니다. 변경된 수트는 실제 플러시 판정에 적용됩니다.",
+
         uses:1,
 
-        use() {
-            if(selectedCards.size !== 1) {
+        use(){
+
+            if(selectedCards.size !== 1){
+
                 alert("카드 1장을 선택하세요.");
+
                 return false;
             }
 
@@ -690,17 +813,27 @@ const AUGMENTS = [
         }
     },
 
+
     {
         id:"extra-card",
+
         name:"한 장 더",
+
         rarity:"silver",
+
         description:
-        "덱에서 카드 1장을 추가로 뽑습니다. 손패에 실제로 추가됩니다.",
+        "손패가 5장 미만일 때 덱에서 카드를 1장 추가합니다.",
+
         uses:1,
 
-        use() {
-            if(playerHand.length >= 5) {
-                alert("손패가 이미 5장입니다. 먼저 카드를 버리세요.");
+        use(){
+
+            if(playerHand.length >= 5){
+
+                alert(
+                    "손패가 이미 5장입니다.\n카드를 먼저 버리세요."
+                );
+
                 return false;
             }
 
@@ -710,17 +843,27 @@ const AUGMENTS = [
         }
     },
 
+
     {
         id:"card-swap",
+
         name:"운명의 교환",
+
         rarity:"silver",
+
         description:
         "내 카드 1장과 AI 카드 1장을 교환합니다.",
+
         uses:1,
 
-        use() {
-            if(selectedCards.size !== 1) {
-                alert("교환할 내 카드 1장을 선택하세요.");
+        use(){
+
+            if(selectedCards.size !== 1){
+
+                alert(
+                    "교환할 내 카드 1장을 선택하세요."
+                );
+
                 return false;
             }
 
@@ -730,18 +873,27 @@ const AUGMENTS = [
         }
     },
 
+
     {
         id:"double-suit",
+
         name:"양손 개조",
+
         rarity:"gold",
+
         description:
-        "카드 2장의 수트를 원하는 수트로 변경합니다.",
+        "카드 2장을 선택해 각각 원하는 수트로 변경합니다.",
+
         uses:1,
 
-        use() {
+        use(){
 
-            if(selectedCards.size !== 2) {
-                alert("카드 2장을 선택하세요.");
+            if(selectedCards.size !== 2){
+
+                alert(
+                    "카드 2장을 선택하세요."
+                );
+
                 return false;
             }
 
@@ -751,42 +903,57 @@ const AUGMENTS = [
         }
     },
 
+
     {
         id:"triple-draw",
+
         name:"과감한 드로우",
+
         rarity:"gold",
+
         description:
-        "선택한 카드를 버리고 최대 3장의 새로운 카드를 뽑습니다.",
+        "선택한 카드를 버리고 새로운 카드를 뽑습니다.",
+
         uses:1,
 
-        use() {
+        use(){
 
-            if(selectedCards.size === 0) {
-                alert("버릴 카드를 선택하세요.");
+            if(selectedCards.size === 0){
+
+                alert(
+                    "버릴 카드를 선택하세요."
+                );
+
                 return false;
             }
 
-            const amount =
-                Math.min(3, selectedCards.size);
-
-            discardSelected(amount);
+            discardSelected();
 
             return true;
         }
     },
 
+
     {
         id:"enemy-swap",
+
         name:"강제 교환",
+
         rarity:"gold",
+
         description:
-        "내 카드 1장과 AI의 카드 1장을 무작위로 교환합니다.",
+        "내 카드 1장과 AI의 카드 1장을 교환합니다.",
+
         uses:1,
 
-        use() {
+        use(){
 
-            if(selectedCards.size !== 1) {
-                alert("내 카드 1장을 선택하세요.");
+            if(selectedCards.size !== 1){
+
+                alert(
+                    "내 카드 1장을 선택하세요."
+                );
+
                 return false;
             }
 
@@ -796,18 +963,27 @@ const AUGMENTS = [
         }
     },
 
+
     {
         id:"perfect-hand",
+
         name:"완벽한 손길",
+
         rarity:"platinum",
+
         description:
-        "카드 2장의 숫자와 수트를 직접 변경할 수 있습니다. 변경 결과는 실제 족보 계산에 적용됩니다.",
+        "카드 2장의 숫자와 수트를 직접 변경합니다. 변경 결과는 실제 족보 계산에 반영됩니다.",
+
         uses:1,
 
-        use() {
+        use(){
 
-            if(selectedCards.size !== 2) {
-                alert("카드 2장을 선택하세요.");
+            if(selectedCards.size !== 2){
+
+                alert(
+                    "카드 2장을 선택하세요."
+                );
+
                 return false;
             }
 
@@ -817,18 +993,27 @@ const AUGMENTS = [
         }
     },
 
+
     {
         id:"double-swap",
+
         name:"운명의 약탈",
+
         rarity:"platinum",
+
         description:
-        "내 카드 2장과 AI 카드 2장을 서로 교환합니다.",
+        "내 카드 2장과 AI 카드 2장을 교환합니다.",
+
         uses:1,
 
-        use() {
+        use(){
 
-            if(selectedCards.size !== 2) {
-                alert("내 카드 2장을 선택하세요.");
+            if(selectedCards.size !== 2){
+
+                alert(
+                    "내 카드 2장을 선택하세요."
+                );
+
                 return false;
             }
 
@@ -838,25 +1023,26 @@ const AUGMENTS = [
         }
     },
 
+
     {
         id:"second-chance",
+
         name:"두 번째 기회",
+
         rarity:"platinum",
+
         description:
-        "버리기 횟수를 모두 회복하고 카드 2장을 추가로 뽑습니다.",
+        "버리기 횟수를 모두 회복하고 손패가 비어 있다면 추가 카드를 뽑습니다.",
+
         uses:1,
 
-        use() {
+        use(){
 
             discardUsed = 0;
 
-            if(playerHand.length < 5) {
-                drawCards(
-                    Math.min(2,5-playerHand.length)
-                );
-            }
-
-            showTaunt("두 번째 기회? 꽤 절박해 보이는데.");
+            showTaunt(
+                "두 번째 기회? 꽤 절박해 보이는데."
+            );
 
             return true;
         }
@@ -865,23 +1051,54 @@ const AUGMENTS = [
 ];
 
 
-/* =========================
+/* =====================================================
    DECK
-========================= */
+===================================================== */
 
-function createDeck() {
+function shuffle(array){
+
+    for(
+        let i=array.length-1;
+        i>0;
+        i--
+    ){
+
+        const j =
+            Math.floor(
+                Math.random()*(i+1)
+            );
+
+        [
+            array[i],
+            array[j]
+        ] =
+        [
+            array[j],
+            array[i]
+        ];
+
+    }
+
+    return array;
+}
+
+
+function createDeck(){
 
     deck = [];
 
-    for(const suit of SUITS) {
+    for(const suit of SUITS){
 
-        for(const rank of RANKS) {
+        for(const rank of RANKS){
 
             deck.push({
 
-                id:Math.random()
-                    .toString(36)
-                    .substring(2),
+                id:
+                    crypto.randomUUID
+                    ? crypto.randomUUID()
+                    : Math.random()
+                        .toString(36)
+                        .slice(2),
 
                 suit:suit.symbol,
 
@@ -901,25 +1118,13 @@ function createDeck() {
 }
 
 
-function shuffle(array) {
-
-    for(let i=array.length-1;i>0;i--) {
-
-        const j =
-            Math.floor(Math.random()*(i+1));
-
-        [array[i],array[j]] =
-        [array[j],array[i]];
-    }
-
-}
-
-
-/* =========================
+/* =====================================================
    DEAL
-========================= */
+===================================================== */
 
-function dealCards() {
+function dealCards(){
+
+    clearInterval(timerInterval);
 
     createDeck();
 
@@ -935,6 +1140,8 @@ function dealCards() {
 
     gamePhase = "playing";
 
+    tenSecondTauntShown = false;
+
     render();
 
     startTimer();
@@ -942,26 +1149,34 @@ function dealCards() {
 }
 
 
-/* =========================
+/* =====================================================
    CARD HTML
-========================= */
+===================================================== */
 
-function cardHTML(card,index,hidden=false) {
+function cardHTML(
+    card,
+    index,
+    hidden=false
+){
 
-    if(hidden) {
+    if(hidden){
 
         return `
-            <div class="card card-back"></div>
+            <div class="card card-back">
+            </div>
         `;
 
     }
+
 
     return `
 
         <div
             class="card
-            ${card.color === "red" ? "red":""}
-            ${selectedCards.has(card.id) ? "selected":""}"
+            ${card.color === "red" ? "red" : ""}
+            ${selectedCards.has(card.id)
+                ? "selected"
+                : ""}"
             data-index="${index}"
         >
 
@@ -979,16 +1194,19 @@ function cardHTML(card,index,hidden=false) {
 }
 
 
-/* =========================
+/* =====================================================
    RENDER
-========================= */
+===================================================== */
 
-function render() {
+function render(){
 
-    $("stage").textContent = stage;
+    $("stage").textContent =
+        stage;
+
 
     $("timer").textContent =
         timeLeft.toFixed(1);
+
 
     $("playerRank").textContent =
         evaluateHand(playerHand).name;
@@ -996,22 +1214,37 @@ function render() {
 
     $("playerHand").innerHTML =
         playerHand
-        .map((card,index)=>
-            cardHTML(card,index,false))
+        .map(
+            (card,index)=>
+                cardHTML(
+                    card,
+                    index,
+                    false
+                )
+        )
         .join("");
 
 
     $("aiHand").innerHTML =
         aiHand
-        .map(() =>
-            cardHTML(null,0,true))
+        .map(
+            () =>
+                cardHTML(
+                    null,
+                    0,
+                    true
+                )
+        )
         .join("");
 
 
     $("discardBtn").innerHTML =
-        `버리기 <small>
+        `
+        버리기
+        <small>
             ${discardUsed} / ${MAX_DISCARD}
-        </small>`;
+        </small>
+        `;
 
 
     $("discardBtn").disabled =
@@ -1030,34 +1263,9 @@ function render() {
 
     $("useAugmentBtn").disabled =
         gamePhase !== "playing" ||
-        !activeAugments.some(a=>a.uses > 0);
-
-
-    document
-    .querySelectorAll("#playerHand .card")
-    .forEach(card => {
-
-        card.onclick = () => {
-
-            if(gamePhase !== "playing")
-                return;
-
-            const index =
-                Number(card.dataset.index);
-
-            const id =
-                playerHand[index].id;
-
-            if(selectedCards.has(id))
-                selectedCards.delete(id);
-            else
-                selectedCards.add(id);
-
-            render();
-
-        };
-
-    });
+        !activeAugments.some(
+            a => a.uses > 0
+        );
 
 
     renderAugments();
@@ -1065,13 +1273,79 @@ function render() {
 }
 
 
-/* =========================
-   POKER
-========================= */
+/* =====================================================
+   IMPORTANT:
+   CARD CLICK EVENT
+   이벤트 위임 방식으로 처리해서
+   render() 이후에도 카드 선택이 유지됨.
+===================================================== */
 
-function evaluateHand(hand) {
+$("playerHand").addEventListener(
+    "click",
+    function(event){
 
-    if(hand.length < 5) {
+        const cardElement =
+            event.target.closest(
+                ".card[data-index]"
+            );
+
+
+        if(!cardElement)
+            return;
+
+
+        if(gamePhase !== "playing")
+            return;
+
+
+        const index =
+            Number(
+                cardElement.dataset.index
+            );
+
+
+        if(
+            Number.isNaN(index) ||
+            !playerHand[index]
+        )
+            return;
+
+
+        const cardId =
+            playerHand[index].id;
+
+
+        if(
+            selectedCards.has(cardId)
+        ){
+
+            selectedCards.delete(
+                cardId
+            );
+
+        }
+        else{
+
+            selectedCards.add(
+                cardId
+            );
+
+        }
+
+
+        render();
+
+    }
+);
+
+
+/* =====================================================
+   POKER HAND EVALUATION
+===================================================== */
+
+function evaluateHand(hand){
+
+    if(hand.length < 5){
 
         return {
             rank:0,
@@ -1081,54 +1355,82 @@ function evaluateHand(hand) {
 
     }
 
+
     const values =
         hand
-        .map(c=>c.value)
-        .sort((a,b)=>b-a);
+        .map(
+            card => card.value
+        )
+        .sort(
+            (a,b)=>b-a
+        );
+
 
     const counts = {};
 
-    values.forEach(v => {
-        counts[v] =
-            (counts[v] || 0) + 1;
-    });
+
+    values.forEach(
+        value => {
+
+            counts[value] =
+                (counts[value] || 0) + 1;
+
+        }
+    );
 
 
     const groups =
         Object.entries(counts)
-        .map(([value,count]) => ({
-            value:Number(value),
-            count
-        }))
-        .sort((a,b)=>
-            b.count-a.count ||
-            b.value-a.value
+        .map(
+            ([value,count])=>({
+
+                value:Number(value),
+
+                count
+
+            })
+        )
+        .sort(
+            (a,b)=>
+                b.count-a.count ||
+                b.value-a.value
         );
 
 
     const flush =
-        hand.every(c =>
-            c.suit === hand[0].suit
+        hand.every(
+            card =>
+                card.suit ===
+                hand[0].suit
         );
 
 
     const unique =
         [...new Set(values)]
-        .sort((a,b)=>b-a);
+        .sort(
+            (a,b)=>b-a
+        );
 
 
     let straight = false;
 
-    let high = unique[0];
+    let high =
+        unique[0];
 
 
     if(
+
         unique.includes(14) &&
+
         unique.includes(5) &&
+
         unique.includes(4) &&
+
         unique.includes(3) &&
+
         unique.includes(2)
-    ) {
+
+    ){
 
         straight = true;
 
@@ -1136,9 +1438,13 @@ function evaluateHand(hand) {
 
     }
     else if(
+
         unique.length === 5 &&
-        unique[0] - unique[4] === 4
-    ) {
+
+        unique[0] -
+        unique[4] === 4
+
+    ){
 
         straight = true;
 
@@ -1147,119 +1453,238 @@ function evaluateHand(hand) {
     }
 
 
-    if(straight && flush)
+    if(straight && flush){
+
         return {
+
             rank:8,
+
             score:800+high,
+
             name:"STRAIGHT FLUSH"
+
         };
 
+    }
 
-    if(groups[0].count === 4)
+
+    if(groups[0].count === 4){
+
         return {
+
             rank:7,
-            score:700+groups[0].value,
+
+            score:
+                700+
+                groups[0].value,
+
             name:"FOUR OF A KIND"
+
         };
+
+    }
 
 
     if(
+
         groups[0].count === 3 &&
+
         groups[1].count === 2
-    )
+
+    ){
+
         return {
+
             rank:6,
-            score:600+
+
+            score:
+                600+
                 groups[0].value+
                 groups[1].value,
+
             name:"FULL HOUSE"
+
         };
 
+    }
 
-    if(flush)
+
+    if(flush){
+
         return {
+
             rank:5,
-            score:500+values[0],
+
+            score:
+                500+
+                values[0],
+
             name:"FLUSH"
+
         };
 
+    }
 
-    if(straight)
+
+    if(straight){
+
         return {
+
             rank:4,
-            score:400+high,
+
+            score:
+                400+
+                high,
+
             name:"STRAIGHT"
+
         };
 
+    }
 
-    if(groups[0].count === 3)
+
+    if(groups[0].count === 3){
+
         return {
+
             rank:3,
-            score:300+groups[0].value,
+
+            score:
+                300+
+                groups[0].value,
+
             name:"THREE OF A KIND"
+
         };
+
+    }
 
 
     if(
+
         groups[0].count === 2 &&
+
         groups[1].count === 2
-    )
+
+    ){
+
         return {
+
             rank:2,
+
             score:
                 200+
                 groups[0].value+
                 groups[1].value,
+
             name:"TWO PAIR"
+
         };
 
+    }
 
-    if(groups[0].count === 2)
+
+    if(groups[0].count === 2){
+
         return {
+
             rank:1,
-            score:100+groups[0].value,
+
+            score:
+                100+
+                groups[0].value,
+
             name:"PAIR"
+
         };
+
+    }
 
 
     return {
+
         rank:0,
-        score:values[0],
+
+        score:
+            values[0],
+
         name:"HIGH CARD"
+
     };
 
 }
 
 
-/* =========================
-   PLAYER ACTIONS
-========================= */
+/* =====================================================
+   DISCARD
+===================================================== */
 
-$("discardBtn").onclick = () => {
+$("discardBtn").onclick =
+function(){
 
-    if(discardUsed >= MAX_DISCARD)
+    if(
+        gamePhase !== "playing"
+    )
         return;
 
-    if(selectedCards.size === 0)
+
+    if(
+        discardUsed >= MAX_DISCARD
+    )
         return;
 
-    discardUsed++;
 
-    const ids =
-        new Set(selectedCards);
+    if(
+        selectedCards.size === 0
+    )
+        return;
+
+
+    const selectedIds =
+        new Set(
+            selectedCards
+        );
+
+
+    const amount =
+        selectedIds.size;
+
 
     playerHand =
         playerHand.filter(
-            card => !ids.has(card.id)
+            card =>
+                !selectedIds.has(
+                    card.id
+                )
         );
 
-    playerHand.push(
-        ...deck.splice(0,ids.size)
-    );
+
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
+
+        if(deck.length > 0){
+
+            playerHand.push(
+                deck.shift()
+            );
+
+        }
+
+    }
+
+
+    discardUsed++;
 
     selectedCards.clear();
 
-    if(discardUsed >= MAX_DISCARD) {
+
+    if(
+        discardUsed >=
+        MAX_DISCARD
+    ){
 
         showTaunt(
             "손패가 너무 안 좋으신가봐?"
@@ -1267,28 +1692,66 @@ $("discardBtn").onclick = () => {
 
     }
 
+
     render();
 
 };
 
 
-$("drawBtn").onclick = () => {
+/* =====================================================
+   DRAW
+===================================================== */
 
-    if(selectedCards.size === 0)
+$("drawBtn").onclick =
+function(){
+
+    if(
+        gamePhase !== "playing"
+    )
         return;
 
+
+    if(
+        selectedCards.size === 0
+    )
+        return;
+
+
+    const selectedIds =
+        new Set(
+            selectedCards
+        );
+
+
     const amount =
-        selectedCards.size;
+        selectedIds.size;
+
 
     playerHand =
         playerHand.filter(
             card =>
-                !selectedCards.has(card.id)
+                !selectedIds.has(
+                    card.id
+                )
         );
 
-    playerHand.push(
-        ...deck.splice(0,amount)
-    );
+
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
+
+        if(deck.length > 0){
+
+            playerHand.push(
+                deck.shift()
+            );
+
+        }
+
+    }
+
 
     selectedCards.clear();
 
@@ -1297,13 +1760,16 @@ $("drawBtn").onclick = () => {
 };
 
 
-/* =========================
+/* =====================================================
    TIMER
-========================= */
+===================================================== */
 
-function startTimer() {
+function startTimer(){
 
-    clearInterval(timerInterval);
+    clearInterval(
+        timerInterval
+    );
+
 
     timeLeft =
         stage >= 7
@@ -1314,74 +1780,107 @@ function startTimer() {
 
 
     timerInterval =
-        setInterval(() => {
+        setInterval(
+            function(){
 
-            if(gamePhase !== "playing")
-                return;
-
-            timeLeft -= .1;
-
-            if(
-                timeLeft <= 10 &&
-                timeLeft > 9.8
-            ) {
-
-                showTaunt(
-                    "카드 5장 고르는 게 그렇게 어렵나?"
-                );
-
-            }
+                if(
+                    gamePhase !==
+                    "playing"
+                )
+                    return;
 
 
-            if(timeLeft <= 0) {
+                timeLeft -= .1;
 
-                timeLeft = 0;
 
-                clearInterval(timerInterval);
+                if(
 
-                submitGame();
+                    timeLeft <= 10 &&
 
-            }
+                    !tenSecondTauntShown
 
-            render();
+                ){
 
-        },100);
+                    tenSecondTauntShown =
+                        true;
+
+
+                    showTaunt(
+                        "카드 5장 고르는 게 그렇게 어렵나?"
+                    );
+
+                }
+
+
+                if(
+                    timeLeft <= 0
+                ){
+
+                    timeLeft = 0;
+
+                    clearInterval(
+                        timerInterval
+                    );
+
+                    submitGame();
+
+                }
+
+
+                render();
+
+            },
+            100
+        );
 
 }
 
 
-/* =========================
+/* =====================================================
    SUBMIT
-========================= */
+===================================================== */
 
 $("submitBtn").onclick =
     submitGame;
 
 
-function submitGame() {
+function submitGame(){
 
-    if(gamePhase !== "playing")
+    if(
+        gamePhase !==
+        "playing"
+    )
         return;
 
-    gamePhase = "result";
 
-    clearInterval(timerInterval);
+    gamePhase =
+        "result";
+
+
+    clearInterval(
+        timerInterval
+    );
 
 
     aiImprove();
 
 
     const playerResult =
-        evaluateHand(playerHand);
+        evaluateHand(
+            playerHand
+        );
+
 
     const aiResult =
-        evaluateHand(aiHand);
+        evaluateHand(
+            aiHand
+        );
 
 
     if(
         playerResult.score >
         aiResult.score
-    ) {
+    ){
 
         playerWin(
             playerResult,
@@ -1389,7 +1888,7 @@ function submitGame() {
         );
 
     }
-    else {
+    else{
 
         playerLose(
             playerResult,
@@ -1401,22 +1900,28 @@ function submitGame() {
 }
 
 
-/* =========================
-   AI
-========================= */
+/* =====================================================
+   AI DIFFICULTY
+===================================================== */
 
-function aiImprove() {
+function aiImprove(){
 
     const difficulty =
-        .15 + stage * .09;
+        .15 +
+        stage * .09;
 
 
-    if(Math.random() > difficulty)
+    if(
+        Math.random() >
+        difficulty
+    )
         return;
 
 
     const result =
-        evaluateHand(aiHand);
+        evaluateHand(
+            aiHand
+        );
 
 
     if(result.rank >= 2)
@@ -1424,30 +1929,42 @@ function aiImprove() {
 
 
     aiHand.sort(
-        (a,b)=>b.value-a.value
+        (a,b)=>
+            b.value-a.value
     );
 
 
     const keep =
-        aiHand.slice(0,2);
+        aiHand.slice(
+            0,
+            2
+        );
 
 
     const keepIds =
         new Set(
-            keep.map(c=>c.id)
+            keep.map(
+                card=>card.id
+            )
         );
 
 
     aiHand =
         aiHand.filter(
-            c=>keepIds.has(c.id)
+            card =>
+                keepIds.has(
+                    card.id
+                )
         );
 
 
-    while(aiHand.length < 5) {
+    while(
+        aiHand.length < 5 &&
+        deck.length > 0
+    ){
 
         aiHand.push(
-            ...deck.splice(0,1)
+            deck.shift()
         );
 
     }
@@ -1455,157 +1972,230 @@ function aiImprove() {
 }
 
 
-/* =========================
-   WIN / LOSE
-========================= */
+/* =====================================================
+   WIN
+===================================================== */
 
-function playerWin(playerResult,aiResult) {
+function playerWin(
+    playerResult,
+    aiResult
+){
 
     $("playerHand")
-        .classList.add("good");
+        .classList.add(
+            "good"
+        );
 
 
-    setTimeout(() => {
+    setTimeout(
+        () => {
 
-        $("playerHand")
-            .classList.remove("good");
+            $("playerHand")
+                .classList.remove(
+                    "good"
+                );
 
-    },700);
+        },
+        700
+    );
 
 
     showModal(
+
         "STAGE CLEAR",
+
         playerResult.name,
+
         `AI의 ${aiResult.name}을 이겼다.`,
+
         "augment"
+
     );
 
 }
 
 
-function playerLose(playerResult,aiResult) {
+/* =====================================================
+   LOSE
+===================================================== */
+
+function playerLose(
+    playerResult,
+    aiResult
+){
 
     showModal(
+
         "GAME OVER",
+
         aiResult.name,
+
         `네 ${playerResult.name}으로는 부족했어.`,
+
         "restart"
+
     );
 
 }
 
 
-/* =========================
-   AUGMENT SELECTION
-========================= */
+/* =====================================================
+   AUGMENT RARITY
+===================================================== */
 
-function getRarityForStage() {
+function getRarityForStage(){
 
     if(stage >= 7)
         return "platinum";
 
+
     if(stage >= 4)
         return "gold";
+
 
     return "silver";
 
 }
 
 
-function chooseAugments() {
+/* =====================================================
+   AUGMENT CHOICE
+===================================================== */
+
+function chooseAugments(){
 
     const rarity =
         getRarityForStage();
 
 
-    const available =
+    let pool =
         AUGMENTS.filter(
-            a=>a.rarity === rarity
+            augment =>
+                augment.rarity ===
+                rarity
+        );
+
+
+    pool =
+        [...pool]
+        .sort(
+            ()=>Math.random()-.5
         );
 
 
     const choices =
-        [...available]
-        .sort(()=>Math.random()-.5)
-        .slice(0,3);
+        pool.slice(
+            0,
+            3
+        );
 
 
     $("choices").innerHTML =
-        choices.map((augment,index)=>`
+        choices
+        .map(
+            (augment,index)=>`
 
-            <div
-                class="choice"
-                data-index="${index}"
-            >
+                <div
+                    class="choice"
+                    data-index="${index}"
+                >
 
-                <div class="rarity ${augment.rarity}">
-                    ${augment.rarity.toUpperCase()}
+                    <div
+                        class="rarity ${augment.rarity}"
+                    >
+                        ${augment.rarity.toUpperCase()}
+                    </div>
+
+                    <h3>
+                        ${augment.name}
+                    </h3>
+
+                    <p>
+                        ${augment.description}
+                    </p>
+
+                    <b>
+                        사용 ${augment.uses}회
+                    </b>
+
                 </div>
 
-                <h3>
-                    ${augment.name}
-                </h3>
-
-                <p>
-                    ${augment.description}
-                </p>
-
-                <b>
-                    사용 ${augment.uses}회
-                </b>
-
-            </div>
-
-        `).join("");
+            `
+        )
+        .join("");
 
 
-    let selected = null;
+    let selectedAugment =
+        null;
 
 
     document
     .querySelectorAll(".choice")
-    .forEach(card => {
+    .forEach(
+        choice => {
 
-        card.onclick = () => {
+            choice.onclick =
+            function(){
 
-            document
-            .querySelectorAll(".choice")
-            .forEach(c =>
-                c.classList.remove("selected")
-            );
-
-            card.classList.add("selected");
-
-            selected =
-                choices[
-                    Number(card.dataset.index)
-                ];
-
-        };
-
-    });
+                document
+                .querySelectorAll(".choice")
+                .forEach(
+                    item =>
+                        item.classList
+                            .remove(
+                                "selected"
+                            )
+                );
 
 
-    $("modalButton").textContent =
-        "증강 선택";
+                this.classList.add(
+                    "selected"
+                );
+
+
+                selectedAugment =
+                    choices[
+                        Number(
+                            this.dataset.index
+                        )
+                    ];
+
+            };
+
+        }
+    );
 
 
     $("modalButton").style.display =
         "block";
 
 
-    $("modalButton").onclick = () => {
+    $("modalButton").textContent =
+        "증강 선택";
 
-        if(!selected)
+
+    $("modalButton").onclick =
+    function(){
+
+        if(!selectedAugment)
             return;
 
+
         activeAugments.push({
-            ...selected
+
+            ...selectedAugment
+
         });
+
 
         stage++;
 
-        $("modal").classList.add("hidden");
+
+        $("modal")
+            .classList.add(
+                "hidden"
+            );
+
 
         dealCards();
 
@@ -1614,42 +2204,53 @@ function chooseAugments() {
 }
 
 
+/* =====================================================
+   MODAL
+===================================================== */
+
 function showModal(
     kicker,
     title,
     text,
     type
-) {
+){
 
     $("modalKicker").textContent =
         kicker;
 
+
     $("modalTitle").textContent =
         title;
+
 
     $("modalText").textContent =
         text;
 
 
-    $("modal").classList.remove(
-        "hidden"
-    );
+    $("modal")
+        .classList.remove(
+            "hidden"
+        );
 
 
-    if(type === "augment") {
+    if(type === "augment"){
 
         chooseAugments();
 
     }
-    else {
+    else{
 
-        $("choices").innerHTML = "";
+        $("choices").innerHTML =
+            "";
+
 
         $("modalButton").style.display =
             "block";
 
+
         $("modalButton").textContent =
             "처음부터";
+
 
         $("modalButton").onclick =
             restartGame;
@@ -1659,24 +2260,30 @@ function showModal(
 }
 
 
-/* =========================
+/* =====================================================
    AUGMENT PANEL
-========================= */
+===================================================== */
 
-function renderAugments() {
+function renderAugments(){
 
     const list =
         $("augmentList");
 
 
-    if(activeAugments.length === 0) {
+    if(
+        activeAugments.length === 0
+    ){
 
         list.innerHTML = `
+
             <div class="empty">
+
                 아직 보유한 증강이 없습니다.<br>
                 스테이지를 클리어하면<br>
                 증강을 선택할 수 있습니다.
+
             </div>
+
         `;
 
         return;
@@ -1685,7 +2292,8 @@ function renderAugments() {
 
 
     list.innerHTML =
-        activeAugments.map(
+        activeAugments
+        .map(
             (augment,index)=>`
 
                 <div
@@ -1698,23 +2306,38 @@ function renderAugments() {
                     </span>
 
                     <span class="augment-uses">
+
                         ${
                             augment.uses > 0
-                            ? augment.uses+"회"
+
+                            ? augment.uses + "회"
+
                             : "사용 완료"
+
                         }
+
                     </span>
 
-                    <div class="rarity ${augment.rarity}">
+                    <div
+                        class="rarity ${augment.rarity}"
+                    >
                         ${augment.rarity.toUpperCase()}
                     </div>
 
                     <div class="tooltip">
+
                         ${augment.description}
+
                         <br><br>
+
                         <b>
-                            클릭해서 사용
+                            ${
+                                augment.uses > 0
+                                ? "클릭해서 사용"
+                                : "사용 완료"
+                            }
                         </b>
+
                     </div>
 
                 </div>
@@ -1726,30 +2349,35 @@ function renderAugments() {
 
     document
     .querySelectorAll(".augment")
-    .forEach(item => {
+    .forEach(
+        item => {
 
-        item.onclick = () => {
+            item.onclick =
+            function(){
 
-            useAugment(
-                Number(
-                    item.dataset.index
-                )
-            );
+                useAugment(
+                    Number(
+                        this.dataset.index
+                    )
+                );
 
-        };
+            };
 
-    });
+        }
+    );
 
 }
 
 
-/* =========================
+/* =====================================================
    USE AUGMENT
-========================= */
+===================================================== */
 
-function useAugment(index) {
+function useAugment(index){
 
-    if(gamePhase !== "playing")
+    if(
+        gamePhase !== "playing"
+    )
         return;
 
 
@@ -1761,7 +2389,9 @@ function useAugment(index) {
         return;
 
 
-    if(augment.uses <= 0)
+    if(
+        augment.uses <= 0
+    )
         return;
 
 
@@ -1775,7 +2405,9 @@ function useAugment(index) {
 
     augment.uses--;
 
+
     selectedCards.clear();
+
 
     render();
 
@@ -1787,17 +2419,21 @@ function useAugment(index) {
 }
 
 
-/* =========================
-   SUIT CHANGE
-========================= */
+/* =====================================================
+   CHANGE SUIT
+===================================================== */
 
-function changeSuit(amount) {
+function changeSuit(amount){
 
     const ids =
         [...selectedCards];
 
 
-    for(let i=0;i<amount;i++) {
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
 
         const index =
             playerHand.findIndex(
@@ -1816,14 +2452,16 @@ function changeSuit(amount) {
 
         const newSuit =
             prompt(
-                `${card.rank}의 수트를 선택하세요.\n\n♠ ♥ ♦ ♣`,
-                "♥"
+                `${card.rank}의 수트를 입력하세요.\n\n♠ ♥ ♦ ♣`,
+                card.suit
             );
 
 
         const suit =
             SUITS.find(
-                s=>s.symbol === newSuit
+                item =>
+                    item.symbol ===
+                    newSuit
             );
 
 
@@ -1834,6 +2472,7 @@ function changeSuit(amount) {
         card.suit =
             suit.symbol;
 
+
         card.color =
             suit.color;
 
@@ -1842,17 +2481,21 @@ function changeSuit(amount) {
 }
 
 
-/* =========================
-   MODIFY CARD
-========================= */
+/* =====================================================
+   FULL CARD MODIFY
+===================================================== */
 
-function modifyCards(amount) {
+function modifyCards(amount){
 
     const ids =
         [...selectedCards];
 
 
-    for(let i=0;i<amount;i++) {
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
 
         const index =
             playerHand.findIndex(
@@ -1871,14 +2514,16 @@ function modifyCards(amount) {
 
         const newRank =
             prompt(
-                "숫자/문자를 입력하세요.\n\n2~10 / J / Q / K / A",
+                "숫자/문자 입력\n\n2~10 / J / Q / K / A",
                 card.rank
             );
 
 
         const rank =
             RANKS.find(
-                r=>r[0] === newRank
+                item =>
+                    item[0] ===
+                    newRank
             );
 
 
@@ -1888,14 +2533,16 @@ function modifyCards(amount) {
 
         const newSuit =
             prompt(
-                "수트를 입력하세요.\n\n♠ ♥ ♦ ♣",
+                "수트 입력\n\n♠ ♥ ♦ ♣",
                 card.suit
             );
 
 
         const suit =
             SUITS.find(
-                s=>s.symbol === newSuit
+                item =>
+                    item.symbol ===
+                    newSuit
             );
 
 
@@ -1906,11 +2553,14 @@ function modifyCards(amount) {
         card.rank =
             rank[0];
 
+
         card.value =
             rank[1];
 
+
         card.suit =
             suit.symbol;
+
 
         card.color =
             suit.color;
@@ -1920,51 +2570,64 @@ function modifyCards(amount) {
 }
 
 
-/* =========================
+/* =====================================================
    EXTRA DRAW
-========================= */
+===================================================== */
 
-function drawCards(amount) {
+function drawCards(amount){
 
-    while(
-        amount > 0 &&
-        playerHand.length < 5 &&
-        deck.length > 0
-    ) {
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
+
+        if(
+            playerHand.length >= 5
+        )
+            break;
+
+
+        if(deck.length <= 0)
+            break;
+
 
         playerHand.push(
             deck.shift()
         );
-
-        amount--;
 
     }
 
 }
 
 
-/* =========================
-   DISCARD SELECTED
-========================= */
+/* =====================================================
+   AUGMENT DISCARD
+===================================================== */
 
-function discardSelected(amount) {
+function discardSelected(){
 
     const ids =
-        [...selectedCards]
-        .slice(0,amount);
+        [...selectedCards];
+
+
+    if(ids.length === 0)
+        return;
 
 
     playerHand =
         playerHand.filter(
             card =>
-                !ids.includes(card.id)
+                !ids.includes(
+                    card.id
+                )
         );
 
 
     while(
         playerHand.length < 5 &&
         deck.length > 0
-    ) {
+    ){
 
         playerHand.push(
             deck.shift()
@@ -1972,28 +2635,39 @@ function discardSelected(amount) {
 
     }
 
+
+    selectedCards.clear();
+
 }
 
 
-/* =========================
-   CARD SWAP
-========================= */
+/* =====================================================
+   SWAP
+===================================================== */
 
-function swapCards(amount) {
+function swapCards(amount){
 
-    const mine =
+    const selected =
         [...selectedCards];
 
 
-    if(mine.length < amount)
+    if(
+        selected.length < amount
+    )
         return;
 
 
-    for(let i=0;i<amount;i++) {
+    for(
+        let i=0;
+        i<amount;
+        i++
+    ){
 
         const playerIndex =
             playerHand.findIndex(
-                c=>c.id === mine[i]
+                card =>
+                    card.id ===
+                    selected[i]
             );
 
 
@@ -2003,29 +2677,32 @@ function swapCards(amount) {
 
         const aiIndex =
             Math.floor(
-                Math.random()*aiHand.length
+                Math.random() *
+                aiHand.length
             );
 
 
-        [
-            playerHand[playerIndex],
-            aiHand[aiIndex]
-        ] =
-        [
-            aiHand[aiIndex],
-            playerHand[playerIndex]
-        ];
+        const temp =
+            playerHand[playerIndex];
+
+
+        playerHand[playerIndex] =
+            aiHand[aiIndex];
+
+
+        aiHand[aiIndex] =
+            temp;
 
     }
 
 }
 
 
-/* =========================
+/* =====================================================
    TAUNT
-========================= */
+===================================================== */
 
-function showTaunt(text) {
+function showTaunt(text){
 
     const element =
         $("taunt");
@@ -2041,61 +2718,79 @@ function showTaunt(text) {
 
 
     clearTimeout(
-        window.tauntTimeout
+        window.tauntTimer
     );
 
 
-    window.tauntTimeout =
-        setTimeout(() => {
+    window.tauntTimer =
+        setTimeout(
+            () => {
 
-            element.classList.add(
-                "hidden"
-            );
+                element.classList.add(
+                    "hidden"
+                );
 
-        },2800);
+            },
+            2800
+        );
 
 }
 
 
-/* =========================
-   RESTART
-========================= */
+/* =====================================================
+   USE AUGMENT BUTTON
+===================================================== */
 
-function restartGame() {
+$("useAugmentBtn").onclick =
+function(){
+
+    const index =
+        activeAugments.findIndex(
+            augment =>
+                augment.uses > 0
+        );
+
+
+    if(index === -1)
+        return;
+
+
+    useAugment(index);
+
+};
+
+
+/* =====================================================
+   RESTART
+===================================================== */
+
+function restartGame(){
+
+    clearInterval(
+        timerInterval
+    );
+
 
     stage = 1;
 
     activeAugments = [];
 
+    selectedCards.clear();
+
     $("modal")
-        .classList.add("hidden");
+        .classList.add(
+            "hidden"
+        );
+
 
     dealCards();
 
 }
 
 
-/* =========================
-   QUICK AUGMENT BUTTON
-========================= */
-
-$("useAugmentBtn").onclick = () => {
-
-    const index =
-        activeAugments.findIndex(
-            a=>a.uses > 0
-        );
-
-
-    if(index !== -1)
-        useAugment(index);
-
-};
-
-
-/* =========================
+/* =====================================================
    START
-========================= */
+===================================================== */
 
 dealCards();
 
