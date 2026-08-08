@@ -1,32 +1,1157 @@
-<!DOCTYPE html>
+import os
+
+# Create HTML/JS single file prototype for Balatro-style 1v1 Poker Battle Game
+
+html_content = """<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOPAMINE POKER</title>
-    <link rel="stylesheet" href="style.css">
+    <title>심연의 카드배틀 (1v1 Balatro-style Poker)</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --accent-green: #2ea043;
+            --accent-blue: #388bfd;
+            --accent-gold: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --card-width: 80px;
+            --card-height: 115px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #c9d1d9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 1000px;
+            height: 700px;
+            background: radial-gradient(circle at center, #1a2332 0%, #0d1117 100%);
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        /* Top Header Stats */
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(22, 27, 34, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+
+        .stage-badge {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f0f6fc;
+            background: linear-gradient(45deg, #8957e5, #388bfd);
+            padding: 6px 16px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(137, 87, 229, 0.4);
+        }
+
+        .stat-box {
+            display: flex;
+            gap: 20px;
+            font-size: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-item span {
+            font-weight: bold;
+            color: var(--accent-gold);
+        }
+
+        /* Play Areas */
+        .play-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .row-zone {
+            background: rgba(22, 27, 34, 0.5);
+            border: 1px dashed #30363d;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .row-title {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #21262d;
+            padding: 2px 10px;
+            font-size: 12px;
+            border-radius: 10px;
+            color: #8b949e;
+            border: 1px solid #30363d;
+        }
+
+        .cards-container {
+            display: flex;
+            gap: 12px;
+            min-height: 120px;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Card Component */
+        .card {
+            width: var(--card-width);
+            height: var(--card-height);
+            background: #f0f6fc;
+            border-radius: 8px;
+            border: 2px solid #30363d;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 6px;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            color: #111;
+            font-weight: bold;
+        }
+
+        .card.red {
+            color: #d73a49;
+        }
+
+        .card.selected {
+            transform: translateY(-15px) scale(1.05);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(210, 153, 34, 0.6);
+        }
+
+        .card.back {
+            background: linear-gradient(135deg, #1f6feb 0%, #0d419d 100%);
+            border: 2px solid #388bfd;
+            color: transparent;
+        }
+
+        .card.back::after {
+            content: '♠';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            color: rgba(255,255,255,0.2);
+        }
+
+        .card-corner {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .card-suit-large {
+            font-size: 32px;
+            text-align: center;
+            align-self: center;
+        }
+
+        /* Controls Bottom */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(22, 27, 34, 0.8);
+            padding: 15px 25px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            background: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #30363d;
+            border-color: #8b949e;
+        }
+
+        .btn-primary {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #2c974b;
+            box-shadow: 0 0 12px rgba(46, 160, 67, 0.5);
+        }
+
+        .btn-warning {
+            background: var(--accent-gold);
+            color: #111;
+            border: none;
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            background: #b8860b;
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Augments / Active List */
+        .active-augments {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .aug-tag {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .aug-tag.silver { border-color: #8b949e; color: #f0f6fc; }
+        .aug-tag.gold { border-color: var(--accent-gold); color: var(--accent-gold); }
+        .aug-tag.platinum { border-color: var(--accent-purple); color: var(--accent-purple); box-shadow: 0 0 5px rgba(163, 113, 247, 0.5); }
+
+        /* Modal Overlays */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 17, 23, 0.92);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            border-radius: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #f0f6fc;
+        }
+
+        .modal-subtitle {
+            font-size: 16px;
+            color: #8b949e;
+            margin-bottom: 30px;
+        }
+
+        .augment-cards {
+            display: flex;
+            gap: 20px;
+        }
+
+        .aug-card {
+            width: 250px;
+            height: 320px;
+            background: #161b22;
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .aug-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .aug-card.silver { border-color: #8b949e; }
+        .aug-card.silver:hover { box-shadow: 0 0 20px rgba(139, 148, 158, 0.4); }
+
+        .aug-card.gold { border-color: var(--accent-gold); }
+        .aug-card.gold:hover { box-shadow: 0 0 25px rgba(210, 153, 34, 0.5); }
+
+        .aug-card.platinum { 
+            border-color: var(--accent-purple); 
+            background: linear-gradient(180deg, #161b22 0%, #261b3e 100%);
+        }
+        .aug-card.platinum:hover { box-shadow: 0 0 30px rgba(163, 113, 247, 0.7); }
+
+        .aug-tier {
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .aug-card.silver .aug-tier { background: #30363d; color: #c9d1d9; }
+        .aug-card.gold .aug-tier { background: rgba(210, 153, 34, 0.2); color: var(--accent-gold); }
+        .aug-card.platinum .aug-tier { background: rgba(163, 113, 247, 0.2); color: var(--accent-purple); }
+
+        .aug-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f0f6fc;
+            margin-top: 10px;
+        }
+
+        .aug-desc {
+            font-size: 14px;
+            color: #8b949e;
+            line-height: 1.5;
+            flex-grow: 1;
+            margin-top: 15px;
+        }
+
+        /* Animation Popup Effects */
+        .score-popup {
+            position: absolute;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--accent-gold);
+            text-shadow: 0 0 10px rgba(210, 153, 34, 0.8);
+            animation: floatUp 1.5s forwards ease-out;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 0; transform: translateY(0) scale(0.8); }
+            20% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-60px) scale(1); }
+        }
+
+        .screen-shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        /* Info Display */
+        .poker-hand-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-blue);
+            height: 24px;
+        }
+
+        /* Suit Changer Dialog */
+        .suit-btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .suit-btn {
+            font-size: 24px;
+            padding: 10px 20px;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .suit-btn:hover { background: #30363d; }
+    </style>
 </head>
 <body>
 
 <div id="game-container">
-    <h1>DOPAMINE POKER</h1>
-    <div class="hud">
-        <div class="target-box">목표 점수: <span id="target-score">1,000</span></div>
-        <div class="score-box">현재 점수: <span id="current-score">0</span></div>
-        <div>남은 횟수: <span id="plays-left">4</span></div>
-        <div>버리기: <span id="discards-left">3</span></div>
+    <!-- Top Stats -->
+    <div class="header-bar">
+        <div class="stage-badge" id="stage-display">STAGE 1 / 8</div>
+        <div class="stat-box">
+            <div class="stat-item">버리기 횟수: <span id="discards-display">2</span></div>
+            <div class="stat-item">AI 타입: <span id="ai-type-display" style="color: #f0f6fc;">초보자</span></div>
+        </div>
+        <div class="active-augments" id="augments-list">
+            <!-- Active Augment Badges inserted here -->
+        </div>
     </div>
 
-    <div id="dopamine-pop"></div>
+    <!-- Main Battle Board -->
+    <div class="play-area">
+        <!-- AI Zone -->
+        <div class="row-zone" id="ai-zone">
+            <div class="row-title">상대방 (AI)</div>
+            <div class="poker-hand-name" id="ai-hand-name"></div>
+            <div class="cards-container" id="ai-cards"></div>
+        </div>
 
-    <div class="card-area" id="hand-area"></div>
+        <!-- Center Scoreboard -->
+        <div style="text-align: center;">
+            <div id="vs-text" style="font-size: 20px; font-weight: bold; color: #8b949e;">VS</div>
+        </div>
 
-    <div class="btn-group">
-        <button class="btn-play" id="play-btn">족보 제출 (PLAY)</button>
-        <button class="btn-discard" id="discard-btn">카드 버리기 (DISCARD)</button>
+        <!-- Player Zone -->
+        <div class="row-zone" id="player-zone">
+            <div class="row-title">내 핸드</div>
+            <div class="cards-container" id="player-cards"></div>
+            <div class="poker-hand-name" id="player-hand-name" style="margin-top: 10px;"></div>
+        </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="controls">
+        <button class="btn btn-warning" id="suit-change-btn" style="display: none;" onclick="openSuitDialog()">수트 변경 (증강)</button>
+        <button class="btn btn-warning" id="swap-card-btn" style="display: none;" onclick="executeSwapAugment()">카드 교환 (증강)</button>
+        
+        <div class="action-btns">
+            <button class="btn" id="discard-btn" onclick="discardSelectedCards()">선택 카드 버리기</button>
+            <button class="btn btn-primary" id="play-btn" onclick="playHand()">쇼다운 (승부)</button>
+        </div>
+    </div>
+
+    <!-- Augment Select Modal Overlay -->
+    <div class="overlay" id="augment-modal">
+        <div class="modal-title">증강 선택</div>
+        <div class="modal-subtitle">다음 스테이지를 대비하여 강화할 증강을 하나 선택하세요.</div>
+        <div class="augment-cards" id="augment-choices"></div>
+    </div>
+
+    <!-- Suit Change Modal Overlay -->
+    <div class="overlay" id="suit-modal">
+        <div class="modal-title">수트(문양) 변경</div>
+        <div class="modal-subtitle">선택한 카드 2장의 수트를 변경합니다.</div>
+        <div class="suit-btn-group">
+            <button class="suit-btn" style="color: #111;" onclick="applySuitChange('♠')">♠</button>
+            <button class="suit-btn" style="color: #d73a49;" onclick="applySuitChange('♥')">♥</button>
+            <button class="suit-btn" style="color: #d73a49;" onclick="applySuitChange('♦')">♦</button>
+            <button class="suit-btn" style="color: #111;" onclick="applySuitChange('♣')">♣</button>
+        </div>
+    </div>
+
+    <!-- Game Over / Victory Overlay -->
+    <div class="overlay" id="end-modal">
+        <div class="modal-title" id="end-title">GAME OVER</div>
+        <div class="modal-subtitle" id="end-subtitle">AI에게 패배하였습니다.</div>
+        <button class="btn btn-primary" onclick="restartGame()">처음부터 다시 시작</button>
     </div>
 </div>
 
-<script src="script.js"></script>
+<script>
+/* ==========================================================================
+   GAME ENGINE & LOGIC (Audio, Synthesizer, Web Audio API FX)
+   ========================================================================== */
+
+// Web Audio API for Pure Procedural Sound Effects (No External Sound Files Required!)
+const AudioFX = {
+    ctx: null,
+    init() {
+        if (!this.ctx) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    },
+    playChip() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(400, this.ctx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.05);
+    },
+    playFanfare(isHighHand = false) {
+        if (!this.ctx) return;
+        const freqs = isHighHand ? [523.25, 659.25, 783.99, 1046.50] : [440, 554.37, 659.25];
+        freqs.forEach((f, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(f, this.ctx.currentTime + idx * 0.08);
+            gain.gain.setValueAtTime(0.2, this.ctx.currentTime + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.08 + 0.3);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(this.ctx.currentTime + idx * 0.08);
+            osc.stop(this.ctx.currentTime + idx * 0.08 + 0.3);
+        });
+    },
+    playExplosion() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.4);
+        gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.4);
+    }
+};
+
+document.addEventListener('click', () => AudioFX.init(), { once: true });
+
+/* ==========================================================================
+   CARDS & POKER EVALUATOR
+   ========================================================================== */
+
+const SUITS = ['♠', '♥', '♦', '♣'];
+const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+const RANK_VALUES = { '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '10':10, 'J':11, 'Q':12, 'K':13, 'A':14 };
+
+class Deck {
+    constructor() {
+        this.cards = [];
+        this.reset();
+    }
+    reset() {
+        this.cards = [];
+        for (let s of SUITS) {
+            for (let r of RANKS) {
+                this.cards.push({ suit: s, rank: r, value: RANK_VALUES[r], id: Math.random().toString(36).substr(2, 9) });
+            }
+        }
+        this.shuffle();
+    }
+    shuffle() {
+        for (let i = this.cards.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+        }
+    }
+    draw(count = 1) {
+        return this.cards.splice(0, count);
+    }
+}
+
+// Poker Hand Evaluation with Base Chips and Multipliers
+function evaluateHand(cards, activeAugments = []) {
+    if (!cards || cards.length === 0) return { name: 'High Card', score: 0, baseChips: 5, mult: 1 };
+
+    // Check Augments affecting hand evaluation
+    const wildcardJoker = activeAugments.some(a => a.id === 'wildcard_joker');
+    const fourCardFlush = activeAugments.some(a => a.id === 'four_card_flush');
+
+    let sorted = [...cards].sort((a, b) => b.value - a.value);
+    
+    // Group counts
+    const rankCounts = {};
+    const suitCounts = {};
+    sorted.forEach(c => {
+        rankCounts[c.value] = (rankCounts[c.value] || 0) + 1;
+        suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1;
+    });
+
+    const counts = Object.values(rankCounts).sort((a, b) => b - a);
+    let isFlush = Object.values(suitCounts).some(cnt => cnt >= (fourCardFlush ? 4 : 5));
+
+    // Check Straight
+    let uniqueValues = [...new Set(sorted.map(c => c.value))].sort((a, b) => b - a);
+    let isStraight = false;
+
+    if (uniqueValues.length >= 5) {
+        for (let i = 0; i <= uniqueValues.length - 5; i++) {
+            if (uniqueValues[i] - uniqueValues[i+4] === 4) {
+                isStraight = true;
+                break;
+            }
+        }
+        // Ace low straight (A-2-3-4-5)
+        if (!isStraight && uniqueValues.includes(14) && uniqueValues.includes(2) && uniqueValues.includes(3) && uniqueValues.includes(4) && uniqueValues.includes(5)) {
+            isStraight = true;
+        }
+    } else if (wildcardJoker && uniqueValues.length >= 4) {
+        // Wildcard joker lets 4 consecutive ranks act as straight
+        for (let i = 0; i <= uniqueValues.length - 4; i++) {
+            if (uniqueValues[i] - uniqueValues[i+3] === 3) {
+                isStraight = true;
+                break;
+            }
+        }
+    }
+
+    let handName = '하이 카드';
+    let baseChips = 10;
+    let mult = 1;
+
+    if (isFlush && isStraight && uniqueValues.includes(14) && uniqueValues.includes(13)) {
+        handName = '로열 스트레이트 플러시'; baseChips = 100; mult = 8;
+    } else if (isFlush && isStraight) {
+        handName = '스트레이트 플러시'; baseChips = 70; mult = 6;
+    } else if (counts[0] === 4) {
+        handName = '포카드'; baseChips = 60; mult = 5;
+    } else if (counts[0] === 3 && counts[1] >= 2) {
+        handName = '풀하우스'; baseChips = 40; mult = 4;
+    } else if (isFlush) {
+        handName = '플러시'; baseChips = 35; mult = 3.5;
+    } else if (isStraight) {
+        handName = '스트레이트'; baseChips = 30; mult = 3;
+    } else if (counts[0] === 3) {
+        handName = '트리플'; baseChips = 20; mult = 2;
+    } else if (counts[0] === 2 && counts[1] === 2) {
+        handName = '투 페어'; baseChips = 15; mult = 1.5;
+    } else if (counts[0] === 2) {
+        handName = '원 페어'; baseChips = 10; mult = 1;
+    }
+
+    // Sum total card values
+    let totalCardValue = sorted.reduce((acc, c) => acc + c.value, 0);
+
+    // Apply global multiplier augments if applicable
+    let finalMult = mult;
+    activeAugments.forEach(aug => {
+        if (aug.id === 'score_multiplier') finalMult *= 2.5;
+        if (aug.id === 'flush_boost' && isFlush) finalMult *= 1.8;
+        if (aug.id === 'straight_master' && isStraight) finalMult *= 2.0;
+    });
+
+    let score = Math.floor((baseChips + totalCardValue) * finalMult);
+
+    return { name: handName, score, baseChips, mult: finalMult };
+}
+
+/* ==========================================================================
+   15 EXTENSIVE AUGMENTS DATABASE
+   ========================================================================== */
+
+const AUGMENT_DATABASE = [
+    // --- SILVER (7) ---
+    {
+        id: 'suit_change',
+        name: '변신의 마술',
+        tier: 'silver',
+        desc: '스테이지당 1회, 원하는 카드 2장의 수트를 원하는 모양으로 직접 변경할 수 있습니다.'
+    },
+    {
+        id: 'extra_draw',
+        name: '풍족한 손길',
+        tier: 'silver',
+        desc: '기본 드로우되는 카드 수 수가 +1장 늘어납니다 (기본 5장 → 6장).'
+    },
+    {
+        id: 'extra_discard',
+        name: '신중한 교체',
+        tier: 'silver',
+        desc: '매 스테이지마다 카드를 버릴 수 있는 기회가 +1회 증가합니다.'
+    },
+    {
+        id: 'four_card_flush',
+        name: '느슨한 플러시',
+        tier: 'silver',
+        desc: '같은 수트 카드가 4장만 모여도 플러시가 성립됩니다.'
+    },
+    {
+        id: 'high_card_bonus',
+        name: '거인의 발자국',
+        tier: 'silver',
+        desc: 'A, K, Q 카드가 들어있을 때 최종 족보 점수에 +30 점이 추가됩니다.'
+    },
+    {
+        id: 'wildcard_joker',
+        name: '조커의 묘수',
+        tier: 'silver',
+        desc: '연속된 카드 4장만 있어도 스트레이트 족보가 완성됩니다.'
+    },
+    {
+        id: 'flush_boost',
+        name: '색채의 가중치',
+        tier: 'silver',
+        desc: '플러시 족보 달성 시 최종 점수 배율이 1.8배 추가 상승합니다.'
+    },
+
+    // --- GOLD (5) ---
+    {
+        id: 'card_swap',
+        name: '등가 교환',
+        tier: 'gold',
+        desc: '게임 중 내 카드 1장과 상대 AI의 카드 1장을 강제로 교환할 수 있습니다.'
+    },
+    {
+        id: 'straight_master',
+        name: '줄세우기 달인',
+        tier: 'gold',
+        desc: '스트레이트 완성 시 최종 점수가 2배로 폭증합니다.'
+    },
+    {
+        id: 'ai_peek',
+        name: '천리안의 눈',
+        tier: 'gold',
+        desc: '상대방 AI가 가지고 있는 카드 중 가장 높은 카드 1장을 항상 공개 상태로 봅니다.'
+    },
+    {
+        id: 'royal_shield',
+        name: '철벽의 방어',
+        tier: 'gold',
+        desc: 'AI와의 점수 차이가 10점 이내로 아깝게 패배할 경우, 1회에 한해 패배를 무효화합니다.'
+    },
+    {
+        id: 'pair_amplifier',
+        name: '쌍둥이 파워',
+        tier: 'gold',
+        desc: '투 페어 이상 족보를 만들 때 기본 칩 보상이 +50점 추가됩니다.'
+    },
+
+    // --- PLATINUM (3) ---
+    {
+        id: 'score_multiplier',
+        name: '연금술사의 극의',
+        tier: 'platinum',
+        desc: '모든 완성 족보의 최종 점수가 2.5배 뻥튀기됩니다!'
+    },
+    {
+        id: 'ai_card_lock',
+        name: '지배자의 봉인',
+        tier: 'platinum',
+        desc: '상대 AI의 가장 높은 카드 1장을 무효화(점수 계산에서 제외) 시킵니다.'
+    },
+    {
+        id: 'card_duplicator',
+        name: '복제의 거울',
+        tier: 'platinum',
+        desc: '내 핸드에서 가장 높은 카드 1장을 똑같은 카드로 복사하여 1장 더 획득합니다.'
+    }
+];
+
+/* ==========================================================================
+   GAME STATE & CORE LOOPS
+   ========================================================================== */
+
+const state = {
+    stage: 1,
+    deck: new Deck(),
+    playerCards: [],
+    aiCards: [],
+    selectedCardIds: [],
+    discardsLeft: 2,
+    activeAugments: [],
+    suitChangeUsed: false,
+    swapUsed: false,
+    shieldAvailable: false
+};
+
+const AI_PROFILES = [
+    { stage: 1, name: '초보자 AI', strategy: 'random' },
+    { stage: 2, name: '기초 AI', strategy: 'basic' },
+    { stage: 3, name: '확률 계산 AI', strategy: 'smart' },
+    { stage: 4, name: '베테랑 AI', strategy: 'smart' },
+    { stage: 5, name: '블러핑 AI', strategy: 'aggressive' },
+    { stage: 6, name: '치트 AI', strategy: 'cheater' },
+    { stage: 7, name: '마왕 AI', strategy: 'cheater' },
+    { stage: 8, name: '최종 보스 AI', strategy: 'boss' }
+];
+
+function initStage() {
+    state.deck.reset();
+    state.selectedCardIds = [];
+    state.suitChangeUsed = false;
+    state.swapUsed = false;
+
+    // Discards calculation based on Augments
+    let baseDiscards = 2;
+    if (state.activeAugments.some(a => a.id === 'extra_discard')) baseDiscards += 1;
+    state.discardsLeft = baseDiscards;
+
+    // Draw cards based on Augments
+    let drawCount = 5;
+    if (state.activeAugments.some(a => a.id === 'extra_draw')) drawCount += 1;
+
+    state.playerCards = state.deck.draw(drawCount);
+    state.aiCards = state.deck.draw(5);
+
+    // Apply Card Duplicator Platinum Augment if held
+    if (state.activeAugments.some(a => a.id === 'card_duplicator') && state.playerCards.length > 0) {
+        let topCard = [...state.playerCards].sort((a,b) => b.value - a.value)[0];
+        state.playerCards.push({ ...topCard, id: Math.random().toString(36).substr(2,9) });
+    }
+
+    updateUI();
+}
+
+function updateUI() {
+    // Stage display
+    document.getElementById('stage-display').innerText = `STAGE ${state.stage} / 8`;
+    document.getElementById('discards-display').innerText = state.discardsLeft;
+    
+    const profile = AI_PROFILES[state.stage - 1];
+    document.getElementById('ai-type-display').innerText = profile.name;
+
+    // Render Player Cards
+    const pContainer = document.getElementById('player-cards');
+    pContainer.innerHTML = '';
+    state.playerCards.forEach(card => {
+        const cElem = createCardElem(card, false);
+        if (state.selectedCardIds.includes(card.id)) {
+            cElem.classList.add('selected');
+        }
+        cElem.onclick = () => toggleSelectCard(card.id);
+        pContainer.appendChild(cElem);
+    });
+
+    // Render AI Cards
+    const aiContainer = document.getElementById('ai-cards');
+    aiContainer.innerHTML = '';
+    
+    const peekAugment = state.activeAugments.some(a => a.id === 'ai_peek');
+    let highestAiCardId = null;
+    if (peekAugment && state.aiCards.length > 0) {
+        highestAiCardId = [...state.aiCards].sort((a,b) => b.value - a.value)[0].id;
+    }
+
+    state.aiCards.forEach(card => {
+        const isRevealed = (card.id === highestAiCardId);
+        const cElem = createCardElem(card, !isRevealed);
+        aiContainer.appendChild(cElem);
+    });
+
+    // Augment Active UI
+    const augList = document.getElementById('augments-list');
+    augList.innerHTML = '';
+    state.activeAugments.forEach(aug => {
+        const tag = document.createElement('div');
+        tag.className = `aug-tag ${aug.tier}`;
+        tag.innerText = aug.name;
+        tag.title = aug.desc;
+        augList.appendChild(tag);
+    });
+
+    // Special Buttons Display
+    document.getElementById('suit-change-btn').style.display = 
+        (state.activeAugments.some(a => a.id === 'suit_change') && !state.suitChangeUsed) ? 'inline-block' : 'none';
+    
+    document.getElementById('swap-card-btn').style.display = 
+        (state.activeAugments.some(a => a.id === 'card_swap') && !state.swapUsed) ? 'inline-block' : 'none';
+
+    // Real-time Hand evaluation preview for player
+    const playerEval = evaluateHand(state.playerCards, state.activeAugments);
+    document.getElementById('player-hand-name').innerText = `${playerEval.name} (${playerEval.score}점)`;
+    document.getElementById('ai-hand-name').innerText = '';
+}
+
+function createCardElem(card, isBack = false) {
+    const div = document.createElement('div');
+    div.className = `card ${isBack ? 'back' : ''}`;
+    if (!isBack) {
+        if (card.suit === '♥' || card.suit === '♦') div.classList.add('red');
+        div.innerHTML = `
+            <div class="card-corner">${card.rank}<br>${card.suit}</div>
+            <div class="card-suit-large">${card.suit}</div>
+            <div class="card-corner" style="transform: rotate(180deg); align-self: flex-end;">${card.rank}<br>${card.suit}</div>
+        `;
+    }
+    return div;
+}
+
+function toggleSelectCard(cardId) {
+    if (state.selectedCardIds.includes(cardId)) {
+        state.selectedCardIds = state.selectedCardIds.filter(id => id !== cardId);
+    } else {
+        state.selectedCardIds.push(cardId);
+    }
+    AudioFX.playChip();
+    updateUI();
+}
+
+function discardSelectedCards() {
+    if (state.discardsLeft <= 0 || state.selectedCardIds.length === 0) return;
+
+    state.playerCards = state.playerCards.filter(c => !state.selectedCardIds.includes(c.id));
+    const drawn = state.deck.draw(state.selectedCardIds.length);
+    state.playerCards.push(...drawn);
+    
+    state.discardsLeft--;
+    state.selectedCardIds = [];
+    AudioFX.playChip();
+    updateUI();
+}
+
+/* ==========================================================================
+   AI LOGIC (Decision Making for discarding & AI scaling)
+   ========================================================================== */
+
+function processAITurn() {
+    const profile = AI_PROFILES[state.stage - 1];
+
+    if (profile.strategy === 'cheater' || profile.strategy === 'boss') {
+        // High stages: AI swaps low cards with high rank cards from remaining deck
+        state.aiCards = state.aiCards.map(c => {
+            if (c.value < 9 && Math.random() < 0.7) {
+                return state.deck.draw(1)[0] || c;
+            }
+            return c;
+        });
+    } else if (profile.strategy === 'smart' || profile.strategy === 'basic') {
+        // AI discards non-matching ranks
+        const rankCounts = {};
+        state.aiCards.forEach(c => rankCounts[c.value] = (rankCounts[c.value] || 0) + 1);
+        let cardsToKeep = state.aiCards.filter(c => rankCounts[c.value] > 1);
+        if (cardsToKeep.length < 3) {
+            let discards = state.aiCards.length - cardsToKeep.length;
+            state.aiCards = [...cardsToKeep, ...state.deck.draw(discards)];
+        }
+    }
+}
+
+/* ==========================================================================
+   SHOWDOWN & SCORE EVALUATION
+   ========================================================================== */
+
+function playHand() {
+    processAITurn();
+
+    // Reveal AI Cards
+    const aiContainer = document.getElementById('ai-cards');
+    aiContainer.innerHTML = '';
+    state.aiCards.forEach(card => {
+        aiContainer.appendChild(createCardElem(card, false));
+    });
+
+    // Check if AI card lock platinum augment applies
+    let effectiveAiCards = [...state.aiCards];
+    if (state.activeAugments.some(a => a.id === 'ai_card_lock')) {
+        effectiveAiCards.sort((a,b) => b.value - a.value);
+        effectiveAiCards.shift(); // Remove highest AI card from score
+    }
+
+    const playerEval = evaluateHand(state.playerCards, state.activeAugments);
+    const aiEval = evaluateHand(effectiveAiCards, []);
+
+    document.getElementById('ai-hand-name').innerText = `${aiEval.name} (${aiEval.score}점)`;
+
+    // Screen Shake effect for big hands
+    if (playerEval.score > 80) {
+        document.getElementById('game-container').classList.add('screen-shake');
+        setTimeout(() => document.getElementById('game-container').classList.remove('screen-shake'), 400);
+    }
+
+    if (playerEval.score >= 50) {
+        AudioFX.playFanfare(true);
+    } else {
+        AudioFX.playFanfare(false);
+    }
+
+    // Determine Winner
+    setTimeout(() => {
+        if (playerEval.score >= aiEval.score) {
+            // Player Wins Stage!
+            if (state.stage >= 8) {
+                // Game Clear!
+                document.getElementById('end-title').innerText = '🏆 최종 승리! 🏆';
+                document.getElementById('end-subtitle').innerText = '모든 8개 스테이지의 AI를 격파하고 전설의 도박사가 되셨습니다!';
+                document.getElementById('end-modal').classList.add('active');
+            } else {
+                // Open Augment Modal
+                openAugmentSelection();
+            }
+        } else {
+            // Player Loses
+            if (state.activeAugments.some(a => a.id === 'royal_shield') && !state.shieldAvailable && (aiEval.score - playerEval.score <= 15)) {
+                state.shieldAvailable = true; // Use shield once
+                alert("🛡️ '철벽의 방어' 증강 효과로 1회 패배가 무효화되었습니다!");
+                initStage();
+            } else {
+                AudioFX.playExplosion();
+                document.getElementById('end-title').innerText = 'GAME OVER';
+                document.getElementById('end-subtitle').innerText = `Stage ${state.stage}에서 AI에게 패배하였습니다.`;
+                document.getElementById('end-modal').classList.add('active');
+            }
+        }
+    }, 1200);
+}
+
+/* ==========================================================================
+   AUGMENT SYSTEM (Silver / Gold / Platinum Rarity Rules)
+   ========================================================================== */
+
+function openAugmentSelection() {
+    const modal = document.getElementById('augment-modal');
+    const container = document.getElementById('augment-choices');
+    container.innerHTML = '';
+
+    // Rarity Drop Chance: Platinum 5%, Gold 25%, Silver 70%
+    const rand = Math.random();
+    let chosenTier = 'silver';
+    if (rand < 0.08) chosenTier = 'platinum'; // 8% chance
+    else if (rand < 0.35) chosenTier = 'gold'; // 27% chance
+
+    let availableAugments = [];
+
+    // CRITICAL RULE: If Platinum triggers, ALL THREE choices must be Platinum!
+    if (chosenTier === 'platinum') {
+        availableAugments = AUGMENT_DATABASE.filter(a => a.tier === 'platinum');
+    } else if (chosenTier === 'gold') {
+        availableAugments = AUGMENT_DATABASE.filter(a => a.tier === 'gold' || a.tier === 'silver');
+    } else {
+        availableAugments = AUGMENT_DATABASE.filter(a => a.tier === 'silver');
+    }
+
+    // Shuffle and pick 3 random augments
+    let shuffled = [...availableAugments].sort(() => 0.5 - Math.random());
+    let choices = shuffled.slice(0, 3);
+
+    choices.forEach(aug => {
+        const card = document.createElement('div');
+        card.className = `aug-card ${aug.tier}`;
+        card.innerHTML = `
+            <div>
+                <div class="aug-tier">${aug.tier}</div>
+                <div class="aug-name">${aug.name}</div>
+            </div>
+            <div class="aug-desc">${aug.desc}</div>
+            <button class="btn btn-primary" style="width: 100%;">선택</button>
+        `;
+        card.onclick = () => selectAugment(aug);
+        container.appendChild(card);
+    });
+
+    modal.classList.add('active');
+}
+
+function selectAugment(aug) {
+    state.activeAugments.push(aug);
+    document.getElementById('augment-modal').classList.remove('active');
+    
+    state.stage++;
+    initStage();
+}
+
+/* ==========================================================================
+   INTERACTIVE AUGMENT ACTIONS
+   ========================================================================== */
+
+function openSuitDialog() {
+    if (state.selectedCardIds.length !== 2) {
+        alert("수트를 변경할 카드를 정확히 2장 선택해주세요!");
+        return;
+    }
+    document.getElementById('suit-modal').classList.add('active');
+}
+
+function applySuitChange(targetSuit) {
+    state.playerCards.forEach(c => {
+        if (state.selectedCardIds.includes(c.id)) {
+            c.suit = targetSuit;
+        }
+    });
+    state.suitChangeUsed = true;
+    state.selectedCardIds = [];
+    document.getElementById('suit-modal').classList.remove('active');
+    updateUI();
+}
+
+function executeSwapAugment() {
+    if (state.selectedCardIds.length !== 1) {
+        alert("교환할 내 카드를 1장 선택해주세요!");
+        return;
+    }
+    const pCardIndex = state.playerCards.findIndex(c => c.id === state.selectedCardIds[0]);
+    if (pCardIndex !== -1 && state.aiCards.length > 0) {
+        const aiCardIndex = Math.floor(Math.random() * state.aiCards.length);
+        
+        // Swap cards
+        const temp = state.playerCards[pCardIndex];
+        state.playerCards[pCardIndex] = state.aiCards[aiCardIndex];
+        state.aiCards[aiCardIndex] = temp;
+
+        state.swapUsed = true;
+        state.selectedCardIds = [];
+        alert("상대방의 카드 1장과 내 카드 1장을 교환했습니다!");
+        updateUI();
+    }
+}
+
+function restartGame() {
+    state.stage = 1;
+    state.activeAugments = [];
+    document.getElementById('end-modal').classList.remove('active');
+    initStage();
+}
+
+// Start Game Entry
+initStage();
+</script>
 </body>
 </html>
+"""
+
+# Save index.html file
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("index.html created successfully!")
