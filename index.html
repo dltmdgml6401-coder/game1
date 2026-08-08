@@ -1,4190 +1,2851 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>RISK ROYAL</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI Poker Duel</title>
 
 <style>
-
 *{
     box-sizing:border-box;
+    user-select:none;
 }
 
-html,
 body{
     margin:0;
-    padding:0;
-    width:100%;
-    min-height:100%;
-}
-
-body{
-
+    min-height:100vh;
+    color:white;
+    font-family:Arial,"Malgun Gothic",sans-serif;
     background:
-        radial-gradient(
-            circle at 50% 25%,
-            #19372e 0%,
-            #0c1412 45%,
-            #050608 100%
-        );
-
-    color:#f2f4f6;
-
-    font-family:
-        Arial,
-        "Noto Sans KR",
-        sans-serif;
-
-    overflow-x:hidden;
-
+        radial-gradient(circle at 50% 20%,#29436b 0%,#111b2b 45%,#070b12 100%);
 }
-
-
-/* =========================================================
-   COMMON
-========================================================= */
 
 button{
-
     font-family:inherit;
-
-    border:
-        1px solid #394451;
-
-    background:#151b23;
-
-    color:#e7e9ec;
-
-    border-radius:8px;
-
-    padding:11px 17px;
-
-    font-weight:700;
-
-    cursor:pointer;
-
-    transition:
-        border-color .15s ease,
-        background .15s ease,
-        transform .15s ease,
-        opacity .15s ease;
-
 }
 
-button:hover:not(:disabled){
-
-    border-color:#d9b75f;
-
-    background:#1b222b;
-
+#game{
+    width:min(1400px,96vw);
+    margin:auto;
+    padding:18px 0 35px;
 }
 
-button:active:not(:disabled){
-
-    transform:scale(.97);
-
-}
-
-button:disabled{
-
-    opacity:.35;
-
-    cursor:not-allowed;
-
-}
-
-button.primary{
-
-    background:
-        linear-gradient(
-            #e4c66f,
-            #a47e32
-        );
-
-    color:#101010;
-
-    border-color:#ebcc7a;
-
-}
-
-.hidden{
-
-    display:none !important;
-
-}
-
-
-/* =========================================================
-   TOP BAR
-========================================================= */
-
-.topbar{
-
-    height:70px;
-
+header{
     display:flex;
-
+    justify-content:space-between;
     align-items:center;
-
-    padding:0 28px;
-
-    background:
-        rgba(6,9,12,.96);
-
-    border-bottom:
-        1px solid #303943;
-
+    margin-bottom:15px;
 }
 
-.logo{
-
-    font-size:22px;
-
+.title{
+    font-size:28px;
     font-weight:900;
-
-    letter-spacing:5px;
-
-}
-
-.logo span{
-
-    color:#d9b45d;
-
 }
 
 .stage{
-
-    margin-left:auto;
-
-    padding:7px 15px;
-
-    border:
-        1px solid #3c4651;
-
-    border-radius:8px;
-
-    color:#9ba4af;
-
-    font-size:10px;
-
-    letter-spacing:2px;
-
+    padding:10px 18px;
+    border-radius:12px;
+    background:#19263a;
+    border:1px solid #435a7c;
+    font-weight:bold;
 }
 
-.stage b{
-
-    color:#e7c66e;
-
-    font-size:18px;
-
-}
-
-.timer{
-
-    margin-left:24px;
-
-    width:90px;
-
-    text-align:right;
-
-}
-
-.timer small{
-
-    display:block;
-
-    color:#69737f;
-
-    font-size:8px;
-
-    letter-spacing:2px;
-
-}
-
-.timer strong{
-
-    color:#e3bd62;
-
-    font-size:21px;
-
-}
-
-
-/* =========================================================
-   MAIN
-========================================================= */
-
-.game{
-
-    width:min(1450px,96%);
-
-    margin:24px auto;
-
+#main{
     display:grid;
-
-    grid-template-columns:
-        210px
-        minmax(500px,1fr)
-        280px;
-
-    gap:20px;
-
+    grid-template-columns:1fr 310px;
+    gap:16px;
 }
 
-
-/* =========================================================
-   AI
-========================================================= */
-
-.ai-box{
-
-    height:max-content;
-
-    padding:17px;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:11px;
-
-    background:#0e1319;
-
-    border:
-        1px solid #2c3540;
-
-    border-radius:14px;
-
-}
-
-.ai-avatar{
-
-    width:44px;
-
-    height:44px;
-
-    flex-shrink:0;
-
-    display:grid;
-
-    place-items:center;
-
-    border:
-        1px solid #505a66;
-
-    border-radius:50%;
-
-    background:#1a212b;
-
-    color:#b7bec8;
-
-    font-size:10px;
-
-    font-weight:900;
-
-}
-
-.ai-name{
-
-    font-size:11px;
-
-    font-weight:900;
-
-}
-
-.ai-talk{
-
-    margin-top:5px;
-
-    color:#78828e;
-
-    font-size:10px;
-
-    line-height:1.4;
-
-}
-
-
-/* =========================================================
-   TABLE
-========================================================= */
-
-.table{
-
-    min-height:670px;
-
-    position:relative;
-
-    padding:28px;
-
-    border:
-        1px solid #35423c;
-
-    border-radius:22px;
-
+#table{
+    min-height:720px;
+    padding:25px;
+    border-radius:25px;
+    border:2px solid #3b5275;
     background:
-        radial-gradient(
-            ellipse at center,
-            #1b332b,
-            #0d1715 62%,
-            #090d10
-        );
-
+        radial-gradient(circle at center,#175346 0%,#0d3b33 40%,#09231f 100%);
     box-shadow:
-        inset 0 0 100px rgba(0,0,0,.55),
-        0 20px 60px rgba(0,0,0,.5);
-
+        inset 0 0 100px #0008,
+        0 20px 60px #0007;
 }
 
-.hand-label{
-
-    margin-bottom:12px;
-
-    color:#77818d;
-
-    font-size:10px;
-
-    letter-spacing:2px;
-
-}
-
-.hand-label span{
-
-    float:right;
-
-    color:#dcb960;
-
+.playerName{
+    font-size:17px;
     font-weight:900;
-
+    color:#d4e1f5;
 }
 
+#enemyArea{
+    text-align:center;
+}
 
-/* =========================================================
-   HAND
-========================================================= */
-
-.hand{
-
-    min-height:125px;
-
+#enemyHand{
+    height:110px;
     display:flex;
-
     justify-content:center;
-
-    align-items:flex-start;
-
-    gap:10px;
-
-}
-
-
-/* =========================================================
-   CARD
-========================================================= */
-
-.card{
-
-    width:82px;
-
-    height:116px;
-
-    flex-shrink:0;
-
-    position:relative;
-
-    padding:8px;
-
-    border:
-        2px solid transparent;
-
-    border-radius:9px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #dcdfe3
-        );
-
-    color:#101318;
-
-    font-weight:900;
-
-    cursor:pointer;
-
-    user-select:none;
-
-    box-shadow:
-        0 8px 20px rgba(0,0,0,.5);
-
-    /*
-        중요:
-        hover에서는 위치를 절대 바꾸지 않는다.
-    */
-
-    transform:
-        translate3d(0,0,0);
-
-    transition:
-        transform .13s ease,
-        border-color .13s ease,
-        box-shadow .13s ease,
-        filter .13s ease;
-
-    z-index:1;
-
-}
-
-.card:hover{
-
-    transform:
-        translate3d(0,0,0);
-
-    border-color:#b9a25f;
-
-    z-index:3;
-
-}
-
-.card.selected{
-
-    transform:
-        translate3d(0,-15px,0);
-
-    border-color:#e4bd60;
-
-    box-shadow:
-        0 15px 30px rgba(210,170,75,.30),
-        0 0 18px rgba(228,189,96,.30);
-
-    filter:brightness(1.08);
-
-    z-index:5;
-
-}
-
-.card.selected:hover{
-
-    transform:
-        translate3d(0,-15px,0);
-
-}
-
-.card .rank,
-.card .suit{
-
-    pointer-events:none;
-
-}
-
-.rank{
-
-    font-size:23px;
-
-}
-
-.suit{
-
+    align-items:center;
+    gap:8px;
     margin-top:8px;
-
-    font-size:30px;
-
 }
 
-.card.red{
-
-    color:#b52e3b;
-
-}
-
-
-/* =========================================================
-   AI CARD
-========================================================= */
-
-.card-back{
-
+.enemyCard{
+    width:62px;
+    height:88px;
+    border:3px solid #eee;
+    border-radius:8px;
     background:
         repeating-linear-gradient(
             45deg,
-            #27313e,
-            #27313e 5px,
-            #1c242f 5px,
-            #1c242f 10px
+            #741522 0,
+            #741522 5px,
+            #a52635 5px,
+            #a52635 10px
         );
-
-    border-color:#465160;
-
-    cursor:default;
-
+    box-shadow:0 4px 8px #0009;
 }
 
-.card-back:hover{
-
-    transform:
-        translate3d(0,0,0);
-
-    border-color:#465160;
-
-}
-
-
-/* =========================================================
-   VS
-========================================================= */
-
-.vs{
-
-    margin:14px 0;
-
-    text-align:center;
-
-    color:#59646e;
-
-    font-weight:900;
-
-    letter-spacing:6px;
-
-}
-
-
-/* =========================================================
-   ACTIONS
-========================================================= */
-
-.actions{
-
+#center{
+    height:250px;
     display:flex;
-
+    flex-direction:column;
     justify-content:center;
-
-    flex-wrap:wrap;
-
-    gap:9px;
-
-    margin-top:28px;
-
+    align-items:center;
+    gap:12px;
 }
 
-.help{
-
-    margin-top:14px;
-
-    text-align:center;
-
-    color:#65707c;
-
-    font-size:10px;
-
-}
-
-
-/* =========================================================
-   AUGMENTS
-========================================================= */
-
-.augment-box{
-
-    height:max-content;
-
-    padding:16px;
-
-    background:#0e1319;
-
-    border:
-        1px solid #2c3540;
-
-    border-radius:15px;
-
-}
-
-.augment-title{
-
-    margin-bottom:12px;
-
-    color:#8b95a2;
-
-    font-size:10px;
-
-    letter-spacing:2px;
-
-}
-
-.empty{
-
-    padding:24px 5px;
-
-    text-align:center;
-
-    color:#59636f;
-
-    font-size:10px;
-
-    line-height:1.7;
-
-}
-
-.augment{
-
-    position:relative;
-
-    margin-bottom:9px;
-
-    padding:13px;
-
-    border:
-        1px solid #343e4a;
-
-    border-radius:10px;
-
-    background:#121820;
-
-    cursor:pointer;
-
-    transition:
-        border-color .15s ease,
-        transform .15s ease;
-
-}
-
-.augment:hover{
-
-    border-color:#d8b65d;
-
-    transform:translateX(-2px);
-
-}
-
-.augment-name{
-
-    font-size:12px;
-
+#message{
+    min-height:35px;
+    font-size:20px;
     font-weight:900;
-
+    text-align:center;
 }
 
-.augment-uses{
+#timerWrap{
+    width:330px;
+    height:14px;
+    border-radius:20px;
+    overflow:hidden;
+    background:#101723;
+    border:1px solid #506789;
+}
 
-    float:right;
+#timer{
+    width:100%;
+    height:100%;
+    background:linear-gradient(
+        90deg,
+        #39e68b,
+        #f3d348,
+        #ed4b58
+    );
+}
 
-    color:#8993a0;
+#timerText{
+    font-size:13px;
+    opacity:.8;
+}
 
-    font-size:10px;
+#handArea{
+    margin-top:5px;
+}
 
+#hand{
+    min-height:170px;
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    gap:10px;
+    flex-wrap:wrap;
+    padding-top:20px;
+}
+
+.card{
+    width:100px;
+    height:140px;
+    position:relative;
+    background:#fff;
+    color:#171717;
+    border:3px solid #d7dce3;
+    border-radius:12px;
+    cursor:pointer;
+    box-shadow:0 7px 14px #0009;
+
+    /* 흔들림 제거 */
+    transition:
+        transform .14s ease,
+        box-shadow .14s ease,
+        border-color .14s ease;
+}
+
+.card:hover{
+    transform:translateY(-9px);
+    border-color:#ffd84d;
+    box-shadow:
+        0 15px 28px #000b,
+        0 0 15px #ffd84d66;
+}
+
+.card.selected{
+    transform:translateY(-21px);
+    border-color:#50ef9b;
+    box-shadow:
+        0 18px 30px #000c,
+        0 0 22px #50ef9b88;
+}
+
+.card.red{
+    color:#d52535;
+}
+
+.rank{
+    position:absolute;
+    top:7px;
+    left:9px;
+    font-size:23px;
+    font-weight:900;
+}
+
+.suit{
+    position:absolute;
+    bottom:7px;
+    right:9px;
+    font-size:30px;
+}
+
+.cardCenter{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:44px;
+}
+
+#controls{
+    text-align:center;
+    margin-top:20px;
+}
+
+.actionBtn{
+    padding:13px 25px;
+    margin:4px;
+    border:0;
+    border-radius:10px;
+    color:#fff;
+    background:#263a58;
+    font-weight:900;
+    cursor:pointer;
+    transition:.15s;
+}
+
+.actionBtn:hover{
+    transform:translateY(-2px);
+    background:#355276;
+}
+
+.actionBtn.primary{
+    background:#247c58;
+}
+
+.actionBtn.danger{
+    background:#8d3038;
+}
+
+.actionBtn:disabled{
+    opacity:.35;
+    cursor:not-allowed;
+    transform:none;
+}
+
+#side{
+    background:#111a29;
+    border:1px solid #3b4f6c;
+    border-radius:18px;
+    padding:15px;
+}
+
+.sideTitle{
+    font-size:19px;
+    font-weight:900;
+    margin-bottom:12px;
+}
+
+#augmentList{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+}
+
+.augmentCard{
+    position:relative;
+    padding:12px;
+    border-radius:12px;
+    background:#19273b;
+    border:2px solid #526681;
+    cursor:pointer;
+    transition:.15s;
+}
+
+.augmentCard:hover{
+    transform:translateX(-4px);
+    background:#243650;
+    border-color:#fff;
+}
+
+.augmentCard.used{
+    opacity:.4;
+    cursor:not-allowed;
+}
+
+.augmentName{
+    font-size:15px;
+    font-weight:900;
+}
+
+.augmentDesc{
+    margin-top:5px;
+    font-size:12px;
+    line-height:1.45;
+    color:#b9c7da;
 }
 
 .rarity{
-
-    margin-top:5px;
-
-    font-size:8px;
-
-    letter-spacing:2px;
-
-}
-
-.silver{
-
-    color:#b9c1ca;
-
-}
-
-.gold{
-
-    color:#e4be52;
-
-}
-
-.platinum{
-
-    color:#e9efff;
-
-}
-
-.tooltip{
-
-    position:absolute;
-
-    right:
-        calc(100% + 12px);
-
-    top:0;
-
-    width:240px;
-
-    padding:13px;
-
-    border:
-        1px solid #404b58;
-
-    border-radius:9px;
-
-    background:#080b10;
-
-    color:#ccd3db;
-
+    display:inline-block;
+    margin-bottom:5px;
+    padding:3px 7px;
+    border-radius:5px;
     font-size:10px;
-
-    line-height:1.6;
-
-    opacity:0;
-
-    pointer-events:none;
-
-    transition:opacity .12s ease;
-
-    z-index:30;
-
-    box-shadow:
-        0 15px 40px #000;
-
-}
-
-.augment:hover .tooltip{
-
-    opacity:1;
-
-}
-
-
-/* =========================================================
-   TAUNT
-========================================================= */
-
-.taunt{
-
-    position:absolute;
-
-    left:50%;
-
-    top:17px;
-
-    transform:translateX(-50%);
-
-    z-index:50;
-
-    padding:10px 18px;
-
-    border:
-        1px solid #a2404c;
-
-    border-radius:20px;
-
-    background:#28141a;
-
-    color:#ffb4bd;
-
-    font-size:11px;
-
     font-weight:900;
-
-    white-space:nowrap;
-
-    animation:
-        tauntIn .2s ease;
-
 }
 
-@keyframes tauntIn{
-
-    from{
-
-        opacity:0;
-
-        transform:
-            translate(-50%,-8px);
-
-    }
-
-    to{
-
-        opacity:1;
-
-        transform:
-            translate(-50%,0);
-
-    }
-
+.rarity.silver{
+    background:#8c99aa;
 }
 
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-.modal{
-
-    position:fixed;
-
-    inset:0;
-
-    z-index:100;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:20px;
-
-    background:
-        rgba(0,0,0,.78);
-
+.rarity.gold{
+    background:#c99927;
 }
 
-.modal-card{
-
-    width:min(780px,95vw);
-
-    padding:30px;
-
-    border:
-        1px solid #3d4652;
-
-    border-radius:18px;
-
-    background:#10151d;
-
-    box-shadow:
-        0 30px 100px #000;
-
+.rarity.platinum{
+    background:#9c62e9;
 }
 
-.modal-kicker{
-
-    text-align:center;
-
-    color:#d8b65e;
-
-    font-size:10px;
-
-    letter-spacing:4px;
-
-}
-
-.modal h1{
-
-    margin:10px 0;
-
-    text-align:center;
-
-}
-
-.modal p{
-
-    text-align:center;
-
-    color:#8993a0;
-
+#log{
+    height:130px;
+    margin-top:15px;
+    padding:10px;
+    border-radius:10px;
+    overflow:auto;
+    background:#080f19;
+    color:#aab8cd;
     font-size:12px;
-
-    line-height:1.6;
-
 }
 
-.choices{
+#augmentOverlay,
+#resultOverlay,
+#suitOverlay{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    background:#03070dcc;
+    backdrop-filter:blur(8px);
+}
 
+.overlayBox{
+    width:min(900px,92vw);
+    padding:25px;
+    border-radius:20px;
+    border:1px solid #536a89;
+    background:#121c2b;
+    box-shadow:0 30px 80px #000d;
+}
+
+.overlayTitle{
+    text-align:center;
+    font-size:27px;
+    font-weight:900;
+    margin-bottom:20px;
+}
+
+#augmentChoices{
     display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
-    gap:12px;
-
-    margin-top:25px;
-
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
 }
 
 .choice{
-
-    min-height:170px;
-
-    padding:18px;
-
-    border:
-        1px solid #394451;
-
-    border-radius:12px;
-
-    background:#131a23;
-
+    min-height:210px;
+    padding:20px;
+    border-radius:16px;
+    background:#1b2b41;
+    border:2px solid #536a89;
     cursor:pointer;
-
-    transition:
-        transform .15s ease,
-        border-color .15s ease;
-
+    transition:.15s;
 }
 
 .choice:hover{
-
-    transform:translateY(-5px);
-
-    border-color:#d9b65b;
-
-}
-
-.choice.selected{
-
-    border-color:#e5c46e;
-
-    box-shadow:
-        0 0 25px
-        rgba(220,180,80,.15);
-
+    transform:translateY(-7px);
+    border-color:#fff;
+    box-shadow:0 15px 30px #0009;
 }
 
 .choice h3{
-
-    font-size:14px;
-
+    margin:8px 0;
 }
 
 .choice p{
-
-    text-align:left;
-
+    color:#bfcbdd;
+    line-height:1.5;
 }
 
-
-/* =========================================================
-   SUIT SELECTOR
-========================================================= */
-
-.suit-modal-card{
-
-    width:min(560px,95vw);
-
-}
-
-.suit-choices{
-
+#suitChoices{
     display:grid;
-
-    grid-template-columns:
-        repeat(4,1fr);
-
+    grid-template-columns:repeat(2,1fr);
     gap:12px;
-
-    margin-top:25px;
-
 }
 
-.suit-choice{
-
-    height:130px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:8px;
-
-    border:
-        1px solid #3c4652;
-
+.suitButton{
+    padding:20px;
+    border:2px solid #4d6380;
     border-radius:12px;
-
-    background:#131a23;
-
+    background:#1b2a3f;
+    color:#fff;
+    font-size:20px;
+    font-weight:900;
     cursor:pointer;
-
-    transition:
-        transform .15s ease,
-        border-color .15s ease,
-        background .15s ease;
-
 }
 
-.suit-choice:hover{
-
-    transform:translateY(-5px);
-
-    border-color:#d9b65d;
-
-    background:#1b232d;
-
+.suitButton:hover{
+    border-color:#fff;
+    background:#29415f;
 }
 
-.suit-choice span{
+.resultText{
+    text-align:center;
+    margin:20px;
+    font-size:34px;
+    font-weight:900;
+}
 
-    font-size:48px;
-
-    line-height:1;
-
+#flash{
+    position:fixed;
+    inset:0;
     pointer-events:none;
-
-}
-
-.suit-choice small{
-
-    color:#78838f;
-
-    font-size:8px;
-
-    letter-spacing:2px;
-
-    pointer-events:none;
-
-}
-
-.suit-choice.red span{
-
-    color:#d94a58;
-
-}
-
-.suit-choice.black span{
-
-    color:#e5e7ea;
-
-}
-
-.modal-button{
-
-    display:block;
-
-    margin:20px auto 0;
-
-}
-
-
-/* =========================================================
-   EFFECT
-========================================================= */
-
-.win-flash{
-
-    animation:
-        winFlash .6s ease 2;
-
+    z-index:100;
+    opacity:0;
 }
 
 @keyframes winFlash{
-
-    0%{
-
-        box-shadow:
-            inset 0 0 100px rgba(0,0,0,.55);
-
-    }
-
-    50%{
-
-        box-shadow:
-            inset 0 0 100px rgba(228,190,85,.35),
-            0 0 50px rgba(228,190,85,.25);
-
-    }
-
-    100%{
-
-        box-shadow:
-            inset 0 0 100px rgba(0,0,0,.55);
-
-    }
-
+    0%{opacity:0}
+    30%{opacity:.6}
+    100%{opacity:0}
 }
 
+@keyframes loseFlash{
+    0%{opacity:0}
+    30%{opacity:.7}
+    100%{opacity:0}
+}
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
+.winFlash{
+    animation:winFlash .6s;
+    background:radial-gradient(circle,#5aff9a55,transparent 65%);
+}
 
-@media(max-width:1050px){
+.loseFlash{
+    animation:loseFlash .7s;
+    background:radial-gradient(circle,#ff3e4f55,transparent 65%);
+}
 
-    .game{
+@media(max-width:900px){
 
+    #main{
         grid-template-columns:1fr;
-
     }
 
-    .tooltip{
-
-        left:0;
-
-        right:auto;
-
-        top:calc(100% + 5px);
-
+    #table{
+        min-height:650px;
     }
 
-}
-
-@media(max-width:600px){
-
-    .card{
-
-        width:58px;
-
-        height:86px;
-
-    }
-
-    .rank{
-
-        font-size:18px;
-
-    }
-
-    .suit{
-
-        font-size:22px;
-
-    }
-
-    .table{
-
-        padding:20px 8px;
-
-    }
-
-    .choices{
-
+    #augmentChoices{
         grid-template-columns:1fr;
-
     }
-
-    .suit-choices{
-
-        grid-template-columns:
-            repeat(2,1fr);
-
-    }
-
-    .suit-choice{
-
-        height:110px;
-
-    }
-
-    .logo{
-
-        font-size:16px;
-
-    }
-
-    .topbar{
-
-        padding:0 12px;
-
-    }
-
 }
-
 </style>
 </head>
 
-
 <body>
 
+<div id="game">
 
-<header class="topbar">
-
-    <div class="logo">
-
-        RISK <span>ROYAL</span>
-
-    </div>
-
-
-    <div class="stage">
-
-        STAGE
-
-        <b id="stage">1</b>
-
-        / 8
-
-    </div>
-
-
-    <div class="timer">
-
-        <small>TIME</small>
-
-        <strong id="timer">35.0</strong>
-
-    </div>
-
+<header>
+    <div class="title">♠ AI POKER DUEL</div>
+    <div class="stage" id="stageText">STAGE 1 / 8</div>
 </header>
 
+<div id="main">
 
+<section id="table">
 
-<div class="game">
+<div id="enemyArea">
 
+    <div class="playerName">
+        🤖 AI OPPONENT
+    </div>
 
-    <!-- =====================================================
-         AI
-    ====================================================== -->
+    <div id="enemyHand"></div>
 
-    <aside class="ai-box">
+</div>
 
-        <div class="ai-avatar">
+<div id="center">
 
-            AI
+    <div id="message">
+        카드 5장을 선택하세요.
+    </div>
 
+    <div id="timerWrap">
+        <div id="timer"></div>
+    </div>
+
+    <div id="timerText">
+        제한시간 30초
+    </div>
+
+</div>
+
+<div id="handArea">
+
+    <div class="playerName" style="text-align:center">
+        👤 PLAYER —
+        <span id="handCount">6</span>/8
+    </div>
+
+    <div id="hand"></div>
+
+    <div id="controls">
+
+        <button
+            class="actionBtn primary"
+            id="submitBtn">
+            선택 카드 제출
+        </button>
+
+        <button
+            class="actionBtn"
+            id="discardBtn">
+            선택 카드 버리기
+        </button>
+
+    </div>
+
+</div>
+
+<div id="log"></div>
+
+</section>
+
+<aside id="side">
+
+    <div class="sideTitle">
+        ⚡ 내 증강
+    </div>
+
+    <div id="augmentList">
+        <div style="color:#77869c;font-size:13px">
+            증강을 획득하면 여기에 표시됩니다.<br>
+            클릭해서 사용하세요.
         </div>
+    </div>
 
+</aside>
 
-        <div>
+</div>
+</div>
 
-            <div class="ai-name">
 
-                THE DEALER
+<!-- 증강 선택 -->
 
-            </div>
+<div id="augmentOverlay">
 
+<div class="overlayBox">
 
-            <div
-                class="ai-talk"
-                id="aiTalk"
-            >
+    <div class="overlayTitle">
+        ⚡ 증강 선택
+    </div>
 
-                널 이길 준비는 됐어.
+    <div style="text-align:center;color:#9dacbf;margin-bottom:15px">
+        이번에는 모든 등급의 증강이 등장할 수 있습니다.
+    </div>
 
-            </div>
+    <div id="augmentChoices"></div>
 
-        </div>
-
-    </aside>
-
-
-
-    <!-- =====================================================
-         TABLE
-    ====================================================== -->
-
-    <main
-        class="table"
-        id="gameTable"
-    >
-
-
-        <div
-            id="taunt"
-            class="taunt hidden"
-        ></div>
-
-
-        <!-- AI -->
-
-        <div class="hand-label">
-
-            AI HAND
-
-        </div>
-
-
-        <div
-            id="aiHand"
-            class="hand"
-        ></div>
-
-
-        <div class="vs">
-
-            VS
-
-        </div>
-
-
-        <!-- PLAYER -->
-
-        <div class="hand-label">
-
-            YOUR HAND
-
-            <span
-                id="playerRank"
-            >
-
-                HIGH CARD
-
-            </span>
-
-        </div>
-
-
-        <div
-            id="playerHand"
-            class="hand"
-        ></div>
-
-
-        <!-- ACTIONS -->
-
-        <div class="actions">
-
-
-            <button
-                id="discardBtn"
-            >
-
-                버리기
-
-                <small>
-
-                    0 / 3
-
-                </small>
-
-            </button>
-
-
-            <button
-                id="drawBtn"
-            >
-
-                드로우
-
-            </button>
-
-
-            <button
-                id="useAugmentBtn"
-            >
-
-                증강 사용
-
-            </button>
-
-
-            <button
-                id="submitBtn"
-                class="primary"
-            >
-
-                제출
-
-            </button>
-
-
-        </div>
-
-
-        <div class="help">
-
-            카드를 클릭하면 선택됩니다.
-            다시 클릭하면 선택이 해제됩니다.
-
-        </div>
-
-
-    </main>
-
-
-
-    <!-- =====================================================
-         AUGMENTS
-    ====================================================== -->
-
-    <aside class="augment-box">
-
-
-        <div class="augment-title">
-
-            ACTIVE AUGMENTS
-
-        </div>
-
-
-        <div id="augmentList">
-
-
-            <div class="empty">
-
-                아직 보유한 증강이 없습니다.
-
-                <br>
-
-                스테이지를 클리어하면
-
-                <br>
-
-                증강을 선택할 수 있습니다.
-
-            </div>
-
-
-        </div>
-
-
-    </aside>
-
+</div>
 
 </div>
 
 
+<!-- 수트 선택 -->
 
-<!-- =========================================================
-     RESULT / AUGMENT MODAL
-========================================================= -->
+<div id="suitOverlay">
 
-<div
-    id="modal"
-    class="modal hidden"
->
+<div class="overlayBox">
+
+    <div class="overlayTitle">
+        원하는 수트를 선택하세요
+    </div>
+
+    <div id="suitChoices">
+
+        <button class="suitButton" data-suit="0">
+            ♥ 하트
+        </button>
+
+        <button class="suitButton" data-suit="1">
+            ♦ 다이아
+        </button>
+
+        <button class="suitButton" data-suit="2">
+            ♣ 클로버
+        </button>
+
+        <button class="suitButton" data-suit="3">
+            ♠ 스페이드
+        </button>
+
+    </div>
+
+</div>
+
+</div>
 
 
-    <div class="modal-card">
+<!-- 결과 -->
 
+<div id="resultOverlay">
 
-        <div
-            id="modalKicker"
-            class="modal-kicker"
-        ></div>
+<div class="overlayBox">
 
+    <div class="resultText" id="resultText"></div>
 
-        <h1
-            id="modalTitle"
-        ></h1>
-
-
-        <p
-            id="modalText"
-        ></p>
-
-
-        <div
-            id="choices"
-            class="choices"
-        ></div>
-
+    <div style="text-align:center">
 
         <button
-            id="modalButton"
-            class="primary modal-button"
-        >
-
+            class="actionBtn primary"
+            id="resultBtn">
             계속
-
         </button>
-
 
     </div>
 
 </div>
 
-
-
-<!-- =========================================================
-     SUIT SELECT MODAL
-========================================================= -->
-
-<div
-    id="suitModal"
-    class="modal hidden"
->
-
-
-    <div class="modal-card suit-modal-card">
-
-
-        <div class="modal-kicker">
-
-            SUIT SELECT
-
-        </div>
-
-
-        <h1>
-
-            수트를 선택하세요
-
-        </h1>
-
-
-        <p id="suitTargetText">
-
-            선택한 카드의 수트를 변경합니다.
-
-        </p>
-
-
-        <div class="suit-choices">
-
-
-            <button
-                class="suit-choice black"
-                data-suit="♠"
-            >
-
-                <span>♠</span>
-
-                <small>
-
-                    SPADE
-
-                </small>
-
-            </button>
-
-
-            <button
-                class="suit-choice red"
-                data-suit="♥"
-            >
-
-                <span>♥</span>
-
-                <small>
-
-                    HEART
-
-                </small>
-
-            </button>
-
-
-            <button
-                class="suit-choice red"
-                data-suit="♦"
-            >
-
-                <span>♦</span>
-
-                <small>
-
-                    DIAMOND
-
-                </small>
-
-            </button>
-
-
-            <button
-                class="suit-choice black"
-                data-suit="♣"
-            >
-
-                <span>♣</span>
-
-                <small>
-
-                    CLUB
-
-                </small>
-
-            </button>
-
-
-        </div>
-
-
-        <button
-            id="cancelSuit"
-            class="modal-button"
-        >
-
-            취소
-
-        </button>
-
-
-    </div>
-
 </div>
 
+<div id="flash"></div>
 
 
 <script>
 
-
 /* =========================================================
-   SHORTCUT
+   기본 데이터
 ========================================================= */
 
-const $ =
-    id =>
-        document.getElementById(id);
-
-
-/* =========================================================
-   CARD DATA
-========================================================= */
-
-const SUITS = [
-
-    {
-        symbol:"♠",
-        color:"black"
-    },
-
-    {
-        symbol:"♥",
-        color:"red"
-    },
-
-    {
-        symbol:"♦",
-        color:"red"
-    },
-
-    {
-        symbol:"♣",
-        color:"black"
-    }
-
+const SUITS=[
+    {name:"하트",symbol:"♥",color:"red"},
+    {name:"다이아",symbol:"♦",color:"red"},
+    {name:"클로버",symbol:"♣",color:"black"},
+    {name:"스페이드",symbol:"♠",color:"black"}
 ];
 
-
-const RANKS = [
-
-    ["2",2],
-    ["3",3],
-    ["4",4],
-    ["5",5],
-    ["6",6],
-    ["7",7],
-    ["8",8],
-    ["9",9],
-    ["10",10],
-    ["J",11],
-    ["Q",12],
-    ["K",13],
-    ["A",14]
-
+const RANKS=[
+    {name:"2",value:2},
+    {name:"3",value:3},
+    {name:"4",value:4},
+    {name:"5",value:5},
+    {name:"6",value:6},
+    {name:"7",value:7},
+    {name:"8",value:8},
+    {name:"9",value:9},
+    {name:"10",value:10},
+    {name:"J",value:11},
+    {name:"Q",value:12},
+    {name:"K",value:13},
+    {name:"A",value:14}
 ];
 
 
 /* =========================================================
-   STATE
+   증강 풀
+   ★ 핵심:
+   ★ 라운드에 따라 필터링하지 않는다.
+   ★ 모든 증강이 처음부터 등장 가능하다.
 ========================================================= */
 
-let deck = [];
+const AUGMENTS=[
 
-let playerHand = [];
+/* =========================
+   SILVER
+========================= */
 
-let aiHand = [];
-
-let selectedCards =
-    new Set();
-
-let activeAugments = [];
-
-let stage = 1;
-
-let discardUsed = 0;
-
-const MAX_DISCARD = 3;
-
-let timeLeft = 35;
-
-let timerInterval = null;
-
-let gamePhase =
-    "playing";
-
-let tenSecondTauntShown =
-    false;
-
-
-/* =========================================================
-   SUIT SELECT STATE
-========================================================= */
-
-let suitSelectionQueue = [];
-
-let suitSelectionIndex = 0;
-
-
-/* =========================================================
-   AUGMENTS
-========================================================= */
-
-const AUGMENTS = [
-
-
-    {
-        id:"suit-change",
-
-        name:"수트 개조",
-
-        rarity:"silver",
-
-        description:
-            "카드 1장을 선택하고 원하는 수트로 변경합니다.",
-
-        uses:1,
-
-        use(){
-
-            if(
-                selectedCards.size !== 1
-            ){
-
-                alert(
-                    "카드 1장을 선택하세요."
-                );
-
-                return false;
-
-            }
-
-            changeSuit(1);
-
-            return true;
-
+{
+    id:"silver_draw",
+    name:"추가 드로우",
+    rarity:"silver",
+    desc:"현재 손패가 8장 미만이면 카드를 1장 뽑습니다.",
+    action(){
+        if(state.hand.length>=8){
+            showMessage("손패가 이미 8장입니다.");
+            return false;
         }
 
-    },
+        drawCards(1);
 
-
-    {
-        id:"extra-card",
-
-        name:"한 장 더",
-
-        rarity:"silver",
-
-        description:
-            "손패가 5장 미만이면 카드를 1장 추가합니다.",
-
-        uses:1,
-
-        use(){
-
-            if(
-                playerHand.length >= 5
-            ){
-
-                alert(
-                    "손패가 이미 5장입니다."
-                );
-
-                return false;
-
-            }
-
-            drawCards(1);
-
-            return true;
-
-        }
-
-    },
-
-
-    {
-        id:"card-swap",
-
-        name:"운명의 교환",
-
-        rarity:"silver",
-
-        description:
-            "내 카드 1장과 AI 카드 1장을 교환합니다.",
-
-        uses:1,
-
-        use(){
-
-            if(
-                selectedCards.size !== 1
-            ){
-
-                alert(
-                    "내 카드 1장을 선택하세요."
-                );
-
-                return false;
-
-            }
-
-            swapCards(1);
-
-            return true;
-
-        }
-
-    },
-
-
-    {
-        id:"double-suit",
-
-        name:"양손 개조",
-
-        rarity:"gold",
-
-        description:
-            "카드 2장을 선택하고 각각 원하는 수트로 변경합니다.",
-
-        uses:1,
-
-        use(){
-
-            if(
-                selectedCards.size !== 2
-            ){
-
-                alert(
-                    "카드 2장을 선택하세요."
-                );
-
-                return false;
-
-            }
-
-            changeSuit(2);
-
-            return true;
-
-        }
-
-    },
-
-
-    {
-        id:"triple-draw",
-
-        name:"과감한 드로우",
-
-        rarity:"gold",
-
-        description:
-            "선택한 카드를 버리고 같은 수만큼 새 카드를 뽑습니다.",
-
-        uses:1,
-
-        use(){
-
-            if(
-                selectedCards.size === 0
-            ){
-
-                alert(
-                    "버릴 카드를 선택하세요."
-                );
-
-                return false;
-
-            }
-
-            discardSelected();
-
-            return true;
-
-        }
-
-    },
-
-
-    {
-        id:"enemy-swap",
-
-        name:"강제 교환",
-
-        rarity:"gold",
-
-        description:
-            "내 카드 1장과 AI의 카드 1장을 교환합니다.",
-
-        uses:1,
-
-        use(){
-
-            if(
-                selectedCards.size !== 1
-            ){
-
-                alert(
-                    "내 카드 1장을 선택하세요."
-                );
-
-                return false;
-
-            }
-
-            swapCards(1);
-
-            return true;
-
-        }
-
-    },
-
-
-    {
-        id:"perfect-hand",
-
-        name:"완벽한 손길",
-
-        rarity:"platinum",
-
-        description:
-            "카드 2장의 숫자와 수트를 직접 변경합니다.",
-
-        uses:1,
-
-        use(){
-
-            if(
-                selectedCards.size !== 2
-            ){
-
-                alert(
-                    "카드 2장을 선택하세요."
-                );
-
-                return false;
-
-            }
-
-            modifyCards(2);
-
-            return true;
-
-        }
-
-    },
-
-
-    {
-        id:"double-swap",
-
-        name:"운명의 약탈",
-
-        rarity:"platinum",
-
-        description:
-            "내 카드 2장과 AI 카드 2장을 교환합니다.",
-
-        uses:1,
-
-        use(){
-
-            if(
-                selectedCards.size !== 2
-            ){
-
-                alert(
-                    "카드 2장을 선택하세요."
-                );
-
-                return false;
-
-            }
-
-            swapCards(2);
-
-            return true;
-
-        }
-
-    },
-
-
-    {
-        id:"second-chance",
-
-        name:"두 번째 기회",
-
-        rarity:"platinum",
-
-        description:
-            "버리기 횟수를 모두 회복합니다.",
-
-        uses:1,
-
-        use(){
-
-            discardUsed = 0;
-
-            showTaunt(
-                "두 번째 기회? 꽤 절박해 보이는데."
-            );
-
-            return true;
-
-        }
-
+        log("⚡ 추가 드로우 발동! 카드 1장을 뽑았습니다.");
+        return true;
     }
+},
+
+{
+    id:"silver_suit",
+    name:"수트 변경",
+    rarity:"silver",
+    desc:"손패의 카드 1장을 선택하고 원하는 수트로 변경합니다.",
+    action(){
+        if(state.hand.length===0)return false;
+
+        state.pendingSuitChange=true;
+
+        showMessage("수트를 바꿀 카드를 클릭하세요.");
+
+        return true;
+    }
+},
+
+{
+    id:"silver_luck",
+    name:"행운의 카드",
+    rarity:"silver",
+    desc:"덱에서 무작위 카드를 1장 가져옵니다. 손패가 8장이면 발동하지 않습니다.",
+    action(){
+        if(state.hand.length>=8){
+            showMessage("손패가 8장이라 행운의 카드가 들어올 수 없습니다.");
+            return false;
+        }
+
+        drawCards(1);
+
+        return true;
+    }
+},
+
+{
+    id:"silver_replace",
+    name:"카드 교체",
+    rarity:"silver",
+    desc:"손패의 카드 1장을 버리고 새 카드를 1장 뽑습니다.",
+    action(){
+        state.pendingReplace=true;
+        showMessage("교체할 카드를 클릭하세요.");
+        return true;
+    }
+},
+
+{
+    id:"silver_pair",
+    name:"쌍둥이",
+    rarity:"silver",
+    desc:"손패에서 카드 1장을 선택하면 같은 숫자의 카드를 1장 생성합니다.",
+    action(){
+        state.pendingTwin=true;
+        showMessage("복제할 카드를 클릭하세요.");
+        return true;
+    }
+},
+
+
+/* =========================
+   GOLD
+========================= */
+
+{
+    id:"gold_draw2",
+    name:"대량 드로우",
+    rarity:"gold",
+    desc:"손패가 8장이 될 때까지 최대 2장을 뽑습니다.",
+    action(){
+        const amount=Math.min(2,8-state.hand.length);
+
+        if(amount<=0){
+            showMessage("손패가 이미 8장입니다.");
+            return false;
+        }
+
+        drawCards(amount);
+
+        return true;
+    }
+},
+
+{
+    id:"gold_swap",
+    name:"상대 패 강탈",
+    rarity:"gold",
+    desc:"내 카드 1장과 AI의 카드 1장을 무작위로 교환합니다.",
+    action(){
+
+        if(state.hand.length===0 || state.enemyHand.length===0)
+            return false;
+
+        const a=Math.floor(Math.random()*state.hand.length);
+        const b=Math.floor(Math.random()*state.enemyHand.length);
+
+        const temp=state.hand[a];
+
+        state.hand[a]=state.enemyHand[b];
+        state.enemyHand[b]=temp;
+
+        render();
+
+        log("💰 상대 카드와 내 카드가 교환되었습니다.");
+
+        return true;
+    }
+},
+
+{
+    id:"gold_twoSuit",
+    name:"이중 수트 변환",
+    rarity:"gold",
+    desc:"카드 2장을 선택한 뒤 원하는 수트로 변경합니다.",
+    action(){
+
+        if(state.hand.length<2){
+            showMessage("손패가 부족합니다.");
+            return false;
+        }
+
+        state.pendingMultiSuit=true;
+        state.tempSelected=[];
+
+        showMessage("수트를 변경할 카드 2장을 선택하세요.");
+
+        return true;
+    }
+},
+
+{
+    id:"gold_extra",
+    name:"여분의 한 장",
+    rarity:"gold",
+    desc:"이번 라운드에 제출할 수 있는 카드 수가 5장에서 6장으로 증가합니다.",
+    action(){
+        state.maxSubmit=6;
+
+        log("🔥 이번 라운드는 6장 제출이 가능합니다.");
+
+        return true;
+    }
+},
+
+{
+    id:"gold_reroll",
+    name:"운명 재굴림",
+    rarity:"gold",
+    desc:"손패의 카드 2장을 무작위 카드로 교체합니다.",
+    action(){
+
+        if(state.hand.length<2)return false;
+
+        const indexes=shuffle(
+            [...Array(state.hand.length).keys()]
+        ).slice(0,2);
+
+        indexes.forEach(i=>{
+            state.hand[i]=drawOne();
+        });
+
+        render();
+
+        log("🎲 카드 2장이 재굴림되었습니다.");
+
+        return true;
+    }
+},
+
+
+/* =========================
+   PLATINUM
+========================= */
+
+{
+    id:"plat_draw3",
+    name:"플래티넘 드로우",
+    rarity:"platinum",
+    desc:"손패가 8장이 될 때까지 최대 3장을 뽑습니다.",
+    action(){
+
+        const amount=Math.min(
+            3,
+            8-state.hand.length
+        );
+
+        if(amount<=0){
+            showMessage("손패가 이미 8장입니다.");
+            return false;
+        }
+
+        drawCards(amount);
+
+        return true;
+    }
+},
+
+{
+    id:"plat_wild",
+    name:"와일드 카드",
+    rarity:"platinum",
+    desc:"손패의 카드 1장을 원하는 숫자와 수트로 완전히 변경합니다.",
+    action(){
+
+        state.pendingWild=true;
+
+        showMessage("변경할 카드를 선택하세요.");
+
+        return true;
+    }
+},
+
+{
+    id:"plat_steal",
+    name:"왕의 교환",
+    rarity:"platinum",
+    desc:"AI의 카드 2장과 내 카드 2장을 교환합니다.",
+    action(){
+
+        if(
+            state.hand.length<2 ||
+            state.enemyHand.length<2
+        ){
+            return false;
+        }
+
+        const my=shuffle(
+            [...Array(state.hand.length).keys()]
+        ).slice(0,2);
+
+        const enemy=shuffle(
+            [...Array(state.enemyHand.length).keys()]
+        ).slice(0,2);
+
+        for(let i=0;i<2;i++){
+
+            const temp=state.hand[my[i]];
+
+            state.hand[my[i]]
+                =state.enemyHand[enemy[i]];
+
+            state.enemyHand[enemy[i]]
+                =temp;
+        }
+
+        render();
+
+        log("👑 왕의 교환 발동!");
+
+        return true;
+    }
+},
+
+{
+    id:"plat_flush",
+    name:"완벽한 수트",
+    rarity:"platinum",
+    desc:"선택한 카드 3장의 수트를 원하는 수트로 통일합니다.",
+    action(){
+
+        state.pendingTripleSuit=true;
+        state.tempSelected=[];
+
+        showMessage("수트를 바꿀 카드 3장을 선택하세요.");
+
+        return true;
+    }
+},
+
+{
+    id:"plat_rank",
+    name:"왕의 숫자",
+    rarity:"platinum",
+    desc:"카드 2장을 선택해 원하는 숫자로 변경합니다.",
+    action(){
+
+        state.pendingRankChange=true;
+        state.tempSelected=[];
+
+        showMessage("숫자를 변경할 카드 2장을 선택하세요.");
+
+        return true;
+    }
+}
 
 ];
 
 
 /* =========================================================
-   SHUFFLE
+   상태
 ========================================================= */
 
-function shuffle(array){
+let state={};
 
-    for(
-        let i=array.length-1;
-        i>0;
-        i--
-    ){
+function resetGame(){
 
-        const j =
-            Math.floor(
-                Math.random() *
-                (i+1)
-            );
+    state={
+        stage:1,
 
-        [
-            array[i],
-            array[j]
-        ] =
-        [
-            array[j],
-            array[i]
-        ];
+        deck:[],
 
-    }
+        hand:[],
+        enemyHand:[],
 
-    return array;
+        selected:[],
 
+        maxSubmit:5,
+
+        discards:0,
+
+        maxDiscards:3,
+
+        timer:30,
+        timerMax:30,
+        timerInterval:null,
+
+        augmentOwned:[],
+        usedAugments:[],
+
+        pendingSuitChange:false,
+        pendingReplace:false,
+        pendingTwin:false,
+        pendingMultiSuit:false,
+        pendingTripleSuit:false,
+        pendingWild:false,
+        pendingRankChange:false,
+
+        tempSelected:[],
+
+        awaitingAugment:false,
+        gameOver:false
+    };
+
+    startRound();
 }
 
 
 /* =========================================================
-   DECK
+   덱
 ========================================================= */
 
 function createDeck(){
 
-    deck = [];
+    const deck=[];
 
-    for(
-        const suit of SUITS
-    ){
+    for(let s=0;s<SUITS.length;s++){
 
-        for(
-            const rank of RANKS
-        ){
+        for(let r=0;r<RANKS.length;r++){
 
             deck.push({
-
-                id:
-                    (
-                        window.crypto &&
-                        crypto.randomUUID
-                    )
-                    ?
-                    crypto.randomUUID()
-                    :
-                    Math.random()
-                        .toString(36)
-                        .slice(2),
-
-                suit:
-                    suit.symbol,
-
-                color:
-                    suit.color,
-
-                rank:
-                    rank[0],
-
-                value:
-                    rank[1]
-
+                suit:s,
+                rank:r,
+                id:`${s}-${r}-${Math.random()}`
             });
 
         }
 
     }
 
-    shuffle(deck);
-
+    return shuffle(deck);
 }
 
+function drawOne(){
 
-/* =========================================================
-   DEAL
-========================================================= */
+    if(state.deck.length===0){
+        state.deck=createDeck();
+    }
 
-function dealCards(){
+    return state.deck.pop();
+}
 
-    clearInterval(
-        timerInterval
-    );
+function drawCards(amount){
 
-    createDeck();
+    for(let i=0;i<amount;i++){
 
-    playerHand =
-        deck.splice(0,5);
+        if(state.hand.length>=8)break;
 
-    aiHand =
-        deck.splice(0,5);
-
-    selectedCards.clear();
-
-    discardUsed = 0;
-
-    gamePhase =
-        "playing";
-
-    tenSecondTauntShown =
-        false;
-
-    timeLeft =
-        stage >= 7
-        ? 27
-        : stage >= 4
-        ? 31
-        : 35;
+        state.hand.push(drawOne());
+    }
 
     render();
 
-    startTimer();
-
+    playSound("draw");
 }
 
 
 /* =========================================================
-   CARD HTML
+   유틸
 ========================================================= */
 
-function cardHTML(
-    card,
-    index,
-    hidden=false
-){
+function shuffle(arr){
 
-    if(hidden){
+    const a=[...arr];
 
-        return `
-            <div class="card card-back"></div>
-        `;
+    for(let i=a.length-1;i>0;i--){
 
+        const j=Math.floor(Math.random()*(i+1));
+
+        [a[i],a[j]]=[a[j],a[i]];
     }
 
-    const selected =
-        selectedCards.has(
-            card.id
-        );
+    return a;
+}
 
-    return `
+function log(text){
 
-        <div
+    const el=document.getElementById("log");
 
-            class="
-                card
-                ${card.color === "red" ? "red" : ""}
-                ${selected ? "selected" : ""}
-            "
+    el.innerHTML+=
+        `<div>• ${text}</div>`;
 
-            data-index="${index}"
+    el.scrollTop=el.scrollHeight;
+}
 
-        >
+function showMessage(text){
 
-            <div class="rank">
+    document.getElementById("message").textContent=text;
+}
 
-                ${card.rank}
+function flash(type){
 
-            </div>
+    const f=document.getElementById("flash");
 
+    f.className="";
 
-            <div class="suit">
+    void f.offsetWidth;
 
-                ${card.suit}
-
-            </div>
-
-        </div>
-
-    `;
-
+    f.className=
+        type==="win"
+        ?"winFlash"
+        :"loseFlash";
 }
 
 
 /* =========================================================
-   RENDER
+   사운드
+========================================================= */
+
+let audioCtx=null;
+
+function initAudio(){
+
+    if(!audioCtx){
+
+        audioCtx=
+            new(window.AudioContext||
+            window.webkitAudioContext)();
+    }
+}
+
+function tone(freq,duration,type="sine",volume=.05){
+
+    initAudio();
+
+    const osc=audioCtx.createOscillator();
+
+    const gain=audioCtx.createGain();
+
+    osc.frequency.value=freq;
+    osc.type=type;
+
+    gain.gain.value=volume;
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+
+    gain.gain.exponentialRampToValueAtTime(
+        .001,
+        audioCtx.currentTime+duration
+    );
+
+    osc.stop(
+        audioCtx.currentTime+duration
+    );
+}
+
+function playSound(type){
+
+    try{
+
+        if(type==="draw"){
+
+            tone(520,.07,"triangle",.045);
+
+        }else if(type==="select"){
+
+            tone(700,.04,"sine",.03);
+
+        }else if(type==="augment"){
+
+            tone(500,.08,"triangle",.05);
+
+            setTimeout(
+                ()=>tone(750,.12,"triangle",.05),
+                80
+            );
+
+        }else if(type==="win"){
+
+            tone(500,.1);
+
+            setTimeout(
+                ()=>tone(700,.1),
+                100
+            );
+
+            setTimeout(
+                ()=>tone(900,.2),
+                200
+            );
+
+        }else if(type==="lose"){
+
+            tone(250,.15,"sawtooth",.06);
+
+            setTimeout(
+                ()=>tone(170,.3,"sawtooth",.05),
+                150
+            );
+        }
+
+    }catch(e){}
+}
+
+
+/* =========================================================
+   라운드 시작
+========================================================= */
+
+function startRound(){
+
+    clearInterval(state.timerInterval);
+
+    state.deck=createDeck();
+
+    state.hand=[];
+    state.enemyHand=[];
+
+    state.selected=[];
+
+    state.maxSubmit=5;
+
+    state.discards=0;
+
+    state.pendingSuitChange=false;
+    state.pendingReplace=false;
+    state.pendingTwin=false;
+    state.pendingMultiSuit=false;
+    state.pendingTripleSuit=false;
+    state.pendingWild=false;
+    state.pendingRankChange=false;
+
+    state.tempSelected=[];
+
+    /*
+        ★ 첫 라운드도 6장
+        ★ 이후 라운드도 기본적으로 6장으로 시작
+    */
+
+    while(state.hand.length<6){
+        state.hand.push(drawOne());
+    }
+
+    while(state.enemyHand.length<8){
+        state.enemyHand.push(drawOne());
+    }
+
+    renderEnemy();
+
+    render();
+
+    updateStage();
+
+    startTimer();
+
+    showMessage(
+        "카드 5장을 선택하세요."
+    );
+
+    log(
+        `STAGE ${state.stage} 시작 — 손패 6장`
+    );
+}
+
+
+/* =========================================================
+   렌더링
 ========================================================= */
 
 function render(){
 
-    $("stage").textContent =
-        stage;
+    const hand=document.getElementById("hand");
 
+    hand.innerHTML="";
 
-    $("timer").textContent =
-        timeLeft.toFixed(1);
+    state.hand.forEach((card,index)=>{
 
+        const suit=SUITS[card.suit];
+        const rank=RANKS[card.rank];
 
-    $("playerRank").textContent =
-        evaluateHand(
-            playerHand
-        ).name;
+        const div=document.createElement("div");
 
+        div.className=
+            `card ${suit.color}`;
 
-    $("playerHand").innerHTML =
-        playerHand
-        .map(
-            (card,index) =>
-                cardHTML(
-                    card,
-                    index,
-                    false
-                )
-        )
-        .join("");
+        if(state.selected.includes(index)){
+            div.classList.add("selected");
+        }
 
-
-    $("aiHand").innerHTML =
-        aiHand
-        .map(
-            () =>
-                cardHTML(
-                    null,
-                    0,
-                    true
-                )
-        )
-        .join("");
-
-
-    $("discardBtn").innerHTML =
-        `
-            버리기
-            <small>
-                ${discardUsed} / ${MAX_DISCARD}
-            </small>
+        div.innerHTML=`
+            <div class="rank">${rank.name}</div>
+            <div class="cardCenter">${suit.symbol}</div>
+            <div class="suit">${suit.symbol}</div>
         `;
 
+        div.addEventListener("click",()=>{
 
-    $("discardBtn").disabled =
-        gamePhase !== "playing" ||
-        discardUsed >= MAX_DISCARD;
+            initAudio();
 
+            handleCardClick(index);
 
-    $("drawBtn").disabled =
-        gamePhase !== "playing" ||
-        selectedCards.size === 0;
+        });
 
+        hand.appendChild(div);
 
-    $("submitBtn").disabled =
-        gamePhase !== "playing";
+    });
 
-
-    $("useAugmentBtn").disabled =
-        gamePhase !== "playing" ||
-        !activeAugments.some(
-            augment =>
-                augment.uses > 0
-        );
-
+    document.getElementById("handCount")
+        .textContent=state.hand.length;
 
     renderAugments();
+}
 
+function renderEnemy(){
+
+    const enemy=
+        document.getElementById("enemyHand");
+
+    enemy.innerHTML="";
+
+    state.enemyHand.forEach(()=>{
+
+        const card=document.createElement("div");
+
+        card.className="enemyCard";
+
+        enemy.appendChild(card);
+
+    });
 }
 
 
 /* =========================================================
-   CARD CLICK
+   카드 클릭
 ========================================================= */
 
-$("playerHand")
-.addEventListener(
-    "click",
-    function(event){
+function handleCardClick(index){
 
-        if(
-            gamePhase !== "playing"
-        )
-            return;
+    /* 수트 변경 */
+
+    if(state.pendingSuitChange){
+
+        state.pendingSuitChange=false;
+
+        openSuitSelector(index);
+
+        return;
+    }
 
 
-        const cardElement =
-            event.target.closest(
-                ".card[data-index]"
+    /* 카드 교체 */
+
+    if(state.pendingReplace){
+
+        state.pendingReplace=false;
+
+        state.hand[index]=drawOne();
+
+        render();
+
+        log("🔄 카드가 교체되었습니다.");
+
+        return;
+    }
+
+
+    /* 쌍둥이 */
+
+    if(state.pendingTwin){
+
+        state.pendingTwin=false;
+
+        if(state.hand.length>=8){
+
+            showMessage(
+                "손패가 8장이라 복제할 수 없습니다."
             );
 
-
-        if(!cardElement)
             return;
+        }
+
+        const original=state.hand[index];
+
+        state.hand.push({
+            suit:original.suit,
+            rank:original.rank,
+            id:`twin-${Math.random()}`
+        });
+
+        render();
+
+        log("👯 같은 숫자의 카드가 생성되었습니다.");
+
+        return;
+    }
 
 
-        const index =
-            Number(
-                cardElement.dataset.index
-            );
+    /* 2장 수트 */
 
+    if(state.pendingMultiSuit){
+
+        selectTemp(index,2,()=>{
+            openSuitSelectorMulti();
+        });
+
+        return;
+    }
+
+
+    /* 3장 수트 */
+
+    if(state.pendingTripleSuit){
+
+        selectTemp(index,3,()=>{
+            openSuitSelectorMulti();
+        });
+
+        return;
+    }
+
+
+    /* 숫자 변경 */
+
+    if(state.pendingRankChange){
+
+        selectTemp(index,2,()=>{
+            openRankSelector();
+        });
+
+        return;
+    }
+
+
+    /* 와일드 */
+
+    if(state.pendingWild){
+
+        state.pendingWild=false;
+
+        openWildSelector(index);
+
+        return;
+    }
+
+
+    /* 일반 선택 */
+
+    const pos=state.selected.indexOf(index);
+
+    if(pos>=0){
+
+        state.selected.splice(pos,1);
+
+    }else{
 
         if(
-            !Number.isInteger(index)
-        )
-            return;
-
-
-        const card =
-            playerHand[index];
-
-
-        if(!card)
-            return;
-
-
-        const id =
-            card.id;
-
-
-        if(
-            selectedCards.has(id)
+            state.selected.length<
+            state.maxSubmit
         ){
 
-            selectedCards.delete(id);
+            state.selected.push(index);
 
-            cardElement.classList.remove(
-                "selected"
+        }else{
+
+            showMessage(
+                `최대 ${state.maxSubmit}장까지 선택할 수 있습니다.`
             );
 
+            return;
         }
-        else{
-
-            selectedCards.add(id);
-
-            cardElement.classList.add(
-                "selected"
-            );
-
-        }
-
-
-        $("drawBtn").disabled =
-            selectedCards.size === 0;
-
     }
-);
+
+    playSound("select");
+
+    render();
+
+    showMessage(
+        `${state.selected.length}/${state.maxSubmit}장 선택`
+    );
+}
 
 
 /* =========================================================
-   POKER HAND
+   다중 선택
 ========================================================= */
 
-function evaluateHand(hand){
+function selectTemp(index,max,callback){
 
-    if(
-        hand.length < 5
-    ){
+    if(state.tempSelected.includes(index))
+        return;
 
-        return {
+    state.tempSelected.push(index);
 
-            rank:0,
+    renderTempSelection();
 
-            score:0,
+    if(state.tempSelected.length>=max){
 
-            name:"HIGH CARD"
-
-        };
-
+        callback();
     }
+}
 
+function renderTempSelection(){
 
-    const values =
-        hand
-        .map(
-            card =>
-                card.value
-        )
-        .sort(
-            (a,b) =>
-                b-a
-        );
+    const cards=
+        document.querySelectorAll(".card");
 
+    cards.forEach((card,i)=>{
 
-    const counts = {};
+        if(state.tempSelected.includes(i)){
 
-
-    values.forEach(
-        value => {
-
-            counts[value] =
-                (
-                    counts[value] ||
-                    0
-                ) + 1;
-
+            card.style.borderColor="#b45cff";
+            card.style.boxShadow=
+                "0 0 25px #b45cff88";
         }
-    );
+
+    });
+}
 
 
-    const groups =
-        Object.entries(counts)
-        .map(
-            ([value,count]) => ({
+/* =========================================================
+   수트 선택
+========================================================= */
 
-                value:
-                    Number(value),
+let suitCallback=null;
 
-                count
+function openSuitSelector(index){
 
-            })
-        )
-        .sort(
-            (a,b) =>
-                b.count-a.count ||
-                b.value-a.value
+    suitCallback=selectedSuit=>{
+
+        state.hand[index].suit=selectedSuit;
+
+        render();
+
+        log(
+            `♠ ${SUITS[selectedSuit].name}으로 수트 변경`
         );
 
-
-    const flush =
-        hand.every(
-            card =>
-                card.suit ===
-                hand[0].suit
-        );
-
-
-    const unique =
-        [
-            ...new Set(values)
-        ]
-        .sort(
-            (a,b) =>
-                b-a
-        );
-
-
-    let straight =
-        false;
-
-    let high =
-        unique[0];
-
-
-    if(
-
-        unique.includes(14) &&
-        unique.includes(5) &&
-        unique.includes(4) &&
-        unique.includes(3) &&
-        unique.includes(2)
-
-    ){
-
-        straight = true;
-
-        high = 5;
-
-    }
-    else if(
-
-        unique.length === 5 &&
-        unique[0] -
-        unique[4] === 4
-
-    ){
-
-        straight = true;
-
-        high =
-            unique[0];
-
-    }
-
-
-    if(
-        straight &&
-        flush
-    ){
-
-        return {
-
-            rank:8,
-
-            score:
-                800 + high,
-
-            name:
-                "STRAIGHT FLUSH"
-
-        };
-
-    }
-
-
-    if(
-        groups[0].count === 4
-    ){
-
-        return {
-
-            rank:7,
-
-            score:
-                700 +
-                groups[0].value,
-
-            name:
-                "FOUR OF A KIND"
-
-        };
-
-    }
-
-
-    if(
-
-        groups[0].count === 3 &&
-        groups[1].count === 2
-
-    ){
-
-        return {
-
-            rank:6,
-
-            score:
-                600 +
-                groups[0].value +
-                groups[1].value,
-
-            name:
-                "FULL HOUSE"
-
-        };
-
-    }
-
-
-    if(flush){
-
-        return {
-
-            rank:5,
-
-            score:
-                500 +
-                values[0],
-
-            name:
-                "FLUSH"
-
-        };
-
-    }
-
-
-    if(straight){
-
-        return {
-
-            rank:4,
-
-            score:
-                400 +
-                high,
-
-            name:
-                "STRAIGHT"
-
-        };
-
-    }
-
-
-    if(
-        groups[0].count === 3
-    ){
-
-        return {
-
-            rank:3,
-
-            score:
-                300 +
-                groups[0].value,
-
-            name:
-                "THREE OF A KIND"
-
-        };
-
-    }
-
-
-    if(
-
-        groups[0].count === 2 &&
-        groups[1].count === 2
-
-    ){
-
-        return {
-
-            rank:2,
-
-            score:
-                200 +
-                groups[0].value +
-                groups[1].value,
-
-            name:
-                "TWO PAIR"
-
-        };
-
-    }
-
-
-    if(
-        groups[0].count === 2
-    ){
-
-        return {
-
-            rank:1,
-
-            score:
-                100 +
-                groups[0].value,
-
-            name:
-                "PAIR"
-
-        };
-
-    }
-
-
-    return {
-
-        rank:0,
-
-        score:
-            values[0],
-
-        name:
-            "HIGH CARD"
-
+        state.tempSelected=[];
     };
 
+    document.getElementById("suitOverlay")
+        .style.display="flex";
 }
 
+function openSuitSelectorMulti(){
 
-/* =========================================================
-   DISCARD
-========================================================= */
+    suitCallback=selectedSuit=>{
 
-$("discardBtn")
-.addEventListener(
-    "click",
-    function(){
+        state.tempSelected.forEach(index=>{
 
-        if(
-            gamePhase !== "playing"
-        )
-            return;
+            state.hand[index].suit=
+                selectedSuit;
 
+        });
 
-        if(
-            discardUsed >= MAX_DISCARD
-        )
-            return;
+        log(
+            `✨ ${state.tempSelected.length}장의 수트 변경`
+        );
 
-
-        if(
-            selectedCards.size === 0
-        ){
-
-            alert(
-                "버릴 카드를 선택하세요."
-            );
-
-            return;
-
-        }
-
-
-        const ids =
-            new Set(
-                selectedCards
-            );
-
-
-        const amount =
-            ids.size;
-
-
-        playerHand =
-            playerHand.filter(
-                card =>
-                    !ids.has(
-                        card.id
-                    )
-            );
-
-
-        for(
-            let i=0;
-            i<amount;
-            i++
-        ){
-
-            if(
-                deck.length === 0
-            )
-                break;
-
-
-            playerHand.push(
-                deck.shift()
-            );
-
-        }
-
-
-        selectedCards.clear();
-
-        discardUsed++;
-
-
-        if(
-            discardUsed >=
-            MAX_DISCARD
-        ){
-
-            showTaunt(
-                "손패가 너무 안 좋으신가봐?"
-            );
-
-        }
-
+        state.tempSelected=[];
 
         render();
+    };
 
-    }
-);
+    document.getElementById("suitOverlay")
+        .style.display="flex";
+}
 
+document.querySelectorAll(".suitButton")
+.forEach(button=>{
 
-/* =========================================================
-   DRAW
-========================================================= */
+    button.addEventListener("click",()=>{
 
-$("drawBtn")
-.addEventListener(
-    "click",
-    function(){
+        const suit=
+            Number(button.dataset.suit);
 
-        if(
-            gamePhase !== "playing"
-        )
-            return;
+        document.getElementById("suitOverlay")
+            .style.display="none";
 
-
-        if(
-            selectedCards.size === 0
-        )
-            return;
-
-
-        const ids =
-            new Set(
-                selectedCards
-            );
-
-
-        const amount =
-            ids.size;
-
-
-        playerHand =
-            playerHand.filter(
-                card =>
-                    !ids.has(
-                        card.id
-                    )
-            );
-
-
-        for(
-            let i=0;
-            i<amount;
-            i++
-        ){
-
-            if(
-                deck.length === 0
-            )
-                break;
-
-
-            playerHand.push(
-                deck.shift()
-            );
-
+        if(suitCallback){
+            suitCallback(suit);
+            suitCallback=null;
         }
 
+    });
 
-        selectedCards.clear();
-
-
-        render();
-
-    }
-);
+});
 
 
 /* =========================================================
-   TIMER
+   숫자 선택
 ========================================================= */
 
-function startTimer(){
+function openRankSelector(){
 
-    clearInterval(
-        timerInterval
-    );
+    const overlay=
+        document.getElementById("suitOverlay");
 
+    const box=
+        overlay.querySelector(".overlayBox");
 
-    timerInterval =
-        setInterval(
-            function(){
+    box.innerHTML=`
 
-                if(
-                    gamePhase !==
-                    "playing"
-                )
-                    return;
+        <div class="overlayTitle">
+            원하는 숫자를 선택하세요
+        </div>
 
+        <div id="suitChoices"></div>
 
-                timeLeft -= .1;
+    `;
 
+    const choices=
+        box.querySelector("#suitChoices");
 
-                if(
+    RANKS.forEach((rank,index)=>{
 
-                    timeLeft <= 10 &&
-                    !tenSecondTauntShown
+        const button=
+            document.createElement("button");
 
-                ){
+        button.className="suitButton";
 
-                    tenSecondTauntShown =
-                        true;
+        button.textContent=rank.name;
 
+        button.onclick=()=>{
 
-                    showTaunt(
-                        "카드 5장 고르는 게 그렇게 어렵나?"
-                    );
+            state.tempSelected.forEach(cardIndex=>{
 
-                }
-
-
-                if(
-                    timeLeft <= 0
-                ){
-
-                    timeLeft = 0;
-
-                    clearInterval(
-                        timerInterval
-                    );
-
-                    submitGame();
-
-                    return;
-
-                }
-
-
-                $("timer").textContent =
-                    timeLeft.toFixed(1);
-
-            },
-            100
-        );
-
-}
-
-
-/* =========================================================
-   SUBMIT
-========================================================= */
-
-$("submitBtn")
-.addEventListener(
-    "click",
-    submitGame
-);
-
-
-function submitGame(){
-
-    if(
-        gamePhase !==
-        "playing"
-    )
-        return;
-
-
-    gamePhase =
-        "result";
-
-
-    clearInterval(
-        timerInterval
-    );
-
-
-    aiImprove();
-
-
-    const playerResult =
-        evaluateHand(
-            playerHand
-        );
-
-
-    const aiResult =
-        evaluateHand(
-            aiHand
-        );
-
-
-    if(
-        playerResult.score >
-        aiResult.score
-    ){
-
-        playerWin(
-            playerResult,
-            aiResult
-        );
-
-    }
-    else{
-
-        playerLose(
-            playerResult,
-            aiResult
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   AI
-========================================================= */
-
-function aiImprove(){
-
-    const difficulty =
-        .15 +
-        stage * .09;
-
-
-    if(
-        Math.random() >
-        difficulty
-    )
-        return;
-
-
-    const result =
-        evaluateHand(
-            aiHand
-        );
-
-
-    if(
-        result.rank >= 2
-    )
-        return;
-
-
-    aiHand.sort(
-        (a,b) =>
-            b.value -
-            a.value
-    );
-
-
-    const keep =
-        aiHand.slice(
-            0,
-            2
-        );
-
-
-    const keepIds =
-        new Set(
-            keep.map(
-                card =>
-                    card.id
-            )
-        );
-
-
-    aiHand =
-        aiHand.filter(
-            card =>
-                keepIds.has(
-                    card.id
-                )
-        );
-
-
-    while(
-
-        aiHand.length < 5 &&
-        deck.length > 0
-
-    ){
-
-        aiHand.push(
-            deck.shift()
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   WIN / LOSE
-========================================================= */
-
-function playerWin(
-    playerResult,
-    aiResult
-){
-
-    $("gameTable")
-        .classList
-        .add("win-flash");
-
-
-    setTimeout(
-        function(){
-
-            $("gameTable")
-                .classList
-                .remove("win-flash");
-
-        },
-        1500
-    );
-
-
-    showTaunt(
-        playerResult.name +
-        "! 운이 꽤 좋네."
-    );
-
-
-    showModal(
-
-        "STAGE CLEAR",
-
-        playerResult.name,
-
-        `AI의 ${aiResult.name}을 이겼습니다.`,
-
-        "augment"
-
-    );
-
-}
-
-
-function playerLose(
-    playerResult,
-    aiResult
-){
-
-    showModal(
-
-        "GAME OVER",
-
-        aiResult.name,
-
-        `당신의 ${playerResult.name}으로는 부족했습니다.`,
-
-        "restart"
-
-    );
-
-}
-
-
-/* =========================================================
-   RARITY
-========================================================= */
-
-function getRarityForStage(){
-
-    if(
-        stage >= 7
-    )
-        return "platinum";
-
-
-    if(
-        stage >= 4
-    )
-        return "gold";
-
-
-    return "silver";
-
-}
-
-
-/* =========================================================
-   AUGMENT CHOICE
-========================================================= */
-
-function chooseAugments(){
-
-    const rarity =
-        getRarityForStage();
-
-
-    let pool =
-        AUGMENTS.filter(
-            augment =>
-                augment.rarity ===
-                rarity
-        );
-
-
-    pool =
-        pool.sort(
-            () =>
-                Math.random() - .5
-        );
-
-
-    const choices =
-        pool.slice(
-            0,
-            3
-        );
-
-
-    $("choices").innerHTML =
-        choices
-        .map(
-            (augment,index) => `
-
-                <div
-                    class="choice"
-                    data-index="${index}"
-                >
-
-                    <div
-                        class="
-                            rarity
-                            ${augment.rarity}
-                        "
-                    >
-
-                        ${augment.rarity.toUpperCase()}
-
-                    </div>
-
-
-                    <h3>
-
-                        ${augment.name}
-
-                    </h3>
-
-
-                    <p>
-
-                        ${augment.description}
-
-                    </p>
-
-
-                    <b>
-
-                        사용 ${augment.uses}회
-
-                    </b>
-
-                </div>
-
-            `
-        )
-        .join("");
-
-
-    let selectedAugment =
-        null;
-
-
-    document
-    .querySelectorAll(".choice")
-    .forEach(
-        choice => {
-
-            choice.addEventListener(
-                "click",
-                function(){
-
-                    document
-                    .querySelectorAll(
-                        ".choice"
-                    )
-                    .forEach(
-                        item =>
-                            item.classList
-                                .remove(
-                                    "selected"
-                                )
-                    );
-
-
-                    this.classList.add(
-                        "selected"
-                    );
-
-
-                    selectedAugment =
-                        choices[
-                            Number(
-                                this.dataset.index
-                            )
-                        ];
-
-                }
-            );
-
-        }
-    );
-
-
-    $("modalButton")
-        .style
-        .display =
-        "block";
-
-
-    $("modalButton")
-        .textContent =
-        "증강 선택";
-
-
-    $("modalButton")
-        .onclick =
-        function(){
-
-            if(
-                !selectedAugment
-            ){
-
-                alert(
-                    "증강을 하나 선택하세요."
-                );
-
-                return;
-
-            }
-
-
-            activeAugments.push({
-
-                id:
-                    selectedAugment.id,
-
-                name:
-                    selectedAugment.name,
-
-                rarity:
-                    selectedAugment.rarity,
-
-                description:
-                    selectedAugment.description,
-
-                uses:
-                    selectedAugment.uses,
-
-                use:
-                    selectedAugment.use
+                state.hand[cardIndex].rank=index;
 
             });
 
+            state.tempSelected=[];
 
-            $("modal")
-                .classList
-                .add("hidden");
+            overlay.style.display="none";
 
+            render();
 
-            if(
-                stage >= 8
-            ){
+            log(
+                `👑 선택한 카드의 숫자가 ${rank.name}으로 변경되었습니다.`
+            );
 
-                showModal(
-
-                    "YOU WIN",
-
-                    "ALL STAGES CLEAR",
-
-                    "8개의 스테이지를 모두 돌파했습니다.",
-
-                    "restart"
-
-                );
-
-                return;
-
-            }
-
-
-            stage++;
-
-            dealCards();
+            restoreSuitOverlay();
 
         };
 
+        choices.appendChild(button);
+
+    });
+
+    overlay.style.display="flex";
+}
+
+function restoreSuitOverlay(){
+
+    const overlay=
+        document.getElementById("suitOverlay");
+
+    const box=
+        overlay.querySelector(".overlayBox");
+
+    box.innerHTML=`
+
+        <div class="overlayTitle">
+            원하는 수트를 선택하세요
+        </div>
+
+        <div id="suitChoices">
+
+            <button class="suitButton" data-suit="0">
+                ♥ 하트
+            </button>
+
+            <button class="suitButton" data-suit="1">
+                ♦ 다이아
+            </button>
+
+            <button class="suitButton" data-suit="2">
+                ♣ 클로버
+            </button>
+
+            <button class="suitButton" data-suit="3">
+                ♠ 스페이드
+            </button>
+
+        </div>
+    `;
+
+    box.querySelectorAll(".suitButton")
+    .forEach(button=>{
+
+        button.onclick=()=>{
+
+            const suit=
+                Number(button.dataset.suit);
+
+            overlay.style.display="none";
+
+            if(suitCallback){
+
+                suitCallback(suit);
+
+                suitCallback=null;
+
+            }
+
+        };
+
+    });
 }
 
 
 /* =========================================================
-   MODAL
+   와일드 선택
 ========================================================= */
 
-function showModal(
-    kicker,
-    title,
-    text,
-    type
-){
+let wildIndex=null;
 
-    $("modalKicker")
-        .textContent =
-        kicker;
+function openWildSelector(index){
 
+    wildIndex=index;
 
-    $("modalTitle")
-        .textContent =
-        title;
+    const overlay=
+        document.getElementById("suitOverlay");
 
+    const box=
+        overlay.querySelector(".overlayBox");
 
-    $("modalText")
-        .textContent =
-        text;
+    box.innerHTML=`
 
+        <div class="overlayTitle">
+            원하는 카드 선택
+        </div>
 
-    $("modal")
-        .classList
-        .remove("hidden");
+        <div id="suitChoices"></div>
+    `;
 
+    const choices=
+        box.querySelector("#suitChoices");
 
-    if(
-        type === "augment"
-    ){
+    RANKS.forEach((rank,r)=>{
 
-        chooseAugments();
+        SUITS.forEach((suit,s)=>{
 
-    }
-    else{
+            const button=
+                document.createElement("button");
 
-        $("choices")
-            .innerHTML =
-            "";
+            button.className="suitButton";
 
+            button.innerHTML=
+                `<span style="color:${
+                    suit.color==="red"
+                    ?"#e33"
+                    :"#fff"
+                }">${rank.name}${suit.symbol}</span>`;
 
-        $("modalButton")
-            .style
-            .display =
-            "block";
+            button.onclick=()=>{
 
+                state.hand[wildIndex]={
+                    suit:s,
+                    rank:r,
+                    id:`wild-${Math.random()}`
+                };
 
-        $("modalButton")
-            .textContent =
-            "처음부터";
+                overlay.style.display="none";
 
+                render();
 
-        $("modalButton")
-            .onclick =
-            restartGame;
+                log(
+                    `🌟 와일드 카드가 ${rank.name}${suit.symbol}로 변경되었습니다.`
+                );
 
-    }
+                restoreSuitOverlay();
+            };
 
+            choices.appendChild(button);
+
+        });
+
+    });
+
+    overlay.style.display="flex";
 }
 
 
 /* =========================================================
-   AUGMENT PANEL
+   증강 렌더링
 ========================================================= */
 
 function renderAugments(){
 
-    const list =
-        $("augmentList");
+    const list=
+        document.getElementById("augmentList");
 
+    if(state.augmentOwned.length===0){
 
-    if(
-        activeAugments.length === 0
-    ){
-
-        list.innerHTML = `
-
-            <div class="empty">
-
-                아직 보유한 증강이 없습니다.
-
-                <br>
-
-                스테이지를 클리어하면
-
-                <br>
-
-                증강을 선택할 수 있습니다.
-
+        list.innerHTML=`
+            <div style="color:#77869c;font-size:13px">
+                아직 증강이 없습니다.
             </div>
-
         `;
 
         return;
-
     }
 
+    list.innerHTML="";
 
-    list.innerHTML =
-        activeAugments
-        .map(
-            (augment,index) => `
+    state.augmentOwned.forEach(augment=>{
 
-                <div
-                    class="augment"
-                    data-index="${index}"
-                >
+        const div=
+            document.createElement("div");
 
-                    <span
-                        class="augment-name"
-                    >
-
-                        ${augment.name}
-
-                    </span>
-
-
-                    <span
-                        class="augment-uses"
-                    >
-
-                        ${
-                            augment.uses > 0
-                            ?
-                            augment.uses + "회"
-                            :
-                            "사용 완료"
-                        }
-
-                    </span>
-
-
-                    <div
-                        class="
-                            rarity
-                            ${augment.rarity}
-                        "
-                    >
-
-                        ${augment.rarity.toUpperCase()}
-
-                    </div>
-
-
-                    <div class="tooltip">
-
-                        ${augment.description}
-
-                        <br><br>
-
-                        ${
-                            augment.uses > 0
-                            ?
-                            "<b>클릭해서 사용</b>"
-                            :
-                            "<b>사용 완료</b>"
-                        }
-
-                    </div>
-
-                </div>
-
-            `
-        )
-        .join("");
-
-
-    document
-    .querySelectorAll(".augment")
-    .forEach(
-        element => {
-
-            element.addEventListener(
-                "click",
-                function(){
-
-                    useAugment(
-                        Number(
-                            this.dataset.index
-                        )
-                    );
-
-                }
+        const used=
+            state.usedAugments.includes(
+                augment.id
             );
 
+        div.className=
+            "augmentCard"+
+            (used?" used":"");
+
+        div.innerHTML=`
+
+            <div class="rarity ${augment.rarity}">
+                ${augment.rarity.toUpperCase()}
+            </div>
+
+            <div class="augmentName">
+                ${augment.name}
+            </div>
+
+            <div class="augmentDesc">
+                ${augment.desc}
+            </div>
+
+            <div style="
+                margin-top:7px;
+                font-size:11px;
+                color:${used?"#899":"#75f0ae"};
+            ">
+                ${used
+                    ?"사용 완료"
+                    :"▶ 클릭해서 발동"
+                }
+            </div>
+        `;
+
+        /*
+            ★ 증강 클릭 발동
+        */
+
+        div.addEventListener("click",()=>{
+
+            if(used)return;
+
+            activateAugment(augment);
+
+        });
+
+        list.appendChild(div);
+
+    });
+}
+
+
+/* =========================================================
+   증강 발동
+========================================================= */
+
+function activateAugment(augment){
+
+    if(state.gameOver)return;
+
+    if(
+        state.usedAugments
+            .includes(augment.id)
+    ){
+        return;
+    }
+
+    const success=
+        augment.action();
+
+    if(success!==false){
+
+        state.usedAugments.push(
+            augment.id
+        );
+
+        playSound("augment");
+
+        renderAugments();
+
+        log(
+            `⚡ ${augment.name} 발동!`
+        );
+    }
+}
+
+
+/* =========================================================
+   증강 후보 생성
+   ★ 중요:
+   ★ stage 조건 없음
+   ★ 모든 증강 풀 사용
+========================================================= */
+
+function generateAugmentChoices(){
+
+    /*
+        이미 보유한 증강은 제외
+    */
+
+    const available=
+        AUGMENTS.filter(augment=>
+            !state.augmentOwned
+                .some(a=>a.id===augment.id)
+        );
+
+    if(available.length<3){
+        return shuffle(available);
+    }
+
+    /*
+        ★ 플래티넘 등장 확률
+        약 15%
+    */
+
+    const platinumRoll=
+        Math.random()<0.15;
+
+    let candidates=[];
+
+    if(platinumRoll){
+
+        /*
+            플래티넘이 걸리면
+            무조건 3개 모두 플래티넘
+        */
+
+        const platinum=
+            available.filter(
+                a=>a.rarity==="platinum"
+            );
+
+        candidates=
+            shuffle(platinum).slice(0,3);
+
+        /*
+            혹시 플래티넘이 3개보다 적으면
+            다시 전체에서 구성
+        */
+
+        if(candidates.length<3){
+
+            candidates=
+                shuffle(available)
+                .slice(0,3);
         }
-    );
 
-}
+    }else{
 
+        /*
+            일반적으로는 실버/골드/플래티넘
+            전체 풀에서 랜덤
+        */
 
-/* =========================================================
-   USE AUGMENT
-========================================================= */
-
-function useAugment(index){
-
-    if(
-        gamePhase !==
-        "playing"
-    )
-        return;
-
-
-    const augment =
-        activeAugments[index];
-
-
-    if(!augment)
-        return;
-
-
-    if(
-        augment.uses <= 0
-    )
-        return;
-
-
-    const success =
-        augment.use();
-
-
-    /*
-        수트 선택창처럼
-        추가 입력이 필요한 증강은
-        아직 사용 횟수를 차감하지 않는다.
-    */
-
-    if(
-        success === false
-    )
-        return;
-
-
-    /*
-        수트 변경은
-        선택창이 열려 있는 동안
-        증강을 사용한 것으로 처리한다.
-    */
-
-    augment.uses--;
-
-
-    selectedCards.clear();
-
-
-    render();
-
-}
-
-
-/* =========================================================
-   SUIT CHANGE
-========================================================= */
-
-function changeSuit(amount){
-
-    const ids =
-        [...selectedCards];
-
-
-    suitSelectionQueue =
-        ids.slice(0,amount);
-
-
-    if(
-        suitSelectionQueue.length === 0
-    ){
-
-        alert(
-            "변경할 카드를 선택하세요."
-        );
-
-        return;
-
+        candidates=
+            shuffle(available).slice(0,3);
     }
 
-
-    suitSelectionIndex = 0;
-
-
-    openSuitSelector();
-
+    return candidates;
 }
 
 
 /* =========================================================
-   OPEN SUIT SELECTOR
+   증강 선택 화면
 ========================================================= */
 
-function openSuitSelector(){
+function openAugmentSelection(){
 
-    if(
-        suitSelectionIndex >=
-        suitSelectionQueue.length
-    ){
+    clearInterval(state.timerInterval);
 
-        closeSuitSelector();
+    state.awaitingAugment=true;
 
-        selectedCards.clear();
+    const choices=
+        generateAugmentChoices();
 
-        render();
+    const container=
+        document.getElementById("augmentChoices");
 
-        return;
+    container.innerHTML="";
 
-    }
+    choices.forEach(augment=>{
 
+        const div=
+            document.createElement("div");
 
-    const cardId =
-        suitSelectionQueue[
-            suitSelectionIndex
-        ];
+        div.className="choice";
 
+        div.innerHTML=`
 
-    const card =
-        playerHand.find(
-            item =>
-                item.id ===
-                cardId
-        );
+            <div class="rarity ${augment.rarity}">
+                ${augment.rarity.toUpperCase()}
+            </div>
 
+            <h3>${augment.name}</h3>
 
-    if(!card){
+            <p>${augment.desc}</p>
 
-        suitSelectionIndex++;
+            <div style="
+                margin-top:20px;
+                color:#73efa8;
+                font-weight:bold;
+            ">
+                클릭하여 획득
+            </div>
+        `;
 
-        openSuitSelector();
+        div.onclick=()=>{
 
-        return;
+            state.augmentOwned.push(
+                augment
+            );
 
-    }
+            state.awaitingAugment=false;
 
+            document.getElementById(
+                "augmentOverlay"
+            ).style.display="none";
 
-    $("suitTargetText")
-        .textContent =
-        `${card.rank}${card.suit} 카드의 수트를 선택하세요.`;
+            renderAugments();
 
+            log(
+                `⚡ ${augment.name} 획득!`
+            );
 
-    $("suitModal")
-        .classList
-        .remove("hidden");
+            playSound("augment");
 
+            state.stage++;
+
+            if(state.stage>8){
+
+                winGame();
+
+            }else{
+
+                startRound();
+
+            }
+
+        };
+
+        container.appendChild(div);
+
+    });
+
+    document.getElementById(
+        "augmentOverlay"
+    ).style.display="flex";
 }
 
 
 /* =========================================================
-   SUIT BUTTON
+   타이머
 ========================================================= */
 
-document
-.querySelectorAll(".suit-choice")
-.forEach(
-    button => {
+function startTimer(){
 
-        button.addEventListener(
-            "click",
-            function(){
+    clearInterval(state.timerInterval);
 
-                const suit =
-                    this.dataset.suit;
+    state.timer=state.timerMax;
 
+    updateTimer();
 
-                applySelectedSuit(
-                    suit
+    state.timerInterval=
+        setInterval(()=>{
+
+            state.timer-=.1;
+
+            updateTimer();
+
+            /*
+                10초 도발
+            */
+
+            if(
+                state.timer<=10 &&
+                state.timer>.0 &&
+                !state.tenSecondWarned
+            ){
+
+                state.tenSecondWarned=true;
+
+                showMessage(
+                    "AI: 카드 5장 고르는 게 그렇게 어렵나?"
+                );
+
+                log(
+                    '🤖 AI: "카드 5장 고르는 게 그렇게 어렵나?"'
                 );
 
             }
+
+            if(state.timer<=0){
+
+                clearInterval(
+                    state.timerInterval
+                );
+
+                timeoutSubmit();
+
+            }
+
+        },100);
+
+    state.tenSecondWarned=false;
+}
+
+function updateTimer(){
+
+    const ratio=
+        Math.max(
+            0,
+            state.timer/state.timerMax
         );
 
-    }
-);
+    document.getElementById(
+        "timer"
+    ).style.width=
+        `${ratio*100}%`;
 
-
-/* =========================================================
-   APPLY SUIT
-========================================================= */
-
-function applySelectedSuit(suit){
-
-    const cardId =
-        suitSelectionQueue[
-            suitSelectionIndex
-        ];
-
-
-    const card =
-        playerHand.find(
-            item =>
-                item.id ===
-                cardId
-        );
-
-
-    if(!card){
-
-        suitSelectionIndex++;
-
-        openSuitSelector();
-
-        return;
-
-    }
-
-
-    const suitData =
-        SUITS.find(
-            item =>
-                item.symbol ===
-                suit
-        );
-
-
-    if(!suitData)
-        return;
-
-
-    card.suit =
-        suitData.symbol;
-
-
-    card.color =
-        suitData.color;
-
-
-    suitSelectionIndex++;
-
-
-    if(
-        suitSelectionIndex >=
-        suitSelectionQueue.length
-    ){
-
-        closeSuitSelector();
-
-        selectedCards.clear();
-
-        render();
-
-        showTaunt(
-            "수트까지 골라주셨네."
-        );
-
-        return;
-
-    }
-
-
-    openSuitSelector();
-
+    document.getElementById(
+        "timerText"
+    ).textContent=
+        `제한시간 ${Math.ceil(state.timer)}초`;
 }
 
 
 /* =========================================================
-   CLOSE SUIT SELECTOR
+   버리기
 ========================================================= */
 
-$("cancelSuit")
-.addEventListener(
-    "click",
-    function(){
+document.getElementById(
+    "discardBtn"
+).onclick=()=>{
 
-        closeSuitSelector();
+    if(state.selected.length===0){
 
-    }
-);
-
-
-function closeSuitSelector(){
-
-    $("suitModal")
-        .classList
-        .add("hidden");
-
-
-    suitSelectionQueue = [];
-
-    suitSelectionIndex = 0;
-
-}
-
-
-/* =========================================================
-   PERFECT HAND
-========================================================= */
-
-function modifyCards(amount){
-
-    const ids =
-        [...selectedCards];
-
-
-    const cards =
-        ids
-        .slice(0,amount)
-        .map(
-            id =>
-                playerHand.find(
-                    card =>
-                        card.id === id
-                )
-        )
-        .filter(Boolean);
-
-
-    if(
-        cards.length === 0
-    ){
-
-        alert(
-            "카드를 선택하세요."
+        showMessage(
+            "버릴 카드를 선택하세요."
         );
 
-        return false;
-
+        return;
     }
 
+    if(state.discards>=state.maxDiscards){
+
+        showMessage(
+            "이번 라운드의 버리기를 모두 사용했습니다."
+        );
+
+        return;
+    }
 
     /*
-        숫자 선택
+        선택한 카드 제거
     */
 
-    for(
-        const card of cards
-    ){
+    const removed=
+        [...state.selected]
+        .sort((a,b)=>b-a);
 
-        const rankAnswer =
-            prompt(
-                "카드 숫자를 선택하세요.\n\n2~10 / J / Q / K / A",
-                card.rank
-            );
+    removed.forEach(index=>{
 
+        state.hand.splice(index,1);
 
-        if(!rankAnswer)
-            return false;
+    });
 
+    state.selected=[];
 
-        const rank =
-            RANKS.find(
-                item =>
-                    item[0] ===
-                    rankAnswer
-            );
-
-
-        if(!rank){
-
-            alert(
-                "올바른 숫자를 입력하세요."
-            );
-
-            return false;
-
-        }
-
-
-        card.rank =
-            rank[0];
-
-
-        card.value =
-            rank[1];
-
-    }
-
+    state.discards++;
 
     /*
-        수트는 클릭 선택
+        제거한 만큼 보충해서
+        손패가 기본적으로 6장 유지
+        단, 최대 8장
     */
 
-    suitSelectionQueue =
-        cards.map(
-            card =>
-                card.id
-        );
-
-
-    suitSelectionIndex = 0;
-
-
-    openSuitSelector();
-
-
-    return true;
-
-}
-
-
-/* =========================================================
-   DRAW EXTRA
-========================================================= */
-
-function drawCards(amount){
-
-    for(
-        let i=0;
-        i<amount;
-        i++
-    ){
-
-        if(
-            playerHand.length >= 5
-        )
-            break;
-
-
-        if(
-            deck.length === 0
-        )
-            break;
-
-
-        playerHand.push(
-            deck.shift()
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   AUGMENT DISCARD
-========================================================= */
-
-function discardSelected(){
-
-    const ids =
-        [...selectedCards];
-
-
-    if(
-        ids.length === 0
-    )
-        return;
-
-
-    playerHand =
-        playerHand.filter(
-            card =>
-                !ids.includes(
-                    card.id
-                )
-        );
-
+    const target=6;
 
     while(
-
-        playerHand.length < 5 &&
-        deck.length > 0
-
+        state.hand.length<target &&
+        state.hand.length<8
     ){
 
-        playerHand.push(
-            deck.shift()
+        state.hand.push(
+            drawOne()
         );
-
     }
 
+    render();
 
-    selectedCards.clear();
+    playSound("draw");
 
+    log(
+        `🗑️ 버리기 사용 ${state.discards}/${state.maxDiscards}`
+    );
+
+    if(
+        state.discards>=state.maxDiscards
+    ){
+
+        showMessage(
+            "AI: 손패가 너무 안좋으신가봐?"
+        );
+
+        log(
+            '🤖 AI: "손패가 너무 안좋으신가봐?"'
+        );
+
+    }else{
+
+        showMessage(
+            "버린 카드가 보충되었습니다."
+        );
+    }
+};
+
+
+/* =========================================================
+   제출
+========================================================= */
+
+document.getElementById(
+    "submitBtn"
+).onclick=()=>{
+
+    submitHand();
+
+};
+
+function timeoutSubmit(){
+
+    /*
+        시간 초과면 자동 제출
+        선택된 카드가 5장 미만이면
+        앞쪽 카드부터 채운다.
+    */
+
+    if(state.selected.length===0){
+
+        state.selected=
+            [...Array(
+                Math.min(
+                    state.maxSubmit,
+                    state.hand.length
+                )
+            ).keys()];
+    }
+
+    while(
+        state.selected.length<
+        Math.min(
+            state.maxSubmit,
+            state.hand.length
+        )
+    ){
+
+        const candidates=
+            [...Array(state.hand.length).keys()]
+            .filter(
+                i=>!state.selected.includes(i)
+            );
+
+        if(candidates.length===0)break;
+
+        state.selected.push(
+            candidates[0]
+        );
+    }
+
+    submitHand();
+}
+
+function submitHand(){
+
+    if(state.selected.length===0){
+
+        showMessage(
+            "최소 1장의 카드를 선택하세요."
+        );
+
+        return;
+    }
+
+    clearInterval(
+        state.timerInterval
+    );
+
+    /*
+        선택된 카드로 족보 계산
+    */
+
+    const playerCards=
+        state.selected.map(
+            i=>state.hand[i]
+        );
+
+    /*
+        AI는 8장 중 가장 강한 5장
+    */
+
+    const enemyBest=
+        bestFiveFromHand(
+            state.enemyHand
+        );
+
+    const playerScore=
+        evaluateHand(playerCards);
+
+    const enemyScore=
+        evaluateHand(enemyBest);
+
+    log(
+        `👤 ${playerScore.name}`
+    );
+
+    log(
+        `🤖 ${enemyScore.name}`
+    );
+
+    state.selected=[];
+
+    render();
+
+    if(
+        compareScores(
+            playerScore,
+            enemyScore
+        )>0
+    ){
+
+        roundWin();
+
+    }else{
+
+        roundLose();
+
+    }
 }
 
 
 /* =========================================================
-   SWAP
+   족보 계산
 ========================================================= */
 
-function swapCards(amount){
+function evaluateHand(cards){
 
-    const selected =
-        [...selectedCards];
+    const values=
+        cards.map(
+            c=>RANKS[c.rank].value
+        ).sort((a,b)=>b-a);
 
+    const suits=
+        cards.map(c=>c.suit);
+
+    const counts={};
+
+    values.forEach(v=>{
+        counts[v]=(counts[v]||0)+1;
+    });
+
+    const groups=
+        Object.entries(counts)
+        .map(([value,count])=>({
+            value:Number(value),
+            count
+        }))
+        .sort(
+            (a,b)=>
+                b.count-a.count ||
+                b.value-a.value
+        );
+
+    const unique=
+        [...new Set(values)]
+        .sort((a,b)=>b-a);
+
+    let straightHigh=null;
+
+    if(unique.includes(14)){
+        unique.push(1);
+    }
+
+    for(let i=0;i<=unique.length-5;i++){
+
+        const slice=
+            unique.slice(i,i+5);
+
+        if(
+            slice[0]-slice[4]===4
+        ){
+
+            straightHigh=slice[0];
+
+            break;
+        }
+    }
+
+    const flush=
+        cards.length===5 &&
+        suits.every(
+            s=>s===suits[0]
+        );
+
+    if(flush && straightHigh){
+
+        return {
+            rank:8,
+            values:[straightHigh],
+            name:"로열/스트레이트 플러시"
+        };
+    }
+
+    if(groups[0]?.count===4){
+
+        return {
+            rank:7,
+            values:[
+                groups[0].value,
+                groups[1]?.value||0
+            ],
+            name:"포카드"
+        };
+    }
+
+    if(
+        groups[0]?.count===3 &&
+        groups[1]?.count===2
+    ){
+
+        return {
+            rank:6,
+            values:[
+                groups[0].value,
+                groups[1].value
+            ],
+            name:"풀하우스"
+        };
+    }
+
+    if(flush){
+
+        return {
+            rank:5,
+            values,
+            name:"플러시"
+        };
+    }
+
+    if(straightHigh){
+
+        return {
+            rank:4,
+            values:[straightHigh],
+            name:"스트레이트"
+        };
+    }
+
+    if(groups[0]?.count===3){
+
+        return {
+            rank:3,
+            values:[
+                groups[0].value,
+                ...groups
+                    .slice(1)
+                    .map(x=>x.value)
+                    .sort((a,b)=>b-a)
+            ],
+            name:"트리플"
+        };
+    }
+
+    if(
+        groups[0]?.count===2 &&
+        groups[1]?.count===2
+    ){
+
+        return {
+            rank:2,
+            values:[
+                Math.max(
+                    groups[0].value,
+                    groups[1].value
+                ),
+                Math.min(
+                    groups[0].value,
+                    groups[1].value
+                ),
+                groups[2]?.value||0
+            ],
+            name:"투페어"
+        };
+    }
+
+    if(groups[0]?.count===2){
+
+        return {
+            rank:1,
+            values:[
+                groups[0].value,
+                ...groups
+                    .slice(1)
+                    .map(x=>x.value)
+                    .sort((a,b)=>b-a)
+            ],
+            name:"원페어"
+        };
+    }
+
+    return {
+        rank:0,
+        values,
+        name:"하이카드"
+    };
+}
+
+function compareScores(a,b){
+
+    if(a.rank!==b.rank){
+
+        return a.rank-b.rank;
+    }
 
     for(
         let i=0;
-        i<amount;
+        i<Math.max(
+            a.values.length,
+            b.values.length
+        );
         i++
     ){
 
-        if(
-            !selected[i]
-        )
-            continue;
+        const av=a.values[i]||0;
+        const bv=b.values[i]||0;
 
+        if(av!==bv){
 
-        const playerIndex =
-            playerHand.findIndex(
-                card =>
-                    card.id ===
-                    selected[i]
-            );
-
-
-        if(
-            playerIndex === -1
-        )
-            continue;
-
-
-        if(
-            aiHand.length === 0
-        )
-            continue;
-
-
-        const aiIndex =
-            Math.floor(
-                Math.random() *
-                aiHand.length
-            );
-
-
-        const temp =
-            playerHand[playerIndex];
-
-
-        playerHand[playerIndex] =
-            aiHand[aiIndex];
-
-
-        aiHand[aiIndex] =
-            temp;
-
+            return av-bv;
+        }
     }
 
+    return 0;
 }
 
 
 /* =========================================================
-   AUGMENT BUTTON
+   8장 중 최강 5장
 ========================================================= */
 
-$("useAugmentBtn")
-.addEventListener(
-    "click",
-    function(){
+function bestFiveFromHand(hand){
 
-        const index =
-            activeAugments.findIndex(
-                augment =>
-                    augment.uses > 0
-            );
+    if(hand.length<=5)
+        return [...hand];
+
+    let best=null;
+    let bestScore=null;
+
+    const n=hand.length;
+
+    for(let a=0;a<n-4;a++){
+        for(let b=a+1;b<n-3;b++){
+            for(let c=b+1;c<n-2;c++){
+                for(let d=c+1;d<n-1;d++){
+                    for(let e=d+1;e<n;e++){
+
+                        const five=[
+                            hand[a],
+                            hand[b],
+                            hand[c],
+                            hand[d],
+                            hand[e]
+                        ];
+
+                        const score=
+                            evaluateHand(five);
+
+                        if(
+                            !bestScore ||
+                            compareScores(
+                                score,
+                                bestScore
+                            )>0
+                        ){
+
+                            bestScore=score;
+                            best=five;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return best;
+}
 
 
-        if(
-            index === -1
-        ){
+/* =========================================================
+   라운드 승리
+========================================================= */
 
-            alert(
-                "사용 가능한 증강이 없습니다."
-            );
+function roundWin(){
 
-            return;
+    flash("win");
+
+    playSound("win");
+
+    showMessage(
+        "🎉 승리!"
+    );
+
+    document.getElementById(
+        "resultText"
+    ).textContent=
+        "🎉 ROUND WIN!";
+
+    document.getElementById(
+        "resultOverlay"
+    ).style.display="flex";
+
+    document.getElementById(
+        "resultBtn"
+    ).onclick=()=>{
+
+        document.getElementById(
+            "resultOverlay"
+        ).style.display="none";
+
+        if(state.stage>=8){
+
+            winGame();
+
+        }else{
+
+            openAugmentSelection();
 
         }
 
-
-        useAugment(index);
-
-    }
-);
-
-
-/* =========================================================
-   TAUNT
-========================================================= */
-
-function showTaunt(text){
-
-    const element =
-        $("taunt");
-
-
-    element.textContent =
-        text;
-
-
-    element.classList
-        .remove("hidden");
-
-
-    clearTimeout(
-        window.tauntTimer
-    );
-
-
-    window.tauntTimer =
-        setTimeout(
-            function(){
-
-                element.classList
-                    .add("hidden");
-
-            },
-            2800
-        );
-
+    };
 }
 
 
 /* =========================================================
-   RESTART
+   라운드 패배
 ========================================================= */
 
-function restartGame(){
+function roundLose(){
+
+    flash("lose");
+
+    playSound("lose");
+
+    showMessage(
+        "💀 패배..."
+    );
+
+    document.getElementById(
+        "resultText"
+    ).textContent=
+        "💀 AI에게 패배했습니다.";
+
+    document.getElementById(
+        "resultOverlay"
+    ).style.display="flex";
+
+    document.getElementById(
+        "resultBtn"
+    ).textContent=
+        "처음부터 다시";
+
+    document.getElementById(
+        "resultBtn"
+    ).onclick=()=>{
+
+        document.getElementById(
+            "resultOverlay"
+        ).style.display="none";
+
+        resetGame();
+
+    };
+}
+
+
+/* =========================================================
+   게임 클리어
+========================================================= */
+
+function winGame(){
 
     clearInterval(
-        timerInterval
+        state.timerInterval
     );
 
+    flash("win");
 
-    stage = 1;
+    playSound("win");
 
-    activeAugments = [];
+    state.gameOver=true;
 
-    selectedCards.clear();
+    document.getElementById(
+        "resultText"
+    ).textContent=
+        "🏆 8 STAGES CLEAR!";
 
-    closeSuitSelector();
+    document.getElementById(
+        "resultOverlay"
+    ).style.display="flex";
 
+    document.getElementById(
+        "resultBtn"
+    ).textContent=
+        "다시 플레이";
 
-    $("modal")
-        .classList
-        .add("hidden");
+    document.getElementById(
+        "resultBtn"
+    ).onclick=()=>{
 
+        document.getElementById(
+            "resultOverlay"
+        ).style.display="none";
 
-    dealCards();
+        resetGame();
 
+    };
 }
 
 
 /* =========================================================
-   START
+   스테이지
 ========================================================= */
 
-dealCards();
+function updateStage(){
+
+    document.getElementById(
+        "stageText"
+    ).textContent=
+        `STAGE ${state.stage} / 8`;
+}
+
+
+/* =========================================================
+   AI 난이도
+========================================================= */
+
+/*
+    스테이지가 올라갈수록
+    AI가 더 강한 5장을 사용한다.
+
+    실제 AI 패 자체를 강화하는 대신
+    8장 중 좋은 조합을 고르는 구조라
+    후반으로 갈수록 안정적으로 강해진다.
+*/
+
+function prepareEnemyForStage(){
+
+    const difficulty=
+        Math.min(
+            1,
+            (state.stage-1)/7
+        );
+
+    /*
+        현재 enemyHand를
+        랜덤 카드에서 조금씩 강한 카드로 교체
+    */
+
+    for(
+        let i=0;
+        i<state.enemyHand.length;
+        i++
+    ){
+
+        if(Math.random()<difficulty*.25){
+
+            const strongRanks=
+                [8,9,10,11,12];
+
+            state.enemyHand[i]={
+                suit:
+                    Math.floor(
+                        Math.random()*4
+                    ),
+                rank:
+                    strongRanks[
+                        Math.floor(
+                            Math.random()*
+                            strongRanks.length
+                        )
+                    ],
+                id:`ai-${Math.random()}`
+            };
+
+        }
+    }
+}
+
+
+/* =========================================================
+   초기 실행
+========================================================= */
+
+resetGame();
 
 </script>
 
 </body>
 </html>
+```
