@@ -24,13 +24,13 @@ body{
 
     background:
         radial-gradient(
-            circle at 50% 30%,
-            #19352d 0%,
-            #0b1110 48%,
+            circle at 50% 25%,
+            #19372e 0%,
+            #0c1412 45%,
             #050608 100%
         );
 
-    color:#f4f4f4;
+    color:#f2f4f6;
 
     font-family:
         Arial,
@@ -38,6 +38,7 @@ body{
         sans-serif;
 
     overflow-x:hidden;
+
 }
 
 
@@ -49,7 +50,8 @@ button{
 
     font-family:inherit;
 
-    border:1px solid #3b4652;
+    border:
+        1px solid #394451;
 
     background:#151b23;
 
@@ -66,7 +68,8 @@ button{
     transition:
         border-color .15s ease,
         background .15s ease,
-        transform .15s ease;
+        transform .15s ease,
+        opacity .15s ease;
 
 }
 
@@ -74,7 +77,7 @@ button:hover:not(:disabled){
 
     border-color:#d9b75f;
 
-    background:#1a212a;
+    background:#1b222b;
 
 }
 
@@ -96,13 +99,13 @@ button.primary{
 
     background:
         linear-gradient(
-            #e2c16a,
-            #a17c31
+            #e4c66f,
+            #a47e32
         );
 
-    color:#111;
+    color:#101010;
 
-    border-color:#e8ca78;
+    border-color:#ebcc7a;
 
 }
 
@@ -128,10 +131,10 @@ button.primary{
     padding:0 28px;
 
     background:
-        rgba(7,10,14,.96);
+        rgba(6,9,12,.96);
 
     border-bottom:
-        1px solid #303842;
+        1px solid #303943;
 
 }
 
@@ -182,7 +185,7 @@ button.primary{
 
     margin-left:24px;
 
-    width:85px;
+    width:90px;
 
     text-align:right;
 
@@ -210,7 +213,7 @@ button.primary{
 
 
 /* =========================================================
-   LAYOUT
+   MAIN
 ========================================================= */
 
 .game{
@@ -268,10 +271,10 @@ button.primary{
 
     place-items:center;
 
-    border-radius:50%;
-
     border:
         1px solid #505a66;
+
+    border-radius:50%;
 
     background:#1a212b;
 
@@ -359,7 +362,7 @@ button.primary{
 
 
 /* =========================================================
-   CARD AREA
+   HAND
 ========================================================= */
 
 .hand{
@@ -377,19 +380,9 @@ button.primary{
 }
 
 
-/*
-==========================================================
- IMPORTANT CARD FIX
-==========================================================
-
-카드 hover에서는 절대로 transform을 사용하지 않는다.
-
-그래야 마우스가 카드 위에 있을 때
-위아래로 튀는 현상이 발생하지 않는다.
-
-선택된 카드만 .selected에서 이동한다.
-==========================================================
-*/
+/* =========================================================
+   CARD
+========================================================= */
 
 .card{
 
@@ -427,8 +420,8 @@ button.primary{
         0 8px 20px rgba(0,0,0,.5);
 
     /*
-        위치 변화는 transition으로 부드럽게.
-        hover에서 transform을 건드리지 않는다.
+        중요:
+        hover에서는 위치를 절대 바꾸지 않는다.
     */
 
     transform:
@@ -442,14 +435,7 @@ button.primary{
 
     z-index:1;
 
-    will-change:transform;
-
 }
-
-
-/*
-    hover에서는 카드 위치가 절대 변하지 않는다.
-*/
 
 .card:hover{
 
@@ -461,11 +447,6 @@ button.primary{
     z-index:3;
 
 }
-
-
-/*
-    선택된 카드만 위로 올라간다.
-*/
 
 .card.selected{
 
@@ -484,24 +465,12 @@ button.primary{
 
 }
 
-
-/*
-    선택된 카드에 hover해도
-    위치가 바뀌지 않는다.
-*/
-
 .card.selected:hover{
 
     transform:
         translate3d(0,-15px,0);
 
 }
-
-
-/*
-    카드 안의 요소는 클릭 이벤트를
-    부모 카드가 받도록 한다.
-*/
 
 .card .rank,
 .card .suit{
@@ -532,7 +501,7 @@ button.primary{
 
 
 /* =========================================================
-   AI CARD BACK
+   AI CARD
 ========================================================= */
 
 .card-back{
@@ -980,11 +949,147 @@ button.primary{
 
 }
 
+
+/* =========================================================
+   SUIT SELECTOR
+========================================================= */
+
+.suit-modal-card{
+
+    width:min(560px,95vw);
+
+}
+
+.suit-choices{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,1fr);
+
+    gap:12px;
+
+    margin-top:25px;
+
+}
+
+.suit-choice{
+
+    height:130px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    border:
+        1px solid #3c4652;
+
+    border-radius:12px;
+
+    background:#131a23;
+
+    cursor:pointer;
+
+    transition:
+        transform .15s ease,
+        border-color .15s ease,
+        background .15s ease;
+
+}
+
+.suit-choice:hover{
+
+    transform:translateY(-5px);
+
+    border-color:#d9b65d;
+
+    background:#1b232d;
+
+}
+
+.suit-choice span{
+
+    font-size:48px;
+
+    line-height:1;
+
+    pointer-events:none;
+
+}
+
+.suit-choice small{
+
+    color:#78838f;
+
+    font-size:8px;
+
+    letter-spacing:2px;
+
+    pointer-events:none;
+
+}
+
+.suit-choice.red span{
+
+    color:#d94a58;
+
+}
+
+.suit-choice.black span{
+
+    color:#e5e7ea;
+
+}
+
 .modal-button{
 
     display:block;
 
     margin:20px auto 0;
+
+}
+
+
+/* =========================================================
+   EFFECT
+========================================================= */
+
+.win-flash{
+
+    animation:
+        winFlash .6s ease 2;
+
+}
+
+@keyframes winFlash{
+
+    0%{
+
+        box-shadow:
+            inset 0 0 100px rgba(0,0,0,.55);
+
+    }
+
+    50%{
+
+        box-shadow:
+            inset 0 0 100px rgba(228,190,85,.35),
+            0 0 50px rgba(228,190,85,.25);
+
+    }
+
+    100%{
+
+        box-shadow:
+            inset 0 0 100px rgba(0,0,0,.55);
+
+    }
 
 }
 
@@ -1044,6 +1149,19 @@ button.primary{
     .choices{
 
         grid-template-columns:1fr;
+
+    }
+
+    .suit-choices{
+
+        grid-template-columns:
+            repeat(2,1fr);
+
+    }
+
+    .suit-choice{
+
+        height:110px;
 
     }
 
@@ -1144,7 +1262,10 @@ button.primary{
          TABLE
     ====================================================== -->
 
-    <main class="table">
+    <main
+        class="table"
+        id="gameTable"
+    >
 
 
         <div
@@ -1304,7 +1425,7 @@ button.primary{
 
 
 <!-- =========================================================
-     MODAL
+     RESULT / AUGMENT MODAL
 ========================================================= -->
 
 <div
@@ -1350,6 +1471,125 @@ button.primary{
 
     </div>
 
+</div>
+
+
+
+<!-- =========================================================
+     SUIT SELECT MODAL
+========================================================= -->
+
+<div
+    id="suitModal"
+    class="modal hidden"
+>
+
+
+    <div class="modal-card suit-modal-card">
+
+
+        <div class="modal-kicker">
+
+            SUIT SELECT
+
+        </div>
+
+
+        <h1>
+
+            수트를 선택하세요
+
+        </h1>
+
+
+        <p id="suitTargetText">
+
+            선택한 카드의 수트를 변경합니다.
+
+        </p>
+
+
+        <div class="suit-choices">
+
+
+            <button
+                class="suit-choice black"
+                data-suit="♠"
+            >
+
+                <span>♠</span>
+
+                <small>
+
+                    SPADE
+
+                </small>
+
+            </button>
+
+
+            <button
+                class="suit-choice red"
+                data-suit="♥"
+            >
+
+                <span>♥</span>
+
+                <small>
+
+                    HEART
+
+                </small>
+
+            </button>
+
+
+            <button
+                class="suit-choice red"
+                data-suit="♦"
+            >
+
+                <span>♦</span>
+
+                <small>
+
+                    DIAMOND
+
+                </small>
+
+            </button>
+
+
+            <button
+                class="suit-choice black"
+                data-suit="♣"
+            >
+
+                <span>♣</span>
+
+                <small>
+
+                    CLUB
+
+                </small>
+
+            </button>
+
+
+        </div>
+
+
+        <button
+            id="cancelSuit"
+            class="modal-button"
+        >
+
+            취소
+
+        </button>
+
+
+    </div>
 
 </div>
 
@@ -1445,6 +1685,15 @@ let gamePhase =
 
 let tenSecondTauntShown =
     false;
+
+
+/* =========================================================
+   SUIT SELECT STATE
+========================================================= */
+
+let suitSelectionQueue = [];
+
+let suitSelectionIndex = 0;
 
 
 /* =========================================================
@@ -1718,7 +1967,7 @@ const AUGMENTS = [
             ){
 
                 alert(
-                    "내 카드 2장을 선택하세요."
+                    "카드 2장을 선택하세요."
                 );
 
                 return false;
@@ -1798,7 +2047,7 @@ function shuffle(array){
 
 
 /* =========================================================
-   CREATE DECK
+   DECK
 ========================================================= */
 
 function createDeck(){
@@ -1817,7 +2066,7 @@ function createDeck(){
 
                 id:
                     (
-                        crypto &&
+                        window.crypto &&
                         crypto.randomUUID
                     )
                     ?
@@ -1878,6 +2127,13 @@ function dealCards(){
     tenSecondTauntShown =
         false;
 
+    timeLeft =
+        stage >= 7
+        ? 27
+        : stage >= 4
+        ? 31
+        : 35;
+
     render();
 
     startTimer();
@@ -1903,12 +2159,10 @@ function cardHTML(
 
     }
 
-
     const selected =
         selectedCards.has(
             card.id
         );
-
 
     return `
 
@@ -2028,16 +2282,6 @@ function render(){
 
 /* =========================================================
    CARD CLICK
-=========================================================
-
-   중요:
-
-   여기서는 render()를 호출하지 않는다.
-
-   카드 하나만 class를 추가/삭제한다.
-
-   따라서 클릭 순간 DOM이 재생성되지 않고
-   마우스가 튀는 문제가 없다.
 ========================================================= */
 
 $("playerHand")
@@ -2085,10 +2329,6 @@ $("playerHand")
             card.id;
 
 
-        /*
-            선택 해제
-        */
-
         if(
             selectedCards.has(id)
         ){
@@ -2100,12 +2340,6 @@ $("playerHand")
             );
 
         }
-
-
-        /*
-            선택
-        */
-
         else{
 
             selectedCards.add(id);
@@ -2117,11 +2351,6 @@ $("playerHand")
         }
 
 
-        /*
-            버튼 상태만 갱신.
-            전체 render는 하지 않는다.
-        */
-
         $("drawBtn").disabled =
             selectedCards.size === 0;
 
@@ -2130,7 +2359,7 @@ $("playerHand")
 
 
 /* =========================================================
-   EVALUATE HAND
+   POKER HAND
 ========================================================= */
 
 function evaluateHand(hand){
@@ -2608,14 +2837,6 @@ function startTimer(){
     );
 
 
-    timeLeft =
-        stage >= 7
-        ? 27
-        : stage >= 4
-        ? 31
-        : 35;
-
-
     timerInterval =
         setInterval(
             function(){
@@ -2664,12 +2885,6 @@ function startTimer(){
 
                 }
 
-
-                /*
-                    시간만 바뀌므로
-                    render하지 않고 숫자만 갱신.
-                    카드 hover/선택 상태에 영향 없음.
-                */
 
                 $("timer").textContent =
                     timeLeft.toFixed(1);
@@ -2827,7 +3042,7 @@ function aiImprove(){
 
 
 /* =========================================================
-   WIN
+   WIN / LOSE
 ========================================================= */
 
 function playerWin(
@@ -2835,13 +3050,36 @@ function playerWin(
     aiResult
 ){
 
+    $("gameTable")
+        .classList
+        .add("win-flash");
+
+
+    setTimeout(
+        function(){
+
+            $("gameTable")
+                .classList
+                .remove("win-flash");
+
+        },
+        1500
+    );
+
+
+    showTaunt(
+        playerResult.name +
+        "! 운이 꽤 좋네."
+    );
+
+
     showModal(
 
         "STAGE CLEAR",
 
         playerResult.name,
 
-        `AI의 ${aiResult.name}을 이겼다.`,
+        `AI의 ${aiResult.name}을 이겼습니다.`,
 
         "augment"
 
@@ -2849,10 +3087,6 @@ function playerWin(
 
 }
 
-
-/* =========================================================
-   LOSE
-========================================================= */
 
 function playerLose(
     playerResult,
@@ -2865,7 +3099,7 @@ function playerLose(
 
         aiResult.name,
 
-        `네 ${playerResult.name}으로는 부족했어.`,
+        `당신의 ${playerResult.name}으로는 부족했습니다.`,
 
         "restart"
 
@@ -2898,7 +3132,7 @@ function getRarityForStage(){
 
 
 /* =========================================================
-   AUGMENT CHOICES
+   AUGMENT CHOICE
 ========================================================= */
 
 function chooseAugments(){
@@ -2940,7 +3174,10 @@ function chooseAugments(){
                 >
 
                     <div
-                        class="rarity ${augment.rarity}"
+                        class="
+                            rarity
+                            ${augment.rarity}
+                        "
                     >
 
                         ${augment.rarity.toUpperCase()}
@@ -3076,8 +3313,28 @@ function chooseAugments(){
                 .add("hidden");
 
 
-            stage++;
+            if(
+                stage >= 8
+            ){
 
+                showModal(
+
+                    "YOU WIN",
+
+                    "ALL STAGES CLEAR",
+
+                    "8개의 스테이지를 모두 돌파했습니다.",
+
+                    "restart"
+
+                );
+
+                return;
+
+            }
+
+
+            stage++;
 
             dealCards();
 
@@ -3312,11 +3569,23 @@ function useAugment(index){
         augment.use();
 
 
+    /*
+        수트 선택창처럼
+        추가 입력이 필요한 증강은
+        아직 사용 횟수를 차감하지 않는다.
+    */
+
     if(
         success === false
     )
         return;
 
+
+    /*
+        수트 변경은
+        선택창이 열려 있는 동안
+        증강을 사용한 것으로 처리한다.
+    */
 
     augment.uses--;
 
@@ -3326,16 +3595,11 @@ function useAugment(index){
 
     render();
 
-
-    showTaunt(
-        `${augment.name} 발동!`
-    );
-
 }
 
 
 /* =========================================================
-   CHANGE SUIT
+   SUIT CHANGE
 ========================================================= */
 
 function changeSuit(amount){
@@ -3344,57 +3608,222 @@ function changeSuit(amount){
         [...selectedCards];
 
 
-    for(
-        let i=0;
-        i<amount;
-        i++
+    suitSelectionQueue =
+        ids.slice(0,amount);
+
+
+    if(
+        suitSelectionQueue.length === 0
     ){
 
-        const index =
-            playerHand.findIndex(
-                card =>
-                    card.id ===
-                    ids[i]
-            );
+        alert(
+            "변경할 카드를 선택하세요."
+        );
 
-
-        if(
-            index === -1
-        )
-            continue;
-
-
-        const card =
-            playerHand[index];
-
-
-        const answer =
-            prompt(
-                `${card.rank} 카드의 수트를 선택하세요.\n\n♠ ♥ ♦ ♣`,
-                card.suit
-            );
-
-
-        const suit =
-            SUITS.find(
-                item =>
-                    item.symbol ===
-                    answer
-            );
-
-
-        if(!suit)
-            continue;
-
-
-        card.suit =
-            suit.symbol;
-
-
-        card.color =
-            suit.color;
+        return;
 
     }
+
+
+    suitSelectionIndex = 0;
+
+
+    openSuitSelector();
+
+}
+
+
+/* =========================================================
+   OPEN SUIT SELECTOR
+========================================================= */
+
+function openSuitSelector(){
+
+    if(
+        suitSelectionIndex >=
+        suitSelectionQueue.length
+    ){
+
+        closeSuitSelector();
+
+        selectedCards.clear();
+
+        render();
+
+        return;
+
+    }
+
+
+    const cardId =
+        suitSelectionQueue[
+            suitSelectionIndex
+        ];
+
+
+    const card =
+        playerHand.find(
+            item =>
+                item.id ===
+                cardId
+        );
+
+
+    if(!card){
+
+        suitSelectionIndex++;
+
+        openSuitSelector();
+
+        return;
+
+    }
+
+
+    $("suitTargetText")
+        .textContent =
+        `${card.rank}${card.suit} 카드의 수트를 선택하세요.`;
+
+
+    $("suitModal")
+        .classList
+        .remove("hidden");
+
+}
+
+
+/* =========================================================
+   SUIT BUTTON
+========================================================= */
+
+document
+.querySelectorAll(".suit-choice")
+.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            function(){
+
+                const suit =
+                    this.dataset.suit;
+
+
+                applySelectedSuit(
+                    suit
+                );
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   APPLY SUIT
+========================================================= */
+
+function applySelectedSuit(suit){
+
+    const cardId =
+        suitSelectionQueue[
+            suitSelectionIndex
+        ];
+
+
+    const card =
+        playerHand.find(
+            item =>
+                item.id ===
+                cardId
+        );
+
+
+    if(!card){
+
+        suitSelectionIndex++;
+
+        openSuitSelector();
+
+        return;
+
+    }
+
+
+    const suitData =
+        SUITS.find(
+            item =>
+                item.symbol ===
+                suit
+        );
+
+
+    if(!suitData)
+        return;
+
+
+    card.suit =
+        suitData.symbol;
+
+
+    card.color =
+        suitData.color;
+
+
+    suitSelectionIndex++;
+
+
+    if(
+        suitSelectionIndex >=
+        suitSelectionQueue.length
+    ){
+
+        closeSuitSelector();
+
+        selectedCards.clear();
+
+        render();
+
+        showTaunt(
+            "수트까지 골라주셨네."
+        );
+
+        return;
+
+    }
+
+
+    openSuitSelector();
+
+}
+
+
+/* =========================================================
+   CLOSE SUIT SELECTOR
+========================================================= */
+
+$("cancelSuit")
+.addEventListener(
+    "click",
+    function(){
+
+        closeSuitSelector();
+
+    }
+);
+
+
+function closeSuitSelector(){
+
+    $("suitModal")
+        .classList
+        .add("hidden");
+
+
+    suitSelectionQueue = [];
+
+    suitSelectionIndex = 0;
 
 }
 
@@ -3409,35 +3838,49 @@ function modifyCards(amount){
         [...selectedCards];
 
 
-    for(
-        let i=0;
-        i<amount;
-        i++
+    const cards =
+        ids
+        .slice(0,amount)
+        .map(
+            id =>
+                playerHand.find(
+                    card =>
+                        card.id === id
+                )
+        )
+        .filter(Boolean);
+
+
+    if(
+        cards.length === 0
     ){
 
-        const index =
-            playerHand.findIndex(
-                card =>
-                    card.id ===
-                    ids[i]
-            );
+        alert(
+            "카드를 선택하세요."
+        );
+
+        return false;
+
+    }
 
 
-        if(
-            index === -1
-        )
-            continue;
+    /*
+        숫자 선택
+    */
 
-
-        const card =
-            playerHand[index];
-
+    for(
+        const card of cards
+    ){
 
         const rankAnswer =
             prompt(
-                "카드 숫자를 입력하세요.\n\n2~10 / J / Q / K / A",
+                "카드 숫자를 선택하세요.\n\n2~10 / J / Q / K / A",
                 card.rank
             );
+
+
+        if(!rankAnswer)
+            return false;
 
 
         const rank =
@@ -3448,27 +3891,15 @@ function modifyCards(amount){
             );
 
 
-        if(!rank)
-            continue;
+        if(!rank){
 
-
-        const suitAnswer =
-            prompt(
-                "수트를 입력하세요.\n\n♠ ♥ ♦ ♣",
-                card.suit
+            alert(
+                "올바른 숫자를 입력하세요."
             );
 
+            return false;
 
-        const suit =
-            SUITS.find(
-                item =>
-                    item.symbol ===
-                    suitAnswer
-            );
-
-
-        if(!suit)
-            continue;
+        }
 
 
         card.rank =
@@ -3478,21 +3909,33 @@ function modifyCards(amount){
         card.value =
             rank[1];
 
-
-        card.suit =
-            suit.symbol;
-
-
-        card.color =
-            suit.color;
-
     }
+
+
+    /*
+        수트는 클릭 선택
+    */
+
+    suitSelectionQueue =
+        cards.map(
+            card =>
+                card.id
+        );
+
+
+    suitSelectionIndex = 0;
+
+
+    openSuitSelector();
+
+
+    return true;
 
 }
 
 
 /* =========================================================
-   EXTRA CARD
+   DRAW EXTRA
 ========================================================= */
 
 function drawCards(amount){
@@ -3634,6 +4077,41 @@ function swapCards(amount){
 
 
 /* =========================================================
+   AUGMENT BUTTON
+========================================================= */
+
+$("useAugmentBtn")
+.addEventListener(
+    "click",
+    function(){
+
+        const index =
+            activeAugments.findIndex(
+                augment =>
+                    augment.uses > 0
+            );
+
+
+        if(
+            index === -1
+        ){
+
+            alert(
+                "사용 가능한 증강이 없습니다."
+            );
+
+            return;
+
+        }
+
+
+        useAugment(index);
+
+    }
+);
+
+
+/* =========================================================
    TAUNT
 ========================================================= */
 
@@ -3671,41 +4149,6 @@ function showTaunt(text){
 
 
 /* =========================================================
-   AUGMENT BUTTON
-========================================================= */
-
-$("useAugmentBtn")
-.addEventListener(
-    "click",
-    function(){
-
-        const index =
-            activeAugments.findIndex(
-                augment =>
-                    augment.uses > 0
-            );
-
-
-        if(
-            index === -1
-        ){
-
-            alert(
-                "사용 가능한 증강이 없습니다."
-            );
-
-            return;
-
-        }
-
-
-        useAugment(index);
-
-    }
-);
-
-
-/* =========================================================
    RESTART
 ========================================================= */
 
@@ -3722,6 +4165,9 @@ function restartGame(){
 
     selectedCards.clear();
 
+    closeSuitSelector();
+
+
     $("modal")
         .classList
         .add("hidden");
@@ -3733,7 +4179,7 @@ function restartGame(){
 
 
 /* =========================================================
-   START GAME
+   START
 ========================================================= */
 
 dealCards();
