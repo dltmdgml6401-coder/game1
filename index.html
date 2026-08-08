@@ -1,9 +1,4 @@
-# Update index.html to include:
-# 1. Right-side UI for active augments with hover tooltip functionality.
-# 2. Card highlighting (glowing border, elevated position) for cards involved in the active poker hand, and dimmer effect for unused cards.
-# 3. Connection/Label showing which cards make up the hand.
-
-html_content = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -83,6 +78,7 @@ html_content = """<!DOCTYPE html>
 <body>
 
     <div id="game-container"></div>
+    <!-- 증강 마우스 호버 시 뜰 HTML 툴팁 레이어 -->
     <div id="augment-tooltip">
         <div class="tooltip-tier" id="tt-tier">SILVER</div>
         <div class="tooltip-title" id="tt-title">증강 이름</div>
@@ -338,7 +334,7 @@ function evaluateHand(cards, augments = []) {
         baseScore = 80;
         usedCards = effectiveCards.filter(c => c.value === counts[0].val);
     } else {
-        usedCards = [sorted[0]]; // Highest card
+        usedCards = [sorted[0]]; // High card
     }
 
     let cardSum = usedCards.reduce((acc, c) => acc + c.value, 0);
@@ -414,7 +410,7 @@ class MainGameScene extends Phaser.Scene {
         this.add.text(430, 110, '🤖 AI HAND', { font: 'bold 18px Arial', fill: '#ff6b6b' }).setOrigin(0.5);
         this.add.text(430, 380, '👤 YOUR HAND', { font: 'bold 18px Arial', fill: '#58a6ff' }).setOrigin(0.5);
 
-        // Right Side Augment UI Panel
+        // Right Side Augment UI Panel & Hover Event Setup
         this.createRightAugmentPanel();
 
         // Control Buttons
@@ -460,8 +456,8 @@ class MainGameScene extends Phaser.Scene {
 
             container.add([slotBg, nameTxt, tierTxt]);
 
-            // Hover Tooltip Event
-            slotBg.on('pointerover', (pointer) => {
+            // Mouse Hover Tooltip Event
+            slotBg.on('pointerover', () => {
                 slotBg.setFillStyle(0x30363d);
                 ttTier.innerText = aug.tier;
                 ttTier.style.color = aug.tier === 'PLATINUM' ? '#a371f7' : (aug.tier === 'GOLD' ? '#d4a72c' : '#8b949e');
@@ -513,7 +509,7 @@ class MainGameScene extends Phaser.Scene {
             this.aiHand.push({ card: this.deck.draw(), revealed: false, obj: null });
         }
 
-        // Apply Peek/Steal
+        // Apply Peek/Steal Augment logic
         let peekAug = this.playerAugments.find(a => a.type === 'PEEK');
         if (peekAug) {
             for (let i = 0; i < Math.min(peekAug.count, this.aiHand.length); i++) {
@@ -536,7 +532,7 @@ class MainGameScene extends Phaser.Scene {
     renderPlayerCards() {
         let startX = 430 - (this.playerHand.length * 85) / 2 + 42;
         
-        // Evaluate current hand to know which cards are used
+        // Evaluate hand to get connected cards
         let evalResult = evaluateHand(this.playerHand.map(i => i.card), this.playerAugments);
 
         this.playerHand.forEach((item, index) => {
@@ -545,7 +541,7 @@ class MainGameScene extends Phaser.Scene {
             let isUsedInHand = evalResult.usedIds.includes(item.card.id);
             let targetX = startX + index * 85;
             
-            // Highlight: Lift up used cards slightly
+            // Highlight: Lift up used cards slightly for hand visual feedback
             let targetY = item.selected ? 440 : (isUsedInHand ? 465 : 485);
 
             let cardContainer = this.createCardObject(item.card, true, isUsedInHand, item.selected);
@@ -583,11 +579,11 @@ class MainGameScene extends Phaser.Scene {
         let container = this.add.container(0, 0);
         let bg = this.add.rectangle(0, 0, 75, 110, revealed ? 0xffffff : 0x1f293d);
 
-        // Highlight border styling for poker hand cards
+        // Visual Highlight Logic
         if (isSelected) {
-            bg.setStrokeStyle(3, 0xf0883e); // Orange for user selected
+            bg.setStrokeStyle(3, 0xf0883e); // Selected for discard (Orange)
         } else if (isHighlighted) {
-            bg.setStrokeStyle(3, 0x388bfd); // Blue Glow for Hand Connection
+            bg.setStrokeStyle(3, 0x388bfd); // Connected in active hand (Blue Glow)
         } else {
             bg.setStrokeStyle(2, revealed ? 0xd0d7de : 0x38444d);
         }
@@ -598,7 +594,7 @@ class MainGameScene extends Phaser.Scene {
             let isRed = card.suit === '♥' || card.suit === '♦';
             let color = isRed ? '#d73a49' : '#24292e';
             
-            // Dim non-used cards slightly for contrast
+            // Dim unused cards slightly
             if (!isHighlighted && !isSelected) {
                 bg.setFillStyle(0xe1e4e8);
             }
@@ -608,8 +604,7 @@ class MainGameScene extends Phaser.Scene {
             let txtCenterSuit = this.add.text(5, 10, card.suit, { font: '32px Arial', fill: color }).setOrigin(0.5);
             container.add([txtRank, txtSuit, txtCenterSuit]);
         } else {
-            let pattern = this.add.text(0, 0, '♠
-♥♣♦', { font: '14px Arial', fill: '#3b4252', align: 'center' }).setOrigin(0.5);
+            let pattern = this.add.text(0, 0, '♠♥\n♣♦', { font: '14px Arial', fill: '#3b4252', align: 'center' }).setOrigin(0.5);
             container.add(pattern);
         }
 
@@ -650,7 +645,7 @@ class MainGameScene extends Phaser.Scene {
         this.btnDiscard.setVisible(false);
         this.btnShowdown.setVisible(false);
 
-        // AI Card Reveal Animation
+        // AI Card Flip Reveal
         this.aiHand.forEach((item, idx) => {
             item.revealed = true;
             this.tweens.add({
@@ -711,7 +706,7 @@ class MainGameScene extends Phaser.Scene {
 
             nextBtn.on('pointerdown', () => {
                 if (this.stage === 8) {
-                    alert('👑 축하합니다! 8단계를 모두 클리어하고 전설의 도박사가 되셨습니다!');
+                    alert('👑 축하합니다! 8단계를 모두 클리어하셨습니다!');
                     this.scene.start('MainGameScene', { stage: 1, playerAugments: [] });
                 } else {
                     this.scene.start('AugmentSelectScene', { stage: this.stage, playerAugments: this.playerAugments });
@@ -812,9 +807,3 @@ const game = new Phaser.Game(config);
 </script>
 </body>
 </html>
-"""
-
-with open("index.html", "w", encoding="utf-8") as f:
-    f.write(html_content)
-
-print("Updated index.html created successfully!")
