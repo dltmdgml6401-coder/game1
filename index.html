@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -175,10 +174,6 @@ header{
     justify-content:center;
     align-items:center;
     font-size:52px;
-}
-
-.cardRank{
-    font-size:20px;
 }
 
 .cardAug{
@@ -605,10 +600,7 @@ header{
 
 </header>
 
-
 <div class="table">
-
-    <!-- AI -->
 
     <section class="enemyArea">
 
@@ -626,9 +618,6 @@ header{
 
     </section>
 
-
-    <!-- CENTER -->
-
     <section class="centerArea">
 
         <div id="message">
@@ -641,9 +630,6 @@ header{
         </div>
 
     </section>
-
-
-    <!-- PLAYER -->
 
     <section class="playerArea">
 
@@ -669,7 +655,6 @@ header{
         </div>
 
     </section>
-
 
     <div class="controls">
 
@@ -697,9 +682,6 @@ header{
 
 </div>
 
-
-<!-- AUGMENTS -->
-
 <div class="sidePanel">
 
     <div class="sideTitle">
@@ -720,9 +702,6 @@ header{
     </div>
 
 </div>
-
-
-<!-- RESULT -->
 
 <div
     class="result"
@@ -751,7 +730,6 @@ header{
             </div>
 
         </div>
-
 
         <div class="resultBox">
 
@@ -787,11 +765,9 @@ header{
 
 </div>
 
-
 </div>
 
-
-<!-- CARD PICKER -->
+<!-- CARD / AUGMENT PICKER -->
 
 <div
     class="overlay"
@@ -818,26 +794,21 @@ header{
 
 </div>
 
-
 <div id="toast"></div>
-
 
 <script>
 
 /* =========================================================
-   GAME STATE
+   STATE
 ========================================================= */
 
 const state = {
 
     stage:1,
-
     maxStage:8,
 
     deck:[],
-
     hand:[],
-
     enemyHand:[],
 
     selected:[],
@@ -845,29 +816,24 @@ const state = {
     discards:3,
 
     maxHand:8,
-
     startHand:6,
 
     time:45,
-
     maxTime:45,
-
     timer:null,
 
     roundActive:false,
-
     gameOver:false,
-
     enemyRevealed:false,
 
     ownedAugments:[],
 
     pendingAugment:null,
-
     pendingCardIndex:null,
 
-    pickerMode:null,
+    pendingSuitCards:[],
 
+    pickerMode:null,
     pickerSuit:null
 
 };
@@ -877,7 +843,7 @@ const state = {
    SUITS
 ========================================================= */
 
-const SUITS = [
+const SUITS=[
 
     {
         name:"하트",
@@ -910,7 +876,7 @@ const SUITS = [
    RANKS
 ========================================================= */
 
-const RANKS = [
+const RANKS=[
 
     {name:"2",value:2},
     {name:"3",value:3},
@@ -939,22 +905,18 @@ function initAudio(){
 
     if(!audioCtx){
 
-        audioCtx =
-            new (
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
+        audioCtx=new(
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
 
     }
 
     if(audioCtx.state==="suspended"){
-
         audioCtx.resume();
-
     }
 
 }
-
 
 function beep(
     frequency,
@@ -967,14 +929,10 @@ function beep(
 
         initAudio();
 
-        const osc =
-            audioCtx.createOscillator();
-
-        const gain =
-            audioCtx.createGain();
+        const osc=audioCtx.createOscillator();
+        const gain=audioCtx.createGain();
 
         osc.type=type;
-
         osc.frequency.value=frequency;
 
         gain.gain.setValueAtTime(
@@ -988,7 +946,6 @@ function beep(
         );
 
         osc.connect(gain);
-
         gain.connect(audioCtx.destination);
 
         osc.start();
@@ -1001,15 +958,12 @@ function beep(
 
 }
 
-
 function playSound(type){
 
     initAudio();
 
     if(type==="click"){
-
         beep(500,.06);
-
     }
 
     if(type==="draw"){
@@ -1064,8 +1018,7 @@ function playSound(type){
 
     if(type==="win"){
 
-        [523,659,784,1046]
-        .forEach(
+        [523,659,784,1046].forEach(
             (f,i)=>{
 
                 setTimeout(
@@ -1108,13 +1061,12 @@ function playSound(type){
 
 
 /* =========================================================
-   VISUAL FX
+   FX
 ========================================================= */
 
 function flash(){
 
-    const el =
-        document.createElement("div");
+    const el=document.createElement("div");
 
     el.className="flash";
 
@@ -1127,11 +1079,9 @@ function flash(){
 
 }
 
-
 function bigText(text){
 
-    const el =
-        document.createElement("div");
+    const el=document.createElement("div");
 
     el.className="bigText";
 
@@ -1146,27 +1096,22 @@ function bigText(text){
 
 }
 
-
 function showToast(text){
 
-    const el =
-        document.getElementById("toast");
+    const el=document.getElementById("toast");
 
     el.textContent=text;
 
     el.classList.add("show");
 
-    clearTimeout(
-        showToast.timer
-    );
+    clearTimeout(showToast.timer);
 
-    showToast.timer =
-        setTimeout(
-            ()=>{
-                el.classList.remove("show");
-            },
-            1800
-        );
+    showToast.timer=setTimeout(
+        ()=>{
+            el.classList.remove("show");
+        },
+        1800
+    );
 
 }
 
@@ -1186,13 +1131,11 @@ function createDeck(){
             deck.push({
 
                 suit,
-
                 rank,
 
                 augmented:false,
 
-                id:
-                    `normal-${suit}-${rank}`
+                id:`normal-${suit}-${rank}`
 
             });
 
@@ -1204,7 +1147,6 @@ function createDeck(){
 
 }
 
-
 function shuffle(arr){
 
     const a=[...arr];
@@ -1215,18 +1157,11 @@ function shuffle(arr){
         i--
     ){
 
-        const j =
-            Math.floor(
-                Math.random()*(i+1)
-            );
+        const j=Math.floor(
+            Math.random()*(i+1)
+        );
 
-        [
-            a[i],
-            a[j]
-        ]=[
-            a[j],
-            a[i]
-        ];
+        [a[i],a[j]]=[a[j],a[i]];
 
     }
 
@@ -1246,9 +1181,16 @@ function createAugmentedCard(
 
     return {
 
-        suit,
+        suit:Number(suit),
+        rank:Number(rank),
 
-        rank,
+        /*
+            증강으로 만들어진 카드는
+            기본 덱의 카드와 독립적이다.
+
+            따라서 ♥K가 이미 있어도
+            또 ♥K를 만들 수 있다.
+        */
 
         augmented:true,
 
@@ -1273,22 +1215,15 @@ function drawCards(amount){
 
     for(let i=0;i<amount;i++){
 
-        if(
-            state.hand.length >=
-            state.maxHand
-        ){
-
+        if(state.hand.length>=state.maxHand)
             break;
-
-        }
 
         if(state.deck.length===0)
             break;
 
-        const card =
-            state.deck.pop();
-
-        state.hand.push(card);
+        state.hand.push(
+            state.deck.pop()
+        );
 
         drawn++;
 
@@ -1305,14 +1240,13 @@ function drawCards(amount){
     }
 
     sortHand();
-
     render();
 
 }
 
 
 /* =========================================================
-   SORT HAND
+   SORT
 ========================================================= */
 
 function sortHand(){
@@ -1321,9 +1255,7 @@ function sortHand(){
         (a,b)=>{
 
             if(a.rank!==b.rank){
-
                 return a.rank-b.rank;
-
             }
 
             return a.suit-b.suit;
@@ -1335,24 +1267,22 @@ function sortHand(){
 
 
 /* =========================================================
-   CARD RENDER
+   CARD HTML
 ========================================================= */
 
 function cardHTML(card,index,enemy=false){
 
-    const suit =
-        SUITS[card.suit];
+    const suit=SUITS[card.suit];
 
-    const rank =
-        RANKS.find(
-            r=>r.value===card.rank
-        );
+    const rank=RANKS.find(
+        r=>r.value===card.rank
+    );
 
-    const selected =
+    const selected=
         !enemy &&
         state.selected.includes(index)
-            ? "selected"
-            : "";
+        ? "selected"
+        : "";
 
     return `
 
@@ -1367,13 +1297,9 @@ function cardHTML(card,index,enemy=false){
 
             <div class="cardCorner">
 
-                <div>
-                    ${rank.name}
-                </div>
+                <div>${rank.name}</div>
 
-                <div>
-                    ${suit.symbol}
-                </div>
+                <div>${suit.symbol}</div>
 
             </div>
 
@@ -1400,12 +1326,10 @@ function cardHTML(card,index,enemy=false){
 
 function renderPlayerHand(){
 
-    const box =
-        document.getElementById(
-            "playerHand"
-        );
+    const box=
+        document.getElementById("playerHand");
 
-    box.innerHTML =
+    box.innerHTML=
         state.hand
         .map(
             (card,index)=>
@@ -1422,14 +1346,12 @@ function renderPlayerHand(){
 
 function renderEnemyHand(){
 
-    const box =
-        document.getElementById(
-            "enemyHand"
-        );
+    const box=
+        document.getElementById("enemyHand");
 
     if(!state.enemyRevealed){
 
-        box.innerHTML =
+        box.innerHTML=
             state.enemyHand
             .map(
                 ()=>`
@@ -1448,8 +1370,7 @@ function renderEnemyHand(){
                             border-color:#62708b;
                             cursor:default;
                         "
-                    >
-                    </div>
+                    ></div>
 
                 `
             )
@@ -1457,7 +1378,7 @@ function renderEnemyHand(){
 
     }else{
 
-        box.innerHTML =
+        box.innerHTML=
             state.enemyHand
             .map(
                 (card,index)=>
@@ -1483,9 +1404,24 @@ function toggleCard(index){
     if(!state.roundActive)
         return;
 
+    /*
+        카드 변경 선택창이 진행 중이면
+        일반 카드 선택을 막는다.
+    */
+
+    if(state.pendingAugment){
+
+        showToast(
+            "현재 증강을 사용 중입니다."
+        );
+
+        return;
+
+    }
+
     playSound("click");
 
-    const pos =
+    const pos=
         state.selected.indexOf(index);
 
     if(pos!==-1){
@@ -1522,6 +1458,16 @@ function discardSelected(){
     if(!state.roundActive)
         return;
 
+    if(state.pendingAugment){
+
+        showToast(
+            "증강 선택을 먼저 완료하세요."
+        );
+
+        return;
+
+    }
+
     if(state.selected.length===0){
 
         showToast(
@@ -1542,18 +1488,16 @@ function discardSelected(){
 
     }
 
-    const selectedCards =
+    const selectedCards=
         [...state.selected]
         .sort((a,b)=>b-a);
 
     selectedCards.forEach(
         index=>{
-
             state.hand.splice(
                 index,
                 1
             );
-
         }
     );
 
@@ -1562,7 +1506,8 @@ function discardSelected(){
     state.discards--;
 
     /*
-        버린 만큼 다시 드로우
+        버린 수만큼
+        기본 덱에서 다시 뽑는다.
     */
 
     drawCards(
@@ -1572,7 +1517,7 @@ function discardSelected(){
     if(state.discards===0){
 
         showTaunt(
-            "카드가 정말 마음에 안 드시나봐?"
+            "손패가 너무 안 좋으신가봐?"
         );
 
     }
@@ -1583,10 +1528,10 @@ function discardSelected(){
 
 
 /* =========================================================
-   POKER HAND EVALUATION
+   POKER
 ========================================================= */
 
-const HAND_NAMES = [
+const HAND_NAMES=[
 
     "하이 카드",
     "원 페어",
@@ -1601,37 +1546,52 @@ const HAND_NAMES = [
 ];
 
 
+/*
+    정확히 5장을 평가한다.
+*/
+
 function evaluateFive(cards){
 
-    const ranks =
+    if(!cards || cards.length!==5){
+
+        return {
+            rank:-1,
+            values:[],
+            name:"5장 필요",
+            cards:[]
+        };
+
+    }
+
+    const ranks=
         cards
-        .map(c=>c.rank)
+        .map(c=>Number(c.rank))
         .sort((a,b)=>b-a);
 
     const counts={};
 
     ranks.forEach(
-        r=>{
-            counts[r] =
-                (counts[r]||0)+1;
+        rank=>{
+            counts[rank]=
+                (counts[rank]||0)+1;
         }
     );
 
-    const groups =
+    const groups=
         Object.entries(counts)
         .map(
             ([rank,count])=>({
+
                 rank:Number(rank),
                 count
+
             })
         )
         .sort(
             (a,b)=>{
 
                 if(b.count!==a.count){
-
                     return b.count-a.count;
-
                 }
 
                 return b.rank-a.rank;
@@ -1639,21 +1599,38 @@ function evaluateFive(cards){
             }
         );
 
-    const suits =
-        cards.map(c=>c.suit);
+    /*
+        ★ 플러시 판정
+        카드 5장의 suit가 모두 같아야 한다.
+    */
 
-    const flush =
-        suits.every(
-            s=>s===suits[0]
+    const firstSuit=
+        Number(cards[0].suit);
+
+    const flush=
+        cards.every(
+            card=>
+                Number(card.suit)===firstSuit
         );
 
-    const unique =
-        [...new Set(ranks)];
+    /*
+        스트레이트 판정
+    */
+
+    const unique=[
+        ...new Set(ranks)
+    ];
 
     let straight=false;
     let straightHigh=0;
 
     if(unique.length===5){
+
+        /*
+            일반 스트레이트
+            예: A K Q J 10
+            14 - 10 = 4
+        */
 
         if(
             unique[0]-unique[4]===4
@@ -1665,13 +1642,16 @@ function evaluateFive(cards){
         }
 
         /*
-            A-2-3-4-5
+            휠 스트레이트
+            A 2 3 4 5
         */
 
         if(
-            JSON.stringify(unique)
-            ===
-            JSON.stringify([14,5,4,3,2])
+            unique[0]===14 &&
+            unique[1]===5 &&
+            unique[2]===4 &&
+            unique[3]===3 &&
+            unique[4]===2
         ){
 
             straight=true;
@@ -1681,17 +1661,29 @@ function evaluateFive(cards){
 
     }
 
+    /*
+        ★ 가장 먼저 스트레이트 플러시
+    */
 
     if(straight && flush){
 
         return {
+
             rank:8,
+
             values:[straightHigh],
-            name:HAND_NAMES[8]
+
+            name:HAND_NAMES[8],
+
+            cards:[...cards]
+
         };
 
     }
 
+    /*
+        포카드
+    */
 
     if(groups[0].count===4){
 
@@ -1704,12 +1696,17 @@ function evaluateFive(cards){
                 groups[1].rank
             ],
 
-            name:HAND_NAMES[7]
+            name:HAND_NAMES[7],
+
+            cards:[...cards]
 
         };
 
     }
 
+    /*
+        풀하우스
+    */
 
     if(
         groups[0].count===3 &&
@@ -1725,12 +1722,17 @@ function evaluateFive(cards){
                 groups[1].rank
             ],
 
-            name:HAND_NAMES[6]
+            name:HAND_NAMES[6],
+
+            cards:[...cards]
 
         };
 
     }
 
+    /*
+        ★ 플러시
+    */
 
     if(flush){
 
@@ -1738,14 +1740,24 @@ function evaluateFive(cards){
 
             rank:5,
 
-            values:ranks,
+            /*
+                플러시는 높은 카드부터
+                하나씩 비교
+            */
 
-            name:HAND_NAMES[5]
+            values:[...ranks],
+
+            name:HAND_NAMES[5],
+
+            cards:[...cards]
 
         };
 
     }
 
+    /*
+        스트레이트
+    */
 
     if(straight){
 
@@ -1755,12 +1767,17 @@ function evaluateFive(cards){
 
             values:[straightHigh],
 
-            name:HAND_NAMES[4]
+            name:HAND_NAMES[4],
+
+            cards:[...cards]
 
         };
 
     }
 
+    /*
+        트리플
+    */
 
     if(groups[0].count===3){
 
@@ -1769,23 +1786,35 @@ function evaluateFive(cards){
             rank:3,
 
             values:[
+
                 groups[0].rank,
+
                 ...groups
                     .filter(
                         g=>g.count===1
                     )
-                    .map(g=>g.rank)
-                    .sort((a,b)=>b-a)
+                    .map(
+                        g=>g.rank
+                    )
+                    .sort(
+                        (a,b)=>b-a
+                    )
+
             ],
 
-            name:HAND_NAMES[3]
+            name:HAND_NAMES[3],
+
+            cards:[...cards]
 
         };
 
     }
 
+    /*
+        투페어
+    */
 
-    const pairs =
+    const pairs=
         groups
         .filter(
             g=>g.count===2
@@ -1796,27 +1825,34 @@ function evaluateFive(cards){
 
     if(pairs.length===2){
 
-        const kicker =
+        const kicker=
             groups.find(
                 g=>g.count===1
-            ).rank;
+            );
 
         return {
 
             rank:2,
 
             values:[
+
                 pairs[0].rank,
                 pairs[1].rank,
-                kicker
+                kicker ? kicker.rank : 0
+
             ],
 
-            name:HAND_NAMES[2]
+            name:HAND_NAMES[2],
+
+            cards:[...cards]
 
         };
 
     }
 
+    /*
+        원페어
+    */
 
     if(pairs.length===1){
 
@@ -1825,29 +1861,43 @@ function evaluateFive(cards){
             rank:1,
 
             values:[
+
                 pairs[0].rank,
+
                 ...groups
                     .filter(
                         g=>g.count===1
                     )
-                    .map(g=>g.rank)
-                    .sort((a,b)=>b-a)
+                    .map(
+                        g=>g.rank
+                    )
+                    .sort(
+                        (a,b)=>b-a
+                    )
+
             ],
 
-            name:HAND_NAMES[1]
+            name:HAND_NAMES[1],
+
+            cards:[...cards]
 
         };
 
     }
 
+    /*
+        하이카드
+    */
 
     return {
 
         rank:0,
 
-        values:ranks,
+        values:[...ranks],
 
-        name:HAND_NAMES[0]
+        name:HAND_NAMES[0],
+
+        cards:[...cards]
 
     };
 
@@ -1855,20 +1905,19 @@ function evaluateFive(cards){
 
 
 /*
-    손패 6~8장 중 최고의 5장 조합을 찾는다.
+    6~8장 중 가장 강한 5장 조합
 */
 
 function evaluateHand(cards){
 
-    if(cards.length<5){
+    if(!cards || cards.length<5){
 
         return {
 
             rank:-1,
-
             values:[],
-
-            name:"5장을 선택해야 합니다."
+            name:"5장을 선택해야 합니다.",
+            cards:[]
 
         };
 
@@ -1880,23 +1929,11 @@ function evaluateHand(cards){
 
         for(let b=a+1;b<cards.length-3;b++){
 
-            for(
-                let c=b+1;
-                c<cards.length-2;
-                c++
-            ){
+            for(let c=b+1;c<cards.length-2;c++){
 
-                for(
-                    let d=c+1;
-                    d<cards.length-1;
-                    d++
-                ){
+                for(let d=c+1;d<cards.length-1;d++){
 
-                    for(
-                        let e=d+1;
-                        e<cards.length;
-                        e++
-                    ){
+                    for(let e=d+1;e<cards.length;e++){
 
                         const five=[
 
@@ -1908,7 +1945,7 @@ function evaluateHand(cards){
 
                         ];
 
-                        const result =
+                        const result=
                             evaluateFive(five);
 
                         if(
@@ -1921,7 +1958,7 @@ function evaluateHand(cards){
 
                             best={
                                 ...result,
-                                cards:five
+                                cards:[...five]
                             };
 
                         }
@@ -1942,7 +1979,7 @@ function evaluateHand(cards){
 
 
 /* =========================================================
-   HAND COMPARISON
+   COMPARISON
 ========================================================= */
 
 function compareRanks(a,b){
@@ -1953,7 +1990,7 @@ function compareRanks(a,b){
 
     }
 
-    const length =
+    const length=
         Math.max(
             a.values.length,
             b.values.length
@@ -1965,11 +2002,8 @@ function compareRanks(a,b){
         i++
     ){
 
-        const av =
-            a.values[i]||0;
-
-        const bv =
-            b.values[i]||0;
+        const av=a.values[i]||0;
+        const bv=b.values[i]||0;
 
         if(av!==bv){
 
@@ -1992,11 +2026,6 @@ function createEnemyHand(){
 
     state.enemyHand=[];
 
-    /*
-        AI는 실제 덱에서 뽑는다.
-        따라서 첫 드로우에서는 중복 카드가 없다.
-    */
-
     for(let i=0;i<6;i++){
 
         if(state.deck.length===0)
@@ -2008,10 +2037,6 @@ function createEnemyHand(){
 
     }
 
-    /*
-        AI 난이도별로 교환을 조금 수행
-    */
-
     aiImproveHand();
 
 }
@@ -2019,24 +2044,14 @@ function createEnemyHand(){
 
 function aiImproveHand(){
 
-    const difficulty =
-        state.stage;
+    const difficulty=state.stage;
 
-    /*
-        AI가 가진 패의 현재 족보
-    */
-
-    let best =
+    let best=
         evaluateHand(
             state.enemyHand
         );
 
-    /*
-        높은 스테이지일수록
-        낮은 카드 교체를 적극적으로 한다.
-    */
-
-    const attempts =
+    const attempts=
         Math.min(
             difficulty,
             6
@@ -2049,8 +2064,7 @@ function aiImproveHand(){
     ){
 
         if(
-            Math.random()
-            >
+            Math.random() >
             .35 + difficulty*.06
         ){
 
@@ -2069,11 +2083,7 @@ function aiImproveHand(){
         if(state.deck.length===0)
             break;
 
-        /*
-            낮은 카드 제거
-        */
-
-        const sorted =
+        const sorted=
             [...state.enemyHand]
             .sort(
                 (a,b)=>a.rank-b.rank
@@ -2082,10 +2092,9 @@ function aiImproveHand(){
         if(sorted.length===0)
             break;
 
-        const weak =
-            sorted[0];
+        const weak=sorted[0];
 
-        const index =
+        const index=
             state.enemyHand.indexOf(
                 weak
             );
@@ -2102,13 +2111,16 @@ function aiImproveHand(){
             state.deck.pop()
         );
 
-        const next =
+        const next=
             evaluateHand(
                 state.enemyHand
             );
 
         if(
-            compareRanks(next,best)>0
+            compareRanks(
+                next,
+                best
+            )>0
         ){
 
             best=next;
@@ -2129,6 +2141,16 @@ function submitHand(){
     if(!state.roundActive)
         return;
 
+    if(state.pendingAugment){
+
+        showToast(
+            "현재 사용 중인 증강을 먼저 완료하세요."
+        );
+
+        return;
+
+    }
+
     if(state.selected.length!==5){
 
         showToast(
@@ -2147,18 +2169,25 @@ function submitHand(){
 
     state.enemyRevealed=true;
 
-    const playerCards =
-        state.selected
-        .map(
+    const playerCards=
+        state.selected.map(
             i=>state.hand[i]
         );
 
-    const playerResult =
+    /*
+        플레이어는 선택한 정확히 5장
+    */
+
+    const playerResult=
         evaluateFive(
             playerCards
         );
 
-    const enemyResult =
+    /*
+        AI는 6~8장 중 최고의 5장
+    */
+
+    const enemyResult=
         evaluateHand(
             state.enemyHand
         );
@@ -2184,16 +2213,14 @@ function showResult(
     enemyResult
 ){
 
-    const result =
-        document.getElementById(
-            "result"
-        );
+    const result=
+        document.getElementById("result");
 
     result.classList.add("show");
 
     document.getElementById(
         "resultPlayerCards"
-    ).innerHTML =
+    ).innerHTML=
         playerCards
         .map(
             c=>miniCardHTML(c)
@@ -2202,7 +2229,7 @@ function showResult(
 
     document.getElementById(
         "resultEnemyCards"
-    ).innerHTML =
+    ).innerHTML=
         enemyResult.cards
         .map(
             c=>miniCardHTML(c)
@@ -2211,30 +2238,28 @@ function showResult(
 
     document.getElementById(
         "playerRankResult"
-    ).textContent =
+    ).textContent=
         playerResult.name;
 
     document.getElementById(
         "enemyRankResult"
-    ).textContent =
+    ).textContent=
         enemyResult.name;
 
-
-    const comparison =
+    const comparison=
         compareRanks(
             playerResult,
             enemyResult
         );
 
-    const title =
+    const title=
         document.getElementById(
             "resultTitle"
         );
 
-
     if(comparison>0){
 
-        title.textContent =
+        title.textContent=
             "🏆 플레이어 승리!";
 
         playSound("win");
@@ -2247,11 +2272,12 @@ function showResult(
 
         document.getElementById(
             "nextBtn"
-        ).style.display="inline-block";
+        ).style.display=
+            "inline-block";
 
     }else{
 
-        title.textContent =
+        title.textContent=
             "💀 패배...";
 
         playSound("lose");
@@ -2262,7 +2288,7 @@ function showResult(
 
         document.getElementById(
             "nextBtn"
-        ).textContent =
+        ).textContent=
             "처음부터 다시";
 
     }
@@ -2272,13 +2298,11 @@ function showResult(
 
 function miniCardHTML(card){
 
-    const suit =
-        SUITS[card.suit];
+    const suit=SUITS[card.suit];
 
-    const rank =
-        RANKS.find(
-            r=>r.value===card.rank
-        );
+    const rank=RANKS.find(
+        r=>r.value===card.rank
+    );
 
     return `
 
@@ -2307,14 +2331,14 @@ function miniCardHTML(card){
 
 function nextRound(){
 
-    const playerResult =
+    const playerResult=
         evaluateFive(
             state.selected.map(
                 i=>state.hand[i]
             )
         );
 
-    const enemyResult =
+    const enemyResult=
         evaluateHand(
             state.enemyHand
         );
@@ -2344,15 +2368,11 @@ function nextRound(){
 
     }
 
-    /*
-        다음 스테이지
-    */
-
     state.stage++;
 
     /*
-        ★ 여기서 모든 증강을
-        다시 사용 가능으로 초기화
+        다음 라운드에서는
+        모든 보유 증강이 다시 사용 가능
     */
 
     resetAugmentsForNewRound();
@@ -2370,9 +2390,9 @@ function nextRound(){
    AUGMENTS
 ========================================================= */
 
-const AUGMENT_POOL = [
+const AUGMENT_POOL=[
 
-    /* ---------- SILVER ---------- */
+    /* ================= SILVER ================= */
 
     {
         id:"draw_one",
@@ -2382,8 +2402,7 @@ const AUGMENT_POOL = [
         action(){
 
             if(
-                state.hand.length>=
-                state.maxHand
+                state.hand.length>=state.maxHand
             ){
 
                 showToast(
@@ -2458,16 +2477,22 @@ const AUGMENT_POOL = [
 
             }
 
-            state.pendingCardIndex =
+            state.pendingCardIndex=
                 state.selected[0];
 
-            openSuitPicker();
+            /*
+                실버 수트 변경은
+                숫자는 유지하고
+                수트만 선택한다.
+            */
+
+            openSuitPicker("suitOnly");
 
         }
     },
 
 
-    /* ---------- GOLD ---------- */
+    /* ================= GOLD ================= */
 
     {
         id:"two_draw",
@@ -2476,7 +2501,7 @@ const AUGMENT_POOL = [
         desc:"카드 2장을 추가합니다.",
         action(){
 
-            const amount =
+            const amount=
                 Math.min(
                     2,
                     state.maxHand-state.hand.length
@@ -2524,12 +2549,15 @@ const AUGMENT_POOL = [
 
             }
 
-            state.pendingCardIndex =
+            state.pendingCardIndex=
                 state.selected[0];
 
-            openSuitPicker(
-                "rank"
-            );
+            /*
+                키보드 입력 없이
+                수트 → 숫자 순서
+            */
+
+            openSuitPicker("rank");
 
         }
     },
@@ -2553,9 +2581,7 @@ const AUGMENT_POOL = [
 
             }
 
-            if(
-                state.enemyHand.length===0
-            ){
+            if(state.enemyHand.length===0){
 
                 state.pendingAugment=null;
 
@@ -2563,29 +2589,29 @@ const AUGMENT_POOL = [
 
             }
 
-            const playerIndex =
+            const playerIndex=
                 state.selected[0];
 
-            const enemyIndex =
+            const enemyIndex=
                 Math.floor(
                     Math.random()*
                     state.enemyHand.length
                 );
 
-            const temp =
+            const temp=
                 state.hand[playerIndex];
 
-            state.hand[playerIndex] =
+            state.hand[playerIndex]=
                 state.enemyHand[enemyIndex];
 
-            state.enemyHand[enemyIndex] =
+            state.enemyHand[enemyIndex]=
                 temp;
 
             state.selected=[];
 
-            consumePendingAugment();
-
             sortHand();
+
+            consumePendingAugment();
 
             render();
 
@@ -2597,7 +2623,7 @@ const AUGMENT_POOL = [
     },
 
 
-    /* ---------- PLATINUM ---------- */
+    /* ================= PLATINUM ================= */
 
     {
         id:"two_suit",
@@ -2618,9 +2644,7 @@ const AUGMENT_POOL = [
 
             }
 
-            state.pendingCardIndex=null;
-
-            state.pendingSuitCards =
+            state.pendingSuitCards=
                 [...state.selected];
 
             openSuitPicker(
@@ -2637,7 +2661,7 @@ const AUGMENT_POOL = [
         desc:"카드 3장을 추가합니다.",
         action(){
 
-            const amount =
+            const amount=
                 Math.min(
                     3,
                     state.maxHand-state.hand.length
@@ -2685,12 +2709,10 @@ const AUGMENT_POOL = [
 
             }
 
-            state.pendingCardIndex =
+            state.pendingCardIndex=
                 state.selected[0];
 
-            openSuitPicker(
-                "wild"
-            );
+            openSuitPicker("wild");
 
         }
     }
@@ -2699,44 +2721,19 @@ const AUGMENT_POOL = [
 
 
 /* =========================================================
-   AUGMENT RANDOM SELECTION
+   RANDOM AUGMENT
 ========================================================= */
 
 function getRandomAugments(){
 
-    /*
-        중복 방지
-    */
-
-    const available =
+    const available=
         AUGMENT_POOL.filter(
             aug=>
-                !state.ownedAugments
-                .some(
+                !state.ownedAugments.some(
                     owned=>
                         owned.id===aug.id
                 )
         );
-
-    if(available.length<3){
-
-        /*
-            이미 대부분 얻었다면
-            기존 증강 중복을 허용하지 않고
-            가능한 만큼만 표시
-        */
-
-        return shuffle(
-            available
-        ).slice(0,3);
-
-    }
-
-    /*
-        ★ 스테이지와 관계없이
-        SILVER / GOLD / PLATINUM
-        전체 풀에서 랜덤
-    */
 
     return shuffle(
         available
@@ -2751,24 +2748,18 @@ function getRandomAugments(){
 
 function showAugmentChoice(){
 
-    const choices =
+    const choices=
         getRandomAugments();
 
-    /*
-        기존 선택 UI
-    */
-
-    const overlay =
+    const overlay=
         document.getElementById(
             "pickerOverlay"
         );
 
-    const modal =
-        overlay.querySelector(
-            ".modal"
-        );
+    const modal=
+        overlay.querySelector(".modal");
 
-    modal.innerHTML = `
+    modal.innerHTML=`
 
         <h2>
             ⚡ 증강 선택
@@ -2843,13 +2834,31 @@ function showAugmentChoice(){
 
 function chooseAugment(id){
 
-    const source =
+    const source=
         AUGMENT_POOL.find(
             a=>a.id===id
         );
 
     if(!source)
         return;
+
+    /*
+        중복 획득 방지
+    */
+
+    if(
+        state.ownedAugments.some(
+            a=>a.id===id
+        )
+    ){
+
+        showToast(
+            "이미 보유한 증강입니다."
+        );
+
+        return;
+
+    }
 
     const augment={
         ...source,
@@ -2874,7 +2883,7 @@ function chooseAugment(id){
 
 
 /* =========================================================
-   AUGMENT USE
+   USE AUGMENT
 ========================================================= */
 
 function useAugment(index){
@@ -2882,7 +2891,22 @@ function useAugment(index){
     if(!state.roundActive)
         return;
 
-    const augment =
+    /*
+        이미 다른 증강을 진행 중이면
+        다른 증강을 눌러 상태를 덮어쓰지 못하게 한다.
+    */
+
+    if(state.pendingAugment){
+
+        showToast(
+            "현재 사용 중인 증강을 먼저 완료하세요."
+        );
+
+        return;
+
+    }
+
+    const augment=
         state.ownedAugments[index];
 
     if(!augment)
@@ -2899,8 +2923,7 @@ function useAugment(index){
     }
 
     /*
-        실제 행동이 성공하기 전까지
-        usedThisRound를 true로 만들지 않는다.
+        성공할 때까지 usedThisRound는 false.
     */
 
     state.pendingAugment=augment;
@@ -2919,11 +2942,23 @@ function consumePendingAugment(){
     if(!state.pendingAugment)
         return;
 
-    state.pendingAugment.usedThisRound=true;
+    const augment=
+        state.pendingAugment;
 
-    playSound("augment");
+    /*
+        ★ 실제 사용 성공한 경우에만
+        이번 라운드 사용 완료 처리
+    */
+
+    augment.usedThisRound=true;
 
     state.pendingAugment=null;
+
+    state.pendingCardIndex=null;
+    state.pendingSuitCards=[];
+    state.pickerSuit=null;
+
+    playSound("augment");
 
     renderAugments();
 
@@ -2931,20 +2966,21 @@ function consumePendingAugment(){
 
 
 /* =========================================================
-   RESET AUGMENTS EACH ROUND
+   RESET
 ========================================================= */
 
 function resetAugmentsForNewRound(){
 
     state.ownedAugments.forEach(
         augment=>{
-
             augment.usedThisRound=false;
-
         }
     );
 
     state.pendingAugment=null;
+    state.pendingCardIndex=null;
+    state.pendingSuitCards=[];
+    state.pickerSuit=null;
 
 }
 
@@ -2955,7 +2991,7 @@ function resetAugmentsForNewRound(){
 
 function renderAugments(){
 
-    const box =
+    const box=
         document.getElementById(
             "ownedAugments"
         );
@@ -2965,25 +3001,28 @@ function renderAugments(){
     state.ownedAugments.forEach(
         (augment,index)=>{
 
-            const div =
+            const div=
                 document.createElement("div");
 
-            div.className =
+            div.className=
                 `augment tier-${augment.tier}
-                 ${augment.usedThisRound ? "used":""}`;
+                 ${
+                    augment.usedThisRound
+                    ? "used"
+                    : ""
+                 }`;
 
             div.innerHTML=`
 
-                <div
-                    class="augmentName"
-                >
+                <div class="augmentName">
+
                     ${tierName(augment.tier)}
                     · ${augment.name}
+
                 </div>
 
-                <div
-                    class="augmentStatus"
-                >
+                <div class="augmentStatus">
+
                     ${
                         augment.usedThisRound
                         ?
@@ -2991,6 +3030,7 @@ function renderAugments(){
                         :
                         "⚡ 이번 라운드 사용 가능"
                     }
+
                 </div>
 
                 <div class="tooltip">
@@ -3017,7 +3057,22 @@ function renderAugments(){
 
             `;
 
+            /*
+                이미 사용한 증강은
+                클릭해도 다시 action을 실행하지 않는다.
+            */
+
             div.onclick=()=>{
+
+                if(augment.usedThisRound){
+
+                    showToast(
+                        `${augment.name}은 이번 라운드에 이미 사용했습니다.`
+                    );
+
+                    return;
+
+                }
 
                 useAugment(index);
 
@@ -3048,26 +3103,38 @@ function tierName(tier){
    PICKER
 ========================================================= */
 
-function openSuitPicker(mode="suit"){
+/*
+    모든 카드 변경은
+
+    1. 수트 선택
+    2. 숫자 선택
+    3. 카드 생성
+
+    순서로 진행한다.
+
+    키보드 입력은 전혀 사용하지 않는다.
+*/
+
+function openSuitPicker(mode="suitOnly"){
 
     state.pickerMode=mode;
 
-    const overlay =
+    const overlay=
         document.getElementById(
             "pickerOverlay"
         );
 
-    const title =
+    const title=
         document.getElementById(
             "pickerTitle"
         );
 
-    const box =
+    const box=
         document.getElementById(
             "pickerChoices"
         );
 
-    title.textContent =
+    title.textContent=
         "수트를 선택하세요";
 
     box.innerHTML="";
@@ -3075,36 +3142,60 @@ function openSuitPicker(mode="suit"){
     SUITS.forEach(
         (suit,index)=>{
 
-            const button =
+            const button=
                 document.createElement("button");
 
-            button.className =
+            button.className=
                 `choiceBtn ${suit.color}`;
 
-            button.innerHTML =
-                `${suit.symbol}<br>
-                 <span style="font-size:12px">
+            button.innerHTML=`
+
+                ${suit.symbol}<br>
+
+                <span
+                    style="
+                        font-size:12px
+                    "
+                >
                     ${suit.name}
-                 </span>`;
+                </span>
+
+            `;
 
             button.onclick=()=>{
 
-                if(
-                    mode==="twoSuit"
-                ){
+                playSound("click");
 
-                    applyTwoSuitChange(
-                        index
-                    );
+                /*
+                    실버 수트 변경
+                    → 수트 선택만
+                */
+
+                if(mode==="suitOnly"){
+
+                    applySuitOnlyChange(index);
 
                     return;
 
                 }
 
                 /*
-                    수트 변경 및
-                    카드 재구성은
-                    다음 단계에서 숫자 선택
+                    두 장 수트 변경
+                    → 수트만 선택
+                */
+
+                if(mode==="twoSuit"){
+
+                    applyTwoSuitChange(index);
+
+                    return;
+
+                }
+
+                /*
+                    카드 재구성 / 와일드
+                    → 수트 선택 후
+                    숫자 선택
                 */
 
                 state.pickerSuit=index;
@@ -3123,19 +3214,23 @@ function openSuitPicker(mode="suit"){
 }
 
 
+/* =========================================================
+   RANK PICKER
+========================================================= */
+
 function openRankPicker(){
 
-    const title =
+    const title=
         document.getElementById(
             "pickerTitle"
         );
 
-    const box =
+    const box=
         document.getElementById(
             "pickerChoices"
         );
 
-    title.textContent =
+    title.textContent=
         "숫자를 선택하세요";
 
     box.innerHTML="";
@@ -3143,17 +3238,27 @@ function openRankPicker(){
     RANKS.forEach(
         rank=>{
 
-            const button =
+            const button=
                 document.createElement("button");
 
-            button.className =
+            button.className=
                 "choiceBtn";
 
-            button.innerHTML =
-                `${rank.name}
-                 ${SUITS[state.pickerSuit].symbol}`;
+            button.innerHTML=`
+
+                ${rank.name}
+                ${SUITS[state.pickerSuit].symbol}
+
+            `;
 
             button.onclick=()=>{
+
+                playSound("click");
+
+                /*
+                    수트 + 숫자를 모두 선택했으므로
+                    여기서 실제 카드를 생성한다.
+                */
 
                 applyCardReplacement(
                     state.pickerSuit,
@@ -3171,18 +3276,20 @@ function openRankPicker(){
 
 
 /* =========================================================
-   APPLY CARD REPLACEMENT
+   SUIT ONLY CHANGE
 ========================================================= */
 
-function applyCardReplacement(
-    suitIndex,
-    rankValue
+function applySuitOnlyChange(
+    suitIndex
 ){
 
-    const index =
+    const index=
         state.pendingCardIndex;
 
-    if(index===null){
+    if(
+        index===null ||
+        !state.hand[index]
+    ){
 
         state.pendingAugment=null;
 
@@ -3192,27 +3299,21 @@ function applyCardReplacement(
 
     }
 
-    if(!state.hand[index]){
+    const oldCard=
+        state.hand[index];
 
-        state.pendingAugment=null;
+    /*
+        숫자는 그대로 유지.
+        수트만 새로 선택한 수트로 변경.
+    */
 
-        closePicker();
-
-        return;
-
-    }
-
-    state.hand[index] =
+    state.hand[index]=
         createAugmentedCard(
             suitIndex,
-            rankValue
+            oldCard.rank
         );
 
     state.selected=[];
-
-    state.pendingCardIndex=null;
-
-    state.pickerSuit=null;
 
     closePicker();
 
@@ -3222,13 +3323,78 @@ function applyCardReplacement(
 
     render();
 
-    const rank =
+    showToast(
+        `⚡ ${RANKS.find(r=>r.value===oldCard.rank).name}${SUITS[suitIndex].symbol}로 변경!`
+    );
+
+}
+
+
+/* =========================================================
+   CARD REPLACEMENT
+========================================================= */
+
+function applyCardReplacement(
+    suitIndex,
+    rankValue
+){
+
+    const index=
+        state.pendingCardIndex;
+
+    if(
+        index===null ||
+        !state.hand[index]
+    ){
+
+        state.pendingAugment=null;
+
+        closePicker();
+
+        return;
+
+    }
+
+    /*
+        ★ 핵심
+        선택한 수트 + 선택한 숫자로
+        완전히 새로운 증강 카드를 생성한다.
+
+        기본 덱에 같은 카드가 있어도
+        증강 카드이므로 허용.
+    */
+
+    state.hand[index]=
+        createAugmentedCard(
+            suitIndex,
+            rankValue
+        );
+
+    state.selected=[];
+
+    state.pendingCardIndex=null;
+    state.pickerSuit=null;
+
+    closePicker();
+
+    sortHand();
+
+    /*
+        실제 카드 생성이 완료된 뒤에만
+        증강을 사용 완료 처리한다.
+    */
+
+    consumePendingAugment();
+
+    render();
+
+    const rank=
         RANKS.find(
             r=>r.value===rankValue
         );
 
     showToast(
-        `⚡ ${rank.name}${SUITS[suitIndex].symbol}로 변경!`
+        `⚡ ${rank.name}${SUITS[suitIndex].symbol} 카드 생성!`
     );
 
 }
@@ -3242,7 +3408,7 @@ function applyTwoSuitChange(
     suitIndex
 ){
 
-    const indices =
+    const indices=
         state.pendingSuitCards;
 
     if(
@@ -3258,27 +3424,45 @@ function applyTwoSuitChange(
 
     }
 
+    let changed=0;
+
     indices.forEach(
         index=>{
 
-            const card =
+            const card=
                 state.hand[index];
 
             if(card){
 
-                state.hand[index] =
+                /*
+                    기존 숫자 유지
+                    수트만 변경
+                */
+
+                state.hand[index]=
                     createAugmentedCard(
                         suitIndex,
                         card.rank
                     );
+
+                changed++;
 
             }
 
         }
     );
 
-    state.pendingSuitCards=[];
+    if(changed!==2){
 
+        state.pendingAugment=null;
+
+        closePicker();
+
+        return;
+
+    }
+
+    state.pendingSuitCards=[];
     state.selected=[];
 
     closePicker();
@@ -3308,7 +3492,32 @@ function closePicker(){
 
     state.pickerMode=null;
 
+    /*
+        취소했을 때는
+        pendingAugment를 사용 완료 처리하지 않는다.
+
+        다시 사용할 수 있도록
+        현재 선택 작업만 정리한다.
+    */
+
+    state.pendingCardIndex=null;
+    state.pendingSuitCards=[];
+    state.pickerSuit=null;
+
+    /*
+        단, 실제 증강 자체는 아직
+        사용되지 않은 상태다.
+    */
+
 }
+
+
+/*
+    취소 버튼 때문에 pendingAugment까지
+    날려버리면 다시 클릭 가능하다.
+    따라서 closePicker에서 pendingAugment는
+    건드리지 않는다.
+*/
 
 
 /* =========================================================
@@ -3319,17 +3528,11 @@ function startRound(){
 
     clearInterval(state.timer);
 
-    /*
-        ★ 새로운 라운드마다
-        보유 증강 사용횟수 초기화
-    */
-
     resetAugmentsForNewRound();
 
     state.deck=createDeck();
 
     state.hand=[];
-
     state.enemyHand=[];
 
     state.selected=[];
@@ -3343,18 +3546,10 @@ function startRound(){
     state.roundActive=true;
 
     state.pendingCardIndex=null;
-
     state.pendingSuitCards=[];
-
-    /*
-        첫 손패 6장
-    */
+    state.pendingAugment=null;
 
     drawInitialCards();
-
-    /*
-        AI 패
-    */
 
     createEnemyHand();
 
@@ -3364,17 +3559,17 @@ function startRound(){
 
     document.getElementById(
         "message"
-    ).textContent =
+    ).textContent=
         "카드 5장을 선택하세요.";
 
     document.getElementById(
         "nextBtn"
-    ).textContent =
+    ).textContent=
         "다음 라운드";
 
     document.getElementById(
         "nextBtn"
-    ).style.display =
+    ).style.display=
         "inline-block";
 
     render();
@@ -3422,7 +3617,7 @@ function startTimer(){
 
     updateTimer();
 
-    state.timer =
+    state.timer=
         setInterval(
             ()=>{
 
@@ -3462,23 +3657,21 @@ function updateTimer(){
 
     document.getElementById(
         "time"
-    ).textContent =
+    ).textContent=
         Math.max(
             0,
             state.time
         );
 
-    const percent =
+    const percent=
         Math.max(
             0,
-            state.time /
-            state.maxTime *
-            100
+            state.time/state.maxTime*100
         );
 
     document.getElementById(
         "timerBar"
-    ).style.width =
+    ).style.width=
         percent+"%";
 
 }
@@ -3508,8 +3701,7 @@ function timeoutLose(){
 
     showResult(
 
-        state.selected
-        .map(
+        state.selected.map(
             i=>state.hand[i]
         ),
 
@@ -3543,7 +3735,7 @@ function timeoutLose(){
 
 function showTaunt(text){
 
-    const el =
+    const el=
         document.getElementById(
             "taunt"
         );
@@ -3555,31 +3747,6 @@ function showTaunt(text){
     void el.offsetWidth;
 
     el.classList.add("taunt");
-
-}
-
-
-function aiTaunt(){
-
-    if(state.stage>=6){
-
-        showTaunt(
-            "이번엔 좀 제대로 골라보시죠."
-        );
-
-    }else if(state.stage>=4){
-
-        showTaunt(
-            "운이 언제까지 따라줄까요?"
-        );
-
-    }else{
-
-        showTaunt(
-            "좋은 패를 만들 수 있을까요?"
-        );
-
-    }
 
 }
 
@@ -3599,6 +3766,14 @@ function restartGame(){
     state.gameOver=false;
 
     state.roundActive=false;
+
+    state.pendingAugment=null;
+
+    state.pendingCardIndex=null;
+    state.pendingSuitCards=[];
+    state.pickerSuit=null;
+
+    closePicker();
 
     document.getElementById(
         "result"
@@ -3627,37 +3802,39 @@ function render(){
 
     document.getElementById(
         "stage"
-    ).textContent =
+    ).textContent=
         state.stage;
 
     document.getElementById(
         "handCount"
-    ).textContent =
+    ).textContent=
         `${state.hand.length} / ${state.maxHand}`;
 
     document.getElementById(
         "discardCount"
-    ).textContent =
+    ).textContent=
         state.discards;
 
     document.getElementById(
         "enemyInfo"
-    ).textContent =
+    ).textContent=
         state.enemyRevealed
         ? "패 공개"
         : "패를 고르는 중";
 
     document.getElementById(
         "discardBtn"
-    ).disabled =
+    ).disabled=
         !state.roundActive ||
-        state.discards<=0;
+        state.discards<=0 ||
+        !!state.pendingAugment;
 
     document.getElementById(
         "submitBtn"
-    ).disabled =
+    ).disabled=
         !state.roundActive ||
-        state.selected.length!==5;
+        state.selected.length!==5 ||
+        !!state.pendingAugment;
 
 }
 
@@ -3674,11 +3851,9 @@ document.addEventListener(
     {once:true}
 );
 
-
 startRound();
 
 </script>
 
 </body>
 </html>
-```
