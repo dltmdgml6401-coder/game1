@@ -3,168 +3,241 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>당신이 판사라면? - 양형 체험 게임</title>
+  <title>법정 재판선고 - 판사 1인칭 체험</title>
   <style>
     :root {
-      --bg-color: #f4f6f9;
-      --card-bg: #ffffff;
-      --primary: #2c3e50;
-      --accent: #e74c3c;
-      --text: #333333;
+      --court-wood: #2b1d0c;
+      --panel-bg: #fdfbf7;
+      --accent-red: #8b0000;
+      --gold: #d4af37;
+      --text: #222222;
     }
     body {
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-color);
+      font-family: 'MaruBuri', 'Garamond', serif;
+      background-color: var(--court-wood);
       color: var(--text);
       margin: 0;
       padding: 20px;
       display: flex;
       justify-content: center;
+      background-image: radial-gradient(#3a2712 15%, transparent 16%);
+      background-size: 30px 30px;
     }
-    .container {
-      max-width: 650px;
+    .court-container {
+      max-width: 750px;
       width: 100%;
-      background: var(--card-bg);
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      color: var(--primary);
-      margin-bottom: 5px;
-    }
-    .subtitle {
-      text-align: center;
-      color: #7f8c8d;
-      font-size: 0.9em;
-      margin-bottom: 25px;
-    }
-    .case-card {
-      border: 1px solid #e2e8f0;
+      background: var(--panel-bg);
+      border: 12px solid #4a3319;
       border-radius: 8px;
-      padding: 20px;
-      background: #fafafa;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      position: relative;
+    }
+    .header-bar {
+      text-align: center;
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 10px;
       margin-bottom: 20px;
     }
-    .case-title {
-      font-size: 1.2em;
+    .header-bar h1 {
+      margin: 0;
+      font-size: 1.8em;
+      color: var(--court-wood);
+    }
+    .header-bar .sub {
+      font-size: 0.9em;
+      color: #666;
+    }
+
+    /* 법정 현황판 UI */
+    .court-scene {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .role-box {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 12px;
+      background: #fff;
+    }
+    .role-title {
       font-weight: bold;
-      color: var(--primary);
+      font-size: 0.95em;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .prosecutor { color: #1a365d; }
+    .defense { color: #276749; }
+    .statement {
+      font-size: 0.9em;
+      line-height: 1.5;
+      color: #444;
+      background: #f8f9fa;
+      padding: 8px;
+      border-left: 3px solid #ccc;
+    }
+
+    /* 사건 기록 문서 UI */
+    .document-card {
+      background: #fffef0;
+      border: 1px solid #dcd7c9;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .doc-header {
+      font-weight: bold;
+      color: var(--accent-red);
+      border-bottom: 1px dashed #bbb;
+      padding-bottom: 5px;
       margin-bottom: 10px;
     }
-    .case-desc {
-      line-height: 1.6;
+    .doc-body {
       font-size: 0.95em;
+      line-height: 1.6;
       white-space: pre-line;
     }
-    .slider-section {
-      margin: 25px 0;
+
+    /* 선고 및 판사봉 UI */
+    .verdict-zone {
       text-align: center;
+      background: #eee8d5;
+      padding: 15px;
+      border-radius: 6px;
     }
-    .sentence-display {
-      font-size: 1.5em;
+    .sentence-val {
+      font-size: 1.6em;
       font-weight: bold;
-      color: var(--accent);
+      color: var(--accent-red);
       margin: 10px 0;
     }
     input[type=range] {
-      width: 100%;
-      margin: 15px 0;
+      width: 90%;
     }
-    button {
-      width: 100%;
-      padding: 14px;
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 1em;
+    .gavel-btn {
+      margin-top: 15px;
+      padding: 12px 30px;
+      background-color: var(--court-wood);
+      color: var(--gold);
+      border: 2px solid var(--gold);
+      border-radius: 25px;
+      font-size: 1.1em;
       font-weight: bold;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
-    button:hover {
-      background-color: #34495e;
+    .gavel-btn:hover {
+      background-color: #4a3319;
+      transform: scale(1.03);
     }
-    .result-box {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 6px;
-      background-color: #eef2f7;
+
+    /* 결과 판결문 */
+    .result-panel {
       display: none;
+      margin-top: 20px;
+      background: #fff;
+      border: 2px solid var(--court-wood);
+      padding: 20px;
+      border-radius: 6px;
     }
-    .score {
-      font-size: 1.2em;
+    .score-badge {
+      font-size: 1.3em;
+      color: #2b6cb0;
       font-weight: bold;
-      color: #27ae60;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>⚖️ 당신이 판사라면?</h1>
-  <div class="subtitle">실제 판례를 바탕으로 형량을 선고해 보세요!</div>
+<div class="court-container">
+  <div class="header-bar">
+    <h1>⚖️ 대한민국 법원 - 제1형사부</h1>
+    <div class="sub">[판사석] 사건을 심리하고 주문을 선고하십시오.</div>
+  </div>
 
-  <div id="game-area">
-    <div class="case-card">
-      <div id="case-title" class="case-title">사건 불러오는 중...</div>
-      <div id="case-desc" class="case-desc"></div>
+  <div id="game-view">
+    <!-- 사건 개요 서류 -->
+    <div class="document-card">
+      <div class="doc-header">📜 사건기록 요약 (<span id="case-num">1</span>/3)</div>
+      <div id="case-title" style="font-weight: bold; font-size: 1.1em; margin-bottom: 8px;"></div>
+      <div id="case-desc" class="doc-body"></div>
     </div>
 
-    <div class="slider-section">
-      <label for="sentence-slider"><strong>당신의 선고 형량:</strong></label>
-      <div class="sentence-display"><span id="slider-value">0</span>개월 (징역)</div>
-      <input type="range" id="sentence-slider" min="0" max="120" value="12" step="1" oninput="updateSliderText(this.value)">
-      <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #888;">
-        <span>무죄/집행유예 (0개월)</span>
-        <span>5년 (60개월)</span>
-        <span>10년 (120개월)</span>
+    <!-- 검사 vs 변호인 진술 -->
+    <div class="court-scene">
+      <div class="role-box">
+        <div class="role-title prosecutor">⚖️ 검사 구형 및 진술</div>
+        <div id="prosecutor-text" class="statement"></div>
+      </div>
+      <div class="role-box">
+        <div class="role-title defense">🛡️ 변호인 변론</div>
+        <div id="defense-text" class="statement"></div>
       </div>
     </div>
 
-    <button id="submit-btn" onclick="submitVerdict()">선고 내리기</button>
+    <!-- 형량 선택 및 판사봉 -->
+    <div class="verdict-zone">
+      <div><strong>[양형 결정]</strong> 피고인에게 선고할 징역 형량을 정하십시오.</div>
+      <div class="sentence-val"><span id="slider-text">12</span></div>
+      <input type="range" id="sentence-slider" min="0" max="120" value="12" oninput="updateSentenceText(this.value)">
+      <br>
+      <button id="gavel-btn" class="gavel-btn" onclick="renderVerdict()">🔨 탕! 탕! 탕! (판결 선고)</button>
+    </div>
 
-    <div id="result-box" class="result-box">
-      <p><strong>실제 법원 판결:</strong> <span id="actual-verdict"></span></p>
-      <p class="score">점수: <span id="score-val">0</span> / 100점</p>
-      <p><strong>판결 이유:</strong> <span id="reason-text"></span></p>
-      <button onclick="nextCase()" style="margin-top: 10px; background-color: #27ae60;">다음 사건으로</button>
+    <!-- 결과 표시 판결문 -->
+    <div id="result-panel" class="result-panel">
+      <h3>🏛️ 판결 선고 결과</h3>
+      <p><strong>실제 법원 최종 선고:</strong> <span id="actual-verdict" style="color: var(--accent-red); font-weight: bold;"></span></p>
+      <p><strong>양형 적합도 점수:</strong> <span id="score-val" class="score-badge">0</span> / 100점</p>
+      <hr>
+      <p><strong>[판결 이유 및 법원의 판단]</strong></p>
+      <p id="reason-text" style="line-height: 1.6; color: #333;"></p>
+      <button onclick="nextCase()" style="width: 100%; padding: 10px; background: #2b6cb0; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">다음 사건 심리하기</button>
     </div>
   </div>
 
-  <div id="final-area" style="display: none; text-align: center;">
-    <h2>🏆 재판 종료!</h2>
-    <p>당신의 총점: <strong id="total-score" style="font-size: 1.5em; color: var(--accent);">0</strong>점</p>
-    <p id="eval-text"></p>
-    <button onclick="restartGame()">처음부터 다시하기</button>
+  <!-- 최종 결과 화면 -->
+  <div id="final-view" style="display: none; text-align: center; padding: 40px 20px;">
+    <h2>⚖️ 모든 재판이 종료되었습니다</h2>
+    <p>총 양형 평가 점수: <strong id="total-score" style="font-size: 2em; color: var(--accent-red);">0</strong>점</p>
+    <p id="eval-text" style="font-size: 1.1em; color: #444; margin: 20px 0;"></p>
+    <button onclick="restartCourt()" class="gavel-btn">처음부터 다시 재판하기</button>
   </div>
 </div>
 
 <script>
-  // 실제 흥미로운 판례 데이터
-  const caseData = [
+  const cases = [
     {
-      title: "사건 1. 2400원짜리 빵 한 개 사먹고 징역형?",
-      desc: "피고인은 과거 절도 전과가 다수 있는 상태에서, 심야 시간에 문이 열린 상점에 들어가 2,400원 상당의 빵 1개를 몰래 먹었습니다.\n검찰은 '특가법상 절도' 혐의로 구속 기소했습니다. 피고인에게 얼마의 징역형을 선고해야 할까요?",
-      actualMonths: 12, // 실제 판결: 징역 1년 (12개월)
+      title: "2023고단1042 - 야간 상점 침입 절도 사건",
+      desc: "피고인은 피곤과 배고픔에 지쳐 심야 시간에 문이 잠기지 않은 상점에 침입하여 2,400원 상당의 빵 1개를 몰래 먹었습니다. 피고인은 과거 동일 범죄 전과가 다수 존재합니다.",
+      prosecutor: "피고인은 누범 기간 중 다시 범행을 저질렀습니다. 법질서 확립을 위해 **징역 2년**을 구형합니다.",
+      defense: "피해 금액이 2,400원으로극히 미시적이며, 피고인이 반성하고 있습니다. 법이 허용하는 최선의 선처를 부탁드립니다.",
+      actualMonths: 12,
       actualText: "징역 1년 (실형)",
-      reason: "특가법상 상습절도 누범에 해당하여 법률상 정해진 최저 형량이 높았습니다. 다만 피해 금액이 매우 적어 법률상 감경을 적용하여 징역 1년이 선고되었습니다."
+      reason: "상습절도 누범으로 특가법에 따라 최저 형량이 높게 제한되어 있으나, 피해 규모가 매우 경미한 점을 참작하여 법률상 감경을 거쳐 징역 1년을 선고했습니다."
     },
     {
-      title: "사건 2. 음주운전 후 층간소음 항의하러 아파트 단지 운전",
-      desc: "피고인은 혈중알코올농도 0.12% 상태에서 위층 주민의 층간소음에 화가 나 단지 내 주차장에서 50m를 운전하여 이동했습니다. 이전 10년 내 음주운전 처벌 전력이 1회 있습니다.",
-      actualMonths: 18, // 실제 판결: 징역 1년 6개월
+      title: "2022노582 - 아파트 단지 내 음주운전 사건",
+      desc: "피고인은 혈중알코올농도 0.12% 상태에서 위층 주민의 층간소음에 항의하고자 아파트 단지 내 주차장에서 약 50m를 운전하였습니다.",
+      prosecutor: "음주운전 처벌 전력이 있음에도 만취 상태로 운전대를 잡았습니다. **징역 2년 6개월**을 구형합니다.",
+      defense: "도로가 아닌 단지 내 주차장 이동이었고, 소음 문제로 이성을 잃은 참작 사유가 있습니다. 집행유예를 부탁드립니다.",
+      actualMonths: 18,
       actualText: "징역 1년 6개월 (실형)",
-      reason: "재범인 데다 혈중알코올농도가 높은 상태였습니다. 단지 내 운전이라도 타인에게 큰 위험을 줄 수 있어 실형이 선고되었습니다."
+      reason: "단지 내 주차장이라도 보행자가 많아 위험성이 높고, 혈중알코올농도가 높은 점 및 음주 전력을 고려해 실형이 선고되었습니다."
     },
     {
-      title: "사건 3. 딸을 괴롭힌 가해 학생을 찾아가 폭언 및 위협",
-      desc: "피고인은 자신의 딸이 학교폭력을 당했다는 말을 듣고, 가해 학생을 찾아가 '내 딸한테 또 그러면 가만 안 둔다'며 소리치고 위협했습니다.",
-      actualMonths: 0, // 실제 판결: 집행유예 또는 벌금형/무죄 수준 (0개월 처리)
+      title: "2021고정819 - 학폭 가해자에 대한 협박 사건",
+      desc: "피고인은 자신의 초등학생 딸이 학교폭력을 당했다는 소식을 듣고, 가해 학생을 찾아가 폭언을 하며 위협하였습니다.",
+      prosecutor: "성인이 미성년자에게 위력을 행사하여 공포심을 유발했습니다. **징역 6개월**을 구형합니다.",
+      defense: "자식이 학폭을 당했다는 말을 듣고 부모로서 이성을 잃은 행동이었습니다. 자력구제 시도였음을 참작해 주십시오.",
+      actualMonths: 0,
       actualText: "벌금 100만원 (징역 0개월)",
-      reason: "부모로서 분노할 만한 사정이 참작되었으나, 성인이 미성년자에게 직접 위력을 행사한 점은 정당행위로 인정되지 않아 벌금형이 선고되었습니다."
+      reason: "부모로서의 분노는 참작할 여지가 있으나, 미성년자에게 직접적인 위력을 행사한 정당행위로 볼 수 없어 벌금형에 처해졌습니다."
     }
   ];
 
@@ -172,78 +245,84 @@
   let totalScore = 0;
 
   function loadCase() {
-    const c = caseData[currentIdx];
+    const c = cases[currentIdx];
+    document.getElementById('case-num').innerText = currentIdx + 1;
     document.getElementById('case-title').innerText = c.title;
     document.getElementById('case-desc').innerText = c.desc;
-    document.getElementById('result-box').style.display = 'none';
-    document.getElementById('submit-btn').style.display = 'block';
+    document.getElementById('prosecutor-text').innerHTML = c.prosecutor;
+    document.getElementById('defense-text').innerHTML = c.defense;
+
+    document.getElementById('result-panel').style.display = 'none';
+    document.getElementById('gavel-btn').style.display = 'inline-block';
     document.getElementById('sentence-slider').disabled = false;
     document.getElementById('sentence-slider').value = 12;
-    updateSliderText(12);
+    updateSentenceText(12);
   }
 
-  function updateSliderText(val) {
+  function updateSentenceText(val) {
     const years = Math.floor(val / 12);
     const months = val % 12;
-    let text = `${val}개월`;
-    if (years > 0) {
-      text += ` (${years}년 ${months > 0 ? months + '개월' : ''})`;
+    let txt = "";
+    if (val == 0) {
+      txt = "무죄 / 집행유예 / 벌금형 (징역 0개월)";
+    } else {
+      txt = `징역 ${val}개월`;
+      if (years > 0) {
+        txt += ` (${years}년 ${months > 0 ? months + '개월' : ''})`;
+      }
     }
-    document.getElementById('slider-value').innerText = text;
+    document.getElementById('slider-text').innerText = txt;
   }
 
-  function submitVerdict() {
+  function renderVerdict() {
     const userVal = parseInt(document.getElementById('sentence-slider').value);
-    const actualVal = caseData[currentIdx].actualMonths;
+    const actualVal = cases[currentIdx].actualMonths;
 
-    // 실제 형량과의 차이에 따라 점수 계산 (최대 100점)
     const diff = Math.abs(userVal - actualVal);
     let score = Math.max(0, 100 - (diff * 5));
-
     totalScore += score;
 
-    document.getElementById('actual-verdict').innerText = caseData[currentIdx].actualText;
+    document.getElementById('actual-verdict').innerText = cases[currentIdx].actualText;
     document.getElementById('score-val').innerText = score;
-    document.getElementById('reason-text').innerText = caseData[currentIdx].reason;
+    document.getElementById('reason-text').innerText = cases[currentIdx].reason;
 
-    document.getElementById('result-box').style.display = 'block';
-    document.getElementById('submit-btn').style.display = 'none';
+    document.getElementById('result-panel').style.display = 'block';
+    document.getElementById('gavel-btn').style.display = 'none';
     document.getElementById('sentence-slider').disabled = true;
   }
 
   function nextCase() {
     currentIdx++;
-    if (currentIdx < caseData.length) {
+    if (currentIdx < cases.length) {
       loadCase();
     } else {
-      showFinalResult();
+      showFinal();
     }
   }
 
-  function showFinalResult() {
-    document.getElementById('game-area').style.display = 'none';
-    document.getElementById('final-area').style.display = 'block';
-    
-    const avgScore = totalScore / caseData.length;
+  function showFinal() {
+    document.getElementById('game-view').style.display = 'none';
+    document.getElementById('final-view').style.display = 'block';
+
+    const avg = totalScore / cases.length;
     document.getElementById('total-score').innerText = totalScore;
 
-    let evalText = "";
-    if (avgScore >= 80) evalText = "🏛️ 훌륭합니다! 대법관 수준의 판결 감각을 가지고 계시네요.";
-    else if (avgScore >= 50) evalText = "⚖️ 양형기준표를 비교적 잘 파악하고 계시는군요.";
-    else evalText = "📜 법의 감경·가중 사유를 좀 더 살펴보시면 좋겠습니다!";
-    
-    document.getElementById('eval-text').innerText = evalText;
+    let evalTxt = "";
+    if (avg >= 85) evalTxt = "🏛️ [대법관급 평가] 양형기준표와 법리 해석 능력이 매우 탁월합니다.";
+    else if (avg >= 60) evalTxt = "⚖️ [부장판사급 평가] 법의 형평성을 고려하는 균형 잡힌 시각을 갖고 계십니다.";
+    else evalTxt = "📜 [초임판사급 평가] 법률상의 가중 및 감경 요소를 조금 더 검토해보세요.";
+
+    document.getElementById('eval-text').innerText = evalTxt;
   }
 
-  function restartGame() {
+  function restartCourt() {
     currentIdx = 0;
     totalScore = 0;
-    document.getElementById('game-area').style.display = 'block';
-    document.getElementById('final-area').style.display = 'none';
+    document.getElementById('game-view').style.display = 'block';
+    document.getElementById('final-view').style.display = 'none';
     loadCase();
   }
 
-  // 게임 시작
   loadCase();
 </script>
 
