@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>당신이 판사라면? - 양형 체험 게임</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --primary: #2c3e50;
+      --accent: #e74c3c;
+      --text: #333333;
+    }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 650px;
+      width: 100%;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 0.9em;
+      margin-bottom: 25px;
+    }
+    .case-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      background: #fafafa;
+      margin-bottom: 20px;
+    }
+    .case-title {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    .case-desc {
+      line-height: 1.6;
+      font-size: 0.95em;
+      white-space: pre-line;
+    }
+    .slider-section {
+      margin: 25px 0;
+      text-align: center;
+    }
+    .sentence-display {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: var(--accent);
+      margin: 10px 0;
+    }
+    input[type=range] {
+      width: 100%;
+      margin: 15px 0;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background-color: #34495e;
+    }
+    .result-box {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      background-color: #eef2f7;
+      display: none;
+    }
+    .score {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #27ae60;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>⚖️ 당신이 판사라면?</h1>
+  <div class="subtitle">실제 판례를 바탕으로 형량을 선고해 보세요!</div>
+
+  <div id="game-area">
+    <div class="case-card">
+      <div id="case-title" class="case-title">사건 불러오는 중...</div>
+      <div id="case-desc" class="case-desc"></div>
+    </div>
+
+    <div class="slider-section">
+      <label for="sentence-slider"><strong>당신의 선고 형량:</strong></label>
+      <div class="sentence-display"><span id="slider-value">0</span>개월 (징역)</div>
+      <input type="range" id="sentence-slider" min="0" max="120" value="12" step="1" oninput="updateSliderText(this.value)">
+      <div style="display: flex; justify-content: space-between; font-size: 0.8em; color: #888;">
+        <span>무죄/집행유예 (0개월)</span>
+        <span>5년 (60개월)</span>
+        <span>10년 (120개월)</span>
+      </div>
+    </div>
+
+    <button id="submit-btn" onclick="submitVerdict()">선고 내리기</button>
+
+    <div id="result-box" class="result-box">
+      <p><strong>실제 법원 판결:</strong> <span id="actual-verdict"></span></p>
+      <p class="score">점수: <span id="score-val">0</span> / 100점</p>
+      <p><strong>판결 이유:</strong> <span id="reason-text"></span></p>
+      <button onclick="nextCase()" style="margin-top: 10px; background-color: #27ae60;">다음 사건으로</button>
+    </div>
+  </div>
+
+  <div id="final-area" style="display: none; text-align: center;">
+    <h2>🏆 재판 종료!</h2>
+    <p>당신의 총점: <strong id="total-score" style="font-size: 1.5em; color: var(--accent);">0</strong>점</p>
+    <p id="eval-text"></p>
+    <button onclick="restartGame()">처음부터 다시하기</button>
+  </div>
+</div>
+
+<script>
+  // 실제 흥미로운 판례 데이터
+  const caseData = [
+    {
+      title: "사건 1. 2400원짜리 빵 한 개 사먹고 징역형?",
+      desc: "피고인은 과거 절도 전과가 다수 있는 상태에서, 심야 시간에 문이 열린 상점에 들어가 2,400원 상당의 빵 1개를 몰래 먹었습니다.\n검찰은 '특가법상 절도' 혐의로 구속 기소했습니다. 피고인에게 얼마의 징역형을 선고해야 할까요?",
+      actualMonths: 12, // 실제 판결: 징역 1년 (12개월)
+      actualText: "징역 1년 (실형)",
+      reason: "특가법상 상습절도 누범에 해당하여 법률상 정해진 최저 형량이 높았습니다. 다만 피해 금액이 매우 적어 법률상 감경을 적용하여 징역 1년이 선고되었습니다."
+    },
+    {
+      title: "사건 2. 음주운전 후 층간소음 항의하러 아파트 단지 운전",
+      desc: "피고인은 혈중알코올농도 0.12% 상태에서 위층 주민의 층간소음에 화가 나 단지 내 주차장에서 50m를 운전하여 이동했습니다. 이전 10년 내 음주운전 처벌 전력이 1회 있습니다.",
+      actualMonths: 18, // 실제 판결: 징역 1년 6개월
+      actualText: "징역 1년 6개월 (실형)",
+      reason: "재범인 데다 혈중알코올농도가 높은 상태였습니다. 단지 내 운전이라도 타인에게 큰 위험을 줄 수 있어 실형이 선고되었습니다."
+    },
+    {
+      title: "사건 3. 딸을 괴롭힌 가해 학생을 찾아가 폭언 및 위협",
+      desc: "피고인은 자신의 딸이 학교폭력을 당했다는 말을 듣고, 가해 학생을 찾아가 '내 딸한테 또 그러면 가만 안 둔다'며 소리치고 위협했습니다.",
+      actualMonths: 0, // 실제 판결: 집행유예 또는 벌금형/무죄 수준 (0개월 처리)
+      actualText: "벌금 100만원 (징역 0개월)",
+      reason: "부모로서 분노할 만한 사정이 참작되었으나, 성인이 미성년자에게 직접 위력을 행사한 점은 정당행위로 인정되지 않아 벌금형이 선고되었습니다."
+    }
+  ];
+
+  let currentIdx = 0;
+  let totalScore = 0;
+
+  function loadCase() {
+    const c = caseData[currentIdx];
+    document.getElementById('case-title').innerText = c.title;
+    document.getElementById('case-desc').innerText = c.desc;
+    document.getElementById('result-box').style.display = 'none';
+    document.getElementById('submit-btn').style.display = 'block';
+    document.getElementById('sentence-slider').disabled = false;
+    document.getElementById('sentence-slider').value = 12;
+    updateSliderText(12);
+  }
+
+  function updateSliderText(val) {
+    const years = Math.floor(val / 12);
+    const months = val % 12;
+    let text = `${val}개월`;
+    if (years > 0) {
+      text += ` (${years}년 ${months > 0 ? months + '개월' : ''})`;
+    }
+    document.getElementById('slider-value').innerText = text;
+  }
+
+  function submitVerdict() {
+    const userVal = parseInt(document.getElementById('sentence-slider').value);
+    const actualVal = caseData[currentIdx].actualMonths;
+
+    // 실제 형량과의 차이에 따라 점수 계산 (최대 100점)
+    const diff = Math.abs(userVal - actualVal);
+    let score = Math.max(0, 100 - (diff * 5));
+
+    totalScore += score;
+
+    document.getElementById('actual-verdict').innerText = caseData[currentIdx].actualText;
+    document.getElementById('score-val').innerText = score;
+    document.getElementById('reason-text').innerText = caseData[currentIdx].reason;
+
+    document.getElementById('result-box').style.display = 'block';
+    document.getElementById('submit-btn').style.display = 'none';
+    document.getElementById('sentence-slider').disabled = true;
+  }
+
+  function nextCase() {
+    currentIdx++;
+    if (currentIdx < caseData.length) {
+      loadCase();
+    } else {
+      showFinalResult();
+    }
+  }
+
+  function showFinalResult() {
+    document.getElementById('game-area').style.display = 'none';
+    document.getElementById('final-area').style.display = 'block';
+    
+    const avgScore = totalScore / caseData.length;
+    document.getElementById('total-score').innerText = totalScore;
+
+    let evalText = "";
+    if (avgScore >= 80) evalText = "🏛️ 훌륭합니다! 대법관 수준의 판결 감각을 가지고 계시네요.";
+    else if (avgScore >= 50) evalText = "⚖️ 양형기준표를 비교적 잘 파악하고 계시는군요.";
+    else evalText = "📜 법의 감경·가중 사유를 좀 더 살펴보시면 좋겠습니다!";
+    
+    document.getElementById('eval-text').innerText = evalText;
+  }
+
+  function restartGame() {
+    currentIdx = 0;
+    totalScore = 0;
+    document.getElementById('game-area').style.display = 'block';
+    document.getElementById('final-area').style.display = 'none';
+    loadCase();
+  }
+
+  // 게임 시작
+  loadCase();
+</script>
+
+</body>
+</html>
