@@ -4,7 +4,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#080d22">
 <title>잠들지 못한 밤</title>
 
 <style>
@@ -13,20 +12,23 @@
 }
 
 html,body{
-    margin:0;
     width:100%;
     height:100%;
+    margin:0;
     overflow:hidden;
 }
 
 body{
-    font-family:"Arial","Malgun Gothic",sans-serif;
+    font-family:
+        Arial,
+        "Malgun Gothic",
+        sans-serif;
     background:#080d22;
     color:#fff;
 }
 
 button{
-    font-family:inherit;
+    font:inherit;
     cursor:pointer;
 }
 
@@ -47,12 +49,8 @@ button{
     display:flex;
 }
 
-/* =====================================================
-   공통 전환
-===================================================== */
-
 .fade{
-    animation:fadeIn .8s ease;
+    animation:fadeIn .7s ease;
 }
 
 @keyframes fadeIn{
@@ -60,27 +58,16 @@ button{
     to{opacity:1}
 }
 
-.glitch{
-    animation:glitch .15s;
-}
-
-@keyframes glitch{
-    0%{transform:translate(0)}
-    25%{transform:translate(4px,-2px)}
-    50%{transform:translate(-4px,2px)}
-    75%{transform:translate(2px,1px)}
-    100%{transform:translate(0)}
-}
-
-/* =====================================================
+/* ==================================================
    TITLE
-===================================================== */
+================================================== */
 
 #titleScreen{
     align-items:center;
     justify-content:center;
     flex-direction:column;
     text-align:center;
+
     background:
         radial-gradient(
             circle at 50% 35%,
@@ -88,41 +75,51 @@ button{
             #e7eee5 45%,
             #cad9d0 100%
         );
+
     color:#4e514d;
 }
 
 .titleFlower{
     font-size:90px;
-    animation:float 3s ease-in-out infinite;
+    animation:floatFlower 3s ease-in-out infinite;
 }
 
-@keyframes float{
-    0%,100%{transform:translateY(0)}
-    50%{transform:translateY(-12px)}
+@keyframes floatFlower{
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-12px);
+    }
 }
 
 .mainTitle{
     margin-top:15px;
-    font-size:clamp(35px,6vw,58px);
-    letter-spacing:-4px;
+    font-size:clamp(38px,6vw,65px);
     font-weight:500;
+    letter-spacing:-4px;
 }
 
 .mainSub{
-    margin-top:12px;
-    color:#8c948c;
-    line-height:1.7;
+    margin-top:15px;
+    color:#8b938c;
+    line-height:1.8;
 }
 
 .startButton{
-    margin-top:40px;
-    padding:16px 45px;
+    margin-top:42px;
+    padding:16px 48px;
+
     border:0;
     border-radius:30px;
+
     background:#fffdf4;
-    color:#5c625d;
-    font-size:16px;
-    box-shadow:0 10px 30px rgba(70,80,70,.15);
+    color:#555c57;
+
+    box-shadow:
+        0 10px 30px rgba(60,70,60,.16);
+
     transition:.2s;
 }
 
@@ -130,56 +127,67 @@ button{
     transform:translateY(-4px);
 }
 
-/* =====================================================
-   STAGE 1 - GARDEN
-===================================================== */
+.startButton:active{
+    transform:translateY(1px);
+}
+
+
+/* ==================================================
+   STAGE 1
+================================================== */
 
 #gardenStage{
-    background:
-        radial-gradient(
-            circle at 50% 30%,
-            #fff8e8,
-            #dce9dc
-        );
     align-items:center;
     justify-content:center;
     flex-direction:column;
+
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            #fff8e8,
+            #dce9dc
+        );
+
     color:#4e514d;
 }
 
 .stageTitle{
     position:absolute;
-    top:28px;
+    top:24px;
     left:50%;
     transform:translateX(-50%);
+
     font-size:22px;
-    color:#656c66;
-    letter-spacing:-1px;
+    white-space:nowrap;
 }
 
 .stageNumber{
     position:absolute;
-    top:58px;
+    top:56px;
     left:50%;
     transform:translateX(-50%);
-    font-size:11px;
-    color:#a0a59f;
+
+    font-size:10px;
+    color:#9ba29c;
+    letter-spacing:.15em;
 }
 
 .subStageText{
     position:absolute;
-    top:85px;
+    top:80px;
     left:50%;
     transform:translateX(-50%);
+
     font-size:12px;
-    color:#9ca49d;
-    white-space:nowrap;
+    color:#929a94;
 }
 
 .gardenPuzzle{
-    display:none;
     width:100%;
     height:100%;
+
+    display:none;
+
     align-items:center;
     justify-content:center;
     flex-direction:column;
@@ -194,104 +202,143 @@ button{
     bottom:28px;
     left:50%;
     transform:translateX(-50%);
-    color:#89918b;
+
+    color:#858e87;
     font-size:13px;
+
     text-align:center;
 }
 
 .nextButton{
     position:absolute;
+    right:28px;
     bottom:25px;
-    right:30px;
+
     padding:12px 25px;
+
     border:0;
     border-radius:25px;
+
     background:#fffdf4;
-    color:#59605b;
+    color:#555d57;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,.09);
+
     display:none;
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
 }
 
 .nextButton:hover{
     transform:translateY(-2px);
 }
 
-/* ---------- 화분 ---------- */
+
+/* ==================================================
+   PUZZLE 1 : 화분
+================================================== */
 
 .pot{
     font-size:120px;
     transition:.4s;
 }
 
+.waterMeter{
+    width:300px;
+    height:12px;
+
+    margin-top:20px;
+
+    border-radius:20px;
+    overflow:hidden;
+
+    background:#cbd5ce;
+}
+
+.waterFill{
+    width:0%;
+    height:100%;
+
+    background:#9ec9b4;
+
+    transition:.3s;
+}
+
 .waterArea{
     margin-top:25px;
+
     display:flex;
     gap:15px;
 }
 
 .water{
-    border:0;
-    background:#fffdf3;
-    border-radius:25px;
     padding:14px 25px;
+
+    border:0;
+    border-radius:25px;
+
+    background:#fffdf3;
+
     font-size:20px;
-    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.08);
 }
 
-.waterMeter{
-    margin-top:20px;
-    width:300px;
-    height:12px;
-    border-radius:20px;
-    background:#cbd5ce;
-    overflow:hidden;
-}
 
-.waterFill{
-    height:100%;
-    width:0%;
-    background:#9ec9b4;
-    transition:.3s;
-}
-
-/* ---------- 토끼 ---------- */
+/* ==================================================
+   PUZZLE 2 : 토끼
+================================================== */
 
 .rabbitWorld{
+    position:relative;
+
     width:min(650px,90vw);
     height:380px;
-    position:relative;
-    background:#dfe9d8;
-    border-radius:30px;
+
     overflow:hidden;
+
+    border-radius:30px;
+
+    background:#dfe9d8;
 }
 
 .rabbit{
     position:absolute;
+
     left:40px;
     top:160px;
+
     font-size:65px;
+
     transition:.7s;
 }
 
 .rabbitDoor{
     position:absolute;
+
     right:40px;
     top:145px;
+
     font-size:75px;
 }
 
 .path{
     position:absolute;
+
     width:100px;
     height:70px;
+
     border-radius:15px;
+
     background:#c7bba2;
+
     cursor:pointer;
+
     transition:.3s;
 }
 
 .path:hover{
-    transform:rotate(10deg) scale(1.05);
+    transform:rotate(7deg) scale(1.05);
 }
 
 .path1{
@@ -309,22 +356,40 @@ button{
     top:150px;
 }
 
-/* ---------- 그림자 ---------- */
 
-#shadowPuzzle{
+/* ==================================================
+   PUZZLE 3 : 그림자
+================================================== */
+
+#puzzle3{
     background:#a9c8d8;
 }
 
 .cloudWorld{
+    position:relative;
+
     width:min(700px,90vw);
     height:420px;
-    position:relative;
+}
+
+.sun{
+    position:absolute;
+
+    left:50%;
+    top:40px;
+
+    transform:translateX(-50%);
+
+    font-size:75px;
 }
 
 .cloud{
     position:absolute;
+
     font-size:80px;
+
     cursor:pointer;
+
     transition:.4s;
 }
 
@@ -342,88 +407,105 @@ button{
     top:90px;
 }
 
-.sun{
-    position:absolute;
-    left:50%;
-    top:40px;
-    transform:translateX(-50%);
-    font-size:75px;
-}
-
 .shadow{
     position:absolute;
-    width:120px;
-    height:35px;
-    background:rgba(70,80,90,.3);
-    border-radius:50%;
+
     left:50%;
     bottom:80px;
+
+    width:120px;
+    height:35px;
+
     transform:translateX(-50%);
+
+    border-radius:50%;
+
+    background:rgba(70,80,90,.3);
+
     transition:.8s;
 }
 
 .shadow.strange{
     width:80px;
     height:100px;
+
     border-radius:50% 50% 20% 20%;
 }
 
-/* ---------- 거울 ---------- */
 
-#mirrorPuzzle{
+/* ==================================================
+   PUZZLE 4 : 거울
+================================================== */
+
+#puzzle4{
     background:#dcd8d4;
 }
 
 .mirrorRoom{
     display:flex;
-    gap:60px;
     align-items:center;
+
+    gap:60px;
 }
 
 .roomCharacter{
     font-size:80px;
-    transition:.3s;
 }
 
 .mirror{
     width:250px;
     height:330px;
+
     border:15px solid #b8aaa0;
     border-radius:20px;
+
     background:#bcd1d3;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     font-size:80px;
+
     cursor:pointer;
 }
 
 .mirrorCharacter{
     transform:scaleX(-1);
+
     transition:.4s;
 }
 
-/* ---------- 이상한 정원 ---------- */
 
-#flowerPuzzle{
+/* ==================================================
+   PUZZLE 5 : 꽃
+================================================== */
+
+#puzzle5{
     background:
         radial-gradient(
             circle at 50% 40%,
             #f7f1d8,
             #c9d8c0
         );
+
+    transition:background .6s;
 }
 
 .garden{
+    position:relative;
+
     width:min(700px,90vw);
     height:450px;
-    position:relative;
 }
 
 .gardenFlower{
     position:absolute;
+
     font-size:70px;
+
     cursor:pointer;
+
     transition:.4s;
 }
 
@@ -431,23 +513,47 @@ button{
     transform:scale(1.15);
 }
 
-.gf1{left:14%;top:100px}
-.gf2{left:43%;top:40px}
-.gf3{right:14%;top:120px}
-.gf4{left:31%;bottom:50px}
-.gf5{right:32%;bottom:40px}
+.gf1{
+    left:14%;
+    top:100px;
+}
 
-/* ---------- 마지막 정원 ---------- */
+.gf2{
+    left:43%;
+    top:40px;
+}
 
-#finalGardenPuzzle{
+.gf3{
+    right:14%;
+    top:120px;
+}
+
+.gf4{
+    left:31%;
+    bottom:50px;
+}
+
+.gf5{
+    right:32%;
+    bottom:40px;
+}
+
+
+/* ==================================================
+   PUZZLE 6
+================================================== */
+
+#puzzle6{
     background:#34353b;
     color:#fff;
 }
 
 .finalGarden{
+    position:relative;
+
     width:600px;
     height:500px;
-    position:relative;
+
     display:flex;
     align-items:center;
     justify-content:center;
@@ -455,68 +561,90 @@ button{
 
 .bigFlower{
     font-size:180px;
+
     animation:pulse 2s infinite;
 }
 
 @keyframes pulse{
-    0%,100%{transform:scale(1)}
-    50%{transform:scale(1.05)}
+    0%,100%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.05);
+    }
 }
 
 .finalText{
     position:absolute;
     bottom:40px;
+
     color:#b9bbb9;
     font-size:13px;
-    letter-spacing:1px;
 }
 
-/* =====================================================
+
+/* ==================================================
    STAGE TRANSITION
-===================================================== */
+================================================== */
 
 #stageTransition{
     background:#05070d;
+
     align-items:center;
     justify-content:center;
     flex-direction:column;
+
     text-align:center;
-    color:#fff;
 }
 
 .transitionSmall{
     color:#8891ae;
-    font:10px "DM Mono",monospace;
+
+    font-size:10px;
+
     letter-spacing:.2em;
 }
 
 .transitionTitle{
     margin-top:15px;
-    font-size:clamp(35px,7vw,70px);
+
+    font-size:clamp(40px,7vw,75px);
+
     letter-spacing:-4px;
 }
 
 .transitionText{
     margin-top:20px;
+
     color:#aab1c8;
+
     line-height:2;
     font-size:14px;
 }
 
 .transitionUfo{
     margin-top:30px;
+
     font-size:55px;
+
     animation:ufoFloat 1.5s ease-in-out infinite alternate;
 }
 
 @keyframes ufoFloat{
-    from{transform:translateY(0)}
-    to{transform:translateY(-15px)}
+    from{
+        transform:translateY(0);
+    }
+
+    to{
+        transform:translateY(-15px);
+    }
 }
 
-/* =====================================================
-   STAGE 2 - UFO
-===================================================== */
+
+/* ==================================================
+   STAGE 2
+================================================== */
 
 #ufoStage{
     background:#080d22;
@@ -526,22 +654,28 @@ button{
 .ufoGame{
     width:100%;
     height:100%;
+
     display:grid;
+
     grid-template-rows:auto 1fr auto;
-    overflow:hidden;
 }
 
 .hud{
     display:flex;
     justify-content:space-between;
+
     padding:17px clamp(16px,5vw,70px);
+
     background:#0c1229;
+
     border-bottom:1px solid #20294c;
-    z-index:2;
+
+    z-index:10;
 }
 
 .hud div{
     min-width:100px;
+
     display:flex;
     flex-direction:column;
     gap:2px;
@@ -553,21 +687,20 @@ button{
 
 .hud .film{
     text-align:right;
-    align-items:end;
+    align-items:flex-end;
 }
 
 .hud b{
     font-size:20px;
-    letter-spacing:-.04em;
 }
 
 .hud small{
-    font:10px "DM Mono",monospace;
+    font-size:10px;
     color:#8f9ac4;
 }
 
 .label{
-    font:500 10px "DM Mono",monospace;
+    font-size:10px;
     letter-spacing:.18em;
     color:#aab5e5;
 }
@@ -578,24 +711,34 @@ button{
 
 .dot{
     display:inline-block;
+
     width:8px;
     height:14px;
-    border:1px solid #6572a0;
+
     margin-left:3px;
+
+    border:1px solid #6572a0;
+
     border-radius:1px;
 }
 
 .dot.full{
     background:#f1d071;
     border-color:#f1d071;
-    box-shadow:0 0 7px #f1d07188;
+
+    box-shadow:
+        0 0 7px #f1d07188;
 }
 
 .sky{
     position:relative;
+
     overflow:hidden;
+
     touch-action:none;
+
     cursor:crosshair;
+
     background:
         radial-gradient(
             ellipse at 50% 64%,
@@ -607,11 +750,17 @@ button{
 
 .sky:after{
     content:"";
+
     position:absolute;
     inset:0;
+
     pointer-events:none;
+
     background:
-        linear-gradient(#0000 75%,#050714aa),
+        linear-gradient(
+            #0000 75%,
+            #050714aa
+        ),
         radial-gradient(
             ellipse at center,
             #0000 48%,
@@ -622,69 +771,95 @@ button{
 .stars{
     position:absolute;
     inset:0;
+
     opacity:.65;
+
     background-image:
         radial-gradient(#fff 1px,transparent 1.2px),
         radial-gradient(#b6ccff 1px,transparent 1.4px),
         radial-gradient(#fff 1px,transparent 1.3px);
+
     background-size:
         75px 75px,
         129px 129px,
         191px 191px;
+
     background-position:
         14px 22px,
         62px 5px,
         20px 94px;
 }
 
+
+/* ==================================================
+   UFO
+================================================== */
+
 .ufo{
     position:absolute;
-    z-index:1;
-    transform:translate(-50%,-50%);
+
+    z-index:2;
+
+    transform:
+        translate(-50%,-50%);
+
     animation:
         enter .25s ease-out,
         hover 1.2s ease-in-out infinite alternate;
 }
 
 .ufo.golden{
-    filter:drop-shadow(0 0 12px #ffcc4d);
+    filter:
+        drop-shadow(
+            0 0 12px #ffcc4d
+        );
 }
 
 @keyframes enter{
     from{
         opacity:0;
-        transform:translate(-50%,-30%) scale(.6);
+
+        transform:
+            translate(-50%,-30%)
+            scale(.6);
     }
+
     to{
         opacity:1;
-        transform:translate(-50%,-50%) scale(1);
+
+        transform:
+            translate(-50%,-50%)
+            scale(1);
     }
 }
 
 @keyframes hover{
-    to{margin-top:-6px}
+    to{
+        margin-top:-6px;
+    }
 }
 
 .sprite{
     display:inline-block;
+
+    position:relative;
+
     width:70px;
     height:43px;
-    position:relative;
-}
-
-.sprite.small{
-    transform:scale(.58);
-    transform-origin:center;
-    margin:-7px 0;
 }
 
 .dome{
     position:absolute;
+
     width:31px;
     height:19px;
+
     left:20px;
     top:3px;
-    border-radius:50% 50% 9px 9px;
+
+    border-radius:
+        50% 50% 9px 9px;
+
     background:
         linear-gradient(
             130deg,
@@ -692,16 +867,21 @@ button{
             #76cfff 55%,
             #4d74c7
         );
+
     border:2px solid #c7eaff;
 }
 
 .body{
     position:absolute;
+
     width:68px;
     height:21px;
+
     left:1px;
     top:19px;
+
     border-radius:50%;
+
     background:
         linear-gradient(
             #d8e4f5,
@@ -709,6 +889,7 @@ button{
             #33456f 52%,
             #a2b4cf
         );
+
     border:2px solid #dceeff;
 }
 
@@ -734,37 +915,64 @@ button{
 
 .light{
     position:absolute;
+
     width:6px;
     height:4px;
-    border-radius:50%;
+
     top:30px;
+
+    border-radius:50%;
+
     background:#61ffbb;
-    z-index:1;
-    box-shadow:0 0 6px #61ffbb;
+
+    box-shadow:
+        0 0 6px #61ffbb;
 }
 
 .golden .light{
     background:#fff4a5;
-    box-shadow:0 0 6px #fff4a5;
+
+    box-shadow:
+        0 0 6px #fff4a5;
 }
 
-.l1{left:16px}
-.l2{left:32px}
-.l3{left:49px}
+.l1{
+    left:16px;
+}
+
+.l2{
+    left:32px;
+}
+
+.l3{
+    left:49px;
+}
+
+
+/* ==================================================
+   조준점
+================================================== */
 
 .finder{
     position:absolute;
+
+    z-index:5;
+
     width:112px;
     height:112px;
-    z-index:3;
-    transform:translate(-50%,-50%);
+
+    transform:
+        translate(-50%,-50%);
+
     pointer-events:none;
 }
 
 .finder i{
     position:absolute;
+
     width:27px;
     height:27px;
+
     border-color:#ecf1ff;
     border-style:solid;
 }
@@ -772,98 +980,157 @@ button{
 .finder i:nth-child(1){
     left:0;
     top:0;
-    border-width:2px 0 0 2px;
+
+    border-width:
+        2px 0 0 2px;
 }
 
 .finder i:nth-child(2){
     right:0;
     top:0;
-    border-width:2px 2px 0 0;
+
+    border-width:
+        2px 2px 0 0;
 }
 
 .finder i:nth-child(3){
     left:0;
     bottom:0;
-    border-width:0 0 2px 2px;
+
+    border-width:
+        0 0 2px 2px;
 }
 
 .finder i:nth-child(4){
     right:0;
     bottom:0;
-    border-width:0 2px 2px 0;
+
+    border-width:
+        0 2px 2px 0;
 }
 
 .finder b{
     position:absolute;
+
     left:50%;
     top:50%;
+
     width:9px;
     height:9px;
+
     border:1px solid #fff;
+
     border-radius:50%;
-    transform:translate(-50%,-50%);
-    box-shadow:0 0 6px #fff;
+
+    transform:
+        translate(-50%,-50%);
+
+    box-shadow:
+        0 0 6px #fff;
 }
+
+
+/* ==================================================
+   FEEDBACK
+================================================== */
 
 .feedback{
     position:absolute;
-    z-index:5;
+
+    z-index:8;
+
     left:50%;
     top:24%;
+
     transform:translateX(-50%);
+
     display:flex;
     flex-direction:column;
+
     text-align:center;
-    animation:feedback .9s ease-out forwards;
+
+    animation:
+        feedback .9s ease-out forwards;
 }
 
 .feedback b{
     font-size:clamp(30px,7vw,54px);
+
     letter-spacing:.06em;
 }
 
 .feedback span{
-    font:13px "DM Mono";
-    color:#fff;
+    font-size:13px;
 }
 
 .PERFECT b{
     color:#f6da75;
-    text-shadow:0 0 18px #e7b94a;
+
+    text-shadow:
+        0 0 18px #e7b94a;
 }
 
-.GOOD b{color:#9de4ff}
-.OK b{color:#d1d9f5}
-.MISS b{color:#ff8b91}
+.GOOD b{
+    color:#9de4ff;
+}
+
+.OK b{
+    color:#d1d9f5;
+}
+
+.MISS b{
+    color:#ff8b91;
+}
 
 @keyframes feedback{
     to{
-        transform:translate(-50%,-22px);
+        transform:
+            translate(-50%,-22px);
+
         opacity:0;
     }
 }
 
 .skyHint{
     position:absolute;
-    z-index:3;
+
+    z-index:6;
+
     bottom:20px;
+
     left:0;
     right:0;
+
     text-align:center;
+
     font-size:11px;
+
     color:#b7c1e5;
+
     pointer-events:none;
 }
 
+
+/* ==================================================
+   CONTROLS
+================================================== */
+
 .controls{
     display:grid;
+
     grid-template-columns:1fr auto 1fr;
+
     align-items:center;
+
     min-height:115px;
-    padding:11px clamp(18px,6vw,80px);
+
+    padding:
+        11px
+        clamp(18px,6vw,80px);
+
     background:#0c1229;
+
     border-top:1px solid #20294c;
-    z-index:4;
 }
 
 .controls p{
@@ -872,58 +1139,76 @@ button{
 }
 
 .controls small{
-    text-align:center;
-    color:#b9c4eb;
-    font:10px "DM Mono";
-    letter-spacing:.13em;
     grid-column:2;
+
+    text-align:center;
+
+    color:#b9c4eb;
+
+    font-size:10px;
+
+    letter-spacing:.13em;
 }
 
 .shutter{
+    grid-column:2;
+
     width:65px;
     height:65px;
-    border-radius:50%;
-    border:4px solid #dfe6ff;
-    background:#a8b4dd;
+
     padding:5px;
+
+    border-radius:50%;
+
+    border:4px solid #dfe6ff;
+
+    background:#a8b4dd;
+
     box-shadow:
         0 0 0 4px #58638c,
         0 4px 15px #0008;
-    grid-column:2;
-    cursor:pointer;
 }
 
 .shutter span{
     display:block;
+
     width:100%;
     height:100%;
+
     border-radius:50%;
+
     background:#e05d69;
+
     border:2px solid #ffb1b7;
-    box-shadow:inset 0 -5px #a63b4a;
+
+    box-shadow:
+        inset 0 -5px #a63b4a;
 }
 
 .shutter:active{
     transform:translateY(2px);
-    filter:brightness(.85);
 }
 
-/* =====================================================
-   FINAL
-===================================================== */
+
+/* ==================================================
+   ENDING
+================================================== */
 
 #ending{
     background:#070911;
-    color:#fff;
+
     align-items:center;
     justify-content:center;
     flex-direction:column;
+
     text-align:center;
 }
 
 .endUfo{
     font-size:80px;
-    animation:ufoFloat 2s ease-in-out infinite alternate;
+
+    animation:
+        ufoFloat 2s ease-in-out infinite alternate;
 }
 
 .endFlower{
@@ -933,39 +1218,60 @@ button{
 
 .endTitle{
     margin-top:25px;
+
     font-size:clamp(30px,6vw,55px);
+
     letter-spacing:-3px;
 }
 
 .endText{
     margin-top:20px;
+
     color:#aeb5c8;
+
     line-height:2;
+
     font-size:14px;
 }
 
 .restart{
     margin-top:35px;
+
     padding:13px 30px;
+
     border:0;
     border-radius:25px;
+
     background:#eee;
     color:#333;
 }
 
+
+/* ==================================================
+   MOBILE
+================================================== */
+
 @media(max-width:580px){
 
+    .mainTitle{
+        font-size:42px;
+    }
+
+    .mainSub{
+        font-size:13px;
+    }
+
     .stageTitle{
-        top:20px;
+        top:18px;
         font-size:19px;
     }
 
     .stageNumber{
-        top:47px;
+        top:46px;
     }
 
     .subStageText{
-        top:70px;
+        top:69px;
         font-size:10px;
     }
 
@@ -1053,17 +1359,23 @@ button{
 </style>
 </head>
 
+
 <body>
 
 <div id="game">
 
-<!-- =====================================================
+
+<!-- ==================================================
      TITLE
-===================================================== -->
+================================================== -->
 
-<section id="titleScreen" class="screen active">
+<section
+    id="titleScreen"
+    class="screen active">
 
-    <div class="titleFlower">🌷</div>
+    <div class="titleFlower">
+        🌷
+    </div>
 
     <div class="mainTitle">
         잠들지 못한 밤
@@ -1074,18 +1386,22 @@ button{
         밤하늘에 남은 흔적을 찾아보세요.
     </div>
 
-    <button class="startButton" onclick="startGame()">
+    <button
+        id="startButton"
+        class="startButton">
         시작하기
     </button>
 
 </section>
 
 
-<!-- =====================================================
+<!-- ==================================================
      STAGE 1
-===================================================== -->
+================================================== -->
 
-<section id="gardenStage" class="screen">
+<section
+    id="gardenStage"
+    class="screen">
 
     <div class="stageTitle">
         잠들지 못한 정원
@@ -1095,27 +1411,40 @@ button{
         STAGE 1
     </div>
 
-    <div class="subStageText" id="gardenSubTitle">
+    <div
+        id="gardenSubTitle"
+        class="subStageText">
         작은 화분
     </div>
 
 
-    <!-- 1-1 화분 -->
+    <!-- PUZZLE 1 -->
 
-    <div id="puzzle1" class="gardenPuzzle active">
+    <div
+        id="puzzle1"
+        class="gardenPuzzle active">
 
-        <div class="pot" id="pot">
+        <div
+            id="pot"
+            class="pot">
             🪴
         </div>
 
         <div class="waterMeter">
-            <div id="waterFill" class="waterFill"></div>
+            <div
+                id="waterFill"
+                class="waterFill">
+            </div>
         </div>
 
         <div class="waterArea">
-            <button class="water" onclick="giveWater()">
+
+            <button
+                id="waterButton"
+                class="water">
                 💧
             </button>
+
         </div>
 
         <div class="hint">
@@ -1124,21 +1453,24 @@ button{
 
         <button
             id="nextPuzzle1"
-            class="nextButton"
-            onclick="nextGardenPuzzle()">
+            class="nextButton">
             다음 →
         </button>
 
     </div>
 
 
-    <!-- 1-2 토끼 -->
+    <!-- PUZZLE 2 -->
 
-    <div id="puzzle2" class="gardenPuzzle">
+    <div
+        id="puzzle2"
+        class="gardenPuzzle">
 
         <div class="rabbitWorld">
 
-            <div id="rabbit" class="rabbit">
+            <div
+                id="rabbit"
+                class="rabbit">
                 🐇
             </div>
 
@@ -1146,16 +1478,19 @@ button{
                 🚪
             </div>
 
-            <div class="path path1"
-                 onclick="moveRabbit(1)">
+            <div
+                class="path path1"
+                data-step="1">
             </div>
 
-            <div class="path path2"
-                 onclick="moveRabbit(2)">
+            <div
+                class="path path2"
+                data-step="2">
             </div>
 
-            <div class="path path3"
-                 onclick="moveRabbit(3)">
+            <div
+                class="path path3"
+                data-step="3">
             </div>
 
         </div>
@@ -1166,17 +1501,18 @@ button{
 
         <button
             id="nextPuzzle2"
-            class="nextButton"
-            onclick="nextGardenPuzzle()">
+            class="nextButton">
             다음 →
         </button>
 
     </div>
 
 
-    <!-- 1-3 그림자 -->
+    <!-- PUZZLE 3 -->
 
-    <div id="puzzle3" class="gardenPuzzle">
+    <div
+        id="puzzle3"
+        class="gardenPuzzle">
 
         <div class="cloudWorld">
 
@@ -1186,17 +1522,20 @@ button{
 
             <div
                 class="cloud cloud1"
-                onclick="moveCloud()">
+                data-cloud="1">
                 ☁️
             </div>
 
             <div
                 class="cloud cloud2"
-                onclick="moveCloud()">
+                data-cloud="2">
                 ☁️
             </div>
 
-            <div id="shadow" class="shadow"></div>
+            <div
+                id="shadow"
+                class="shadow">
+            </div>
 
         </div>
 
@@ -1206,25 +1545,28 @@ button{
 
         <button
             id="nextPuzzle3"
-            class="nextButton"
-            onclick="nextGardenPuzzle()">
+            class="nextButton">
             다음 →
         </button>
 
     </div>
 
 
-    <!-- 1-4 거울 -->
+    <!-- PUZZLE 4 -->
 
-    <div id="puzzle4" class="gardenPuzzle">
+    <div
+        id="puzzle4"
+        class="gardenPuzzle">
 
         <div class="mirrorRoom">
 
-            <div id="character" class="roomCharacter">
+            <div class="roomCharacter">
                 🧍
             </div>
 
-            <div id="mirror" class="mirror">
+            <div
+                id="mirror"
+                class="mirror">
 
                 <div
                     id="mirrorCharacter"
@@ -1242,47 +1584,48 @@ button{
 
         <button
             id="nextPuzzle4"
-            class="nextButton"
-            onclick="nextGardenPuzzle()">
+            class="nextButton">
             다음 →
         </button>
 
     </div>
 
 
-    <!-- 1-5 꽃 -->
+    <!-- PUZZLE 5 -->
 
-    <div id="puzzle5" class="gardenPuzzle">
+    <div
+        id="puzzle5"
+        class="gardenPuzzle">
 
         <div class="garden">
 
             <div
                 class="gardenFlower gf1"
-                onclick="touchFlower(this)">
+                data-flower="1">
                 🌷
             </div>
 
             <div
                 class="gardenFlower gf2"
-                onclick="touchFlower(this)">
+                data-flower="2">
                 🌷
             </div>
 
             <div
                 class="gardenFlower gf3"
-                onclick="touchFlower(this)">
+                data-flower="3">
                 🌷
             </div>
 
             <div
                 class="gardenFlower gf4"
-                onclick="touchFlower(this)">
+                data-flower="4">
                 🌷
             </div>
 
             <div
                 class="gardenFlower gf5"
-                onclick="touchFlower(this)">
+                data-flower="5">
                 🌷
             </div>
 
@@ -1294,17 +1637,18 @@ button{
 
         <button
             id="nextPuzzle5"
-            class="nextButton"
-            onclick="nextGardenPuzzle()">
+            class="nextButton">
             다음 →
         </button>
 
     </div>
 
 
-    <!-- 1-6 마지막 꽃 -->
+    <!-- PUZZLE 6 -->
 
-    <div id="puzzle6" class="gardenPuzzle">
+    <div
+        id="puzzle6"
+        class="gardenPuzzle">
 
         <div class="finalGarden">
 
@@ -1321,9 +1665,9 @@ button{
         </div>
 
         <button
+            id="finishGardenButton"
             class="nextButton"
-            style="display:block;"
-            onclick="finishGarden()">
+            style="display:block;">
             바라보기
         </button>
 
@@ -1332,11 +1676,13 @@ button{
 </section>
 
 
-<!-- =====================================================
-     STAGE TRANSITION
-===================================================== -->
+<!-- ==================================================
+     TRANSITION
+================================================== -->
 
-<section id="stageTransition" class="screen">
+<section
+    id="stageTransition"
+    class="screen">
 
     <div class="transitionSmall">
         STAGE 1 CLEAR
@@ -1358,49 +1704,86 @@ button{
 </section>
 
 
-<!-- =====================================================
-     STAGE 2 UFO
-===================================================== -->
+<!-- ==================================================
+     STAGE 2
+================================================== -->
 
-<section id="ufoStage" class="screen">
+<section
+    id="ufoStage"
+    class="screen">
 
     <main class="ufoGame">
 
         <header class="hud">
 
             <div>
-                <span class="label">STAGE</span>
-                <b id="ufoStageNumber">2</b>
+
+                <span class="label">
+                    STAGE
+                </span>
+
+                <b id="ufoStageNumber">
+                    1
+                </b>
+
                 <small>
-                    <span id="caught">0</span> /
-                    <span id="target">5</span> 발견
+                    <span id="caught">
+                        0
+                    </span>
+                    /
+                    <span id="target">
+                        5
+                    </span>
+                    발견
                 </small>
+
             </div>
+
 
             <div class="score">
-                <span class="label">SCORE</span>
-                <b id="score">0</b>
+
+                <span class="label">
+                    SCORE
+                </span>
+
+                <b id="score">
+                    0
+                </b>
+
                 <small id="comboText"></small>
+
             </div>
 
+
             <div class="film">
-                <span class="label">FILM</span>
+
+                <span class="label">
+                    FILM
+                </span>
+
                 <b id="filmDots"></b>
+
                 <small>
-                    <span id="filmCount">8</span> / 8
+                    <span id="filmCount">
+                        8
+                    </span>
+                    / 8
                 </small>
+
             </div>
 
         </header>
 
 
-        <div class="sky" id="sky">
+        <div
+            id="sky"
+            class="sky">
 
             <div class="stars"></div>
 
             <div
-                class="finder"
-                id="finder">
+                id="finder"
+                class="finder">
 
                 <i></i>
                 <i></i>
@@ -1429,9 +1812,8 @@ button{
             </p>
 
             <button
-                class="shutter"
                 id="shutter"
-                aria-label="UFO 촬영">
+                class="shutter">
 
                 <span></span>
 
@@ -1448,11 +1830,13 @@ button{
 </section>
 
 
-<!-- =====================================================
+<!-- ==================================================
      ENDING
-===================================================== -->
+================================================== -->
 
-<section id="ending" class="screen">
+<section
+    id="ending"
+    class="screen">
 
     <div class="endUfo">
         🛸
@@ -1481,8 +1865,8 @@ button{
     </div>
 
     <button
-        class="restart"
-        onclick="location.reload()">
+        id="restartButton"
+        class="restart">
         다시 보기
     </button>
 
@@ -1493,49 +1877,80 @@ button{
 
 <script>
 
-/* =====================================================
-   전체 게임 상태
-===================================================== */
+/* ==================================================
+   GAME STATE
+================================================== */
 
-let currentGardenPuzzle = 1;
+const game = {
 
-let water = 0;
-let rabbitStep = 0;
-let cloudClicks = 0;
-let mirrorClicks = 0;
-let flowerClicks = 0;
+    gardenPuzzle:1,
+
+    water:0,
+
+    rabbitStep:0,
+
+    cloudClicks:0,
+
+    mirrorClicks:0,
+
+    flowerClicks:0,
+
+    ufo:null
+
+};
 
 
-/* =====================================================
-   공통 화면 전환
-===================================================== */
+/* ==================================================
+   ELEMENT HELPER
+================================================== */
+
+function $(id){
+
+    return document.getElementById(id);
+
+}
+
+
+/* ==================================================
+   SCREEN
+================================================== */
 
 function showScreen(id){
 
     document
         .querySelectorAll(".screen")
         .forEach(screen=>{
+
             screen.classList.remove("active");
+
         });
 
-    const screen=document.getElementById(id);
+    const screen=$(id);
 
-    screen.classList.add("active");
+    if(!screen){
+        console.error(
+            "화면을 찾을 수 없습니다:",
+            id
+        );
+
+        return;
+    }
+
     screen.classList.remove("fade");
 
     void screen.offsetWidth;
 
+    screen.classList.add("active");
     screen.classList.add("fade");
+
 }
 
 
-/* =====================================================
-   게임 시작
-===================================================== */
+/* ==================================================
+   START
+================================================== */
 
 function startGame(){
-
-    currentGardenPuzzle=1;
 
     resetGarden();
 
@@ -1544,118 +1959,167 @@ function startGame(){
 }
 
 
-/* =====================================================
-   STAGE 1 초기화
-===================================================== */
+/* ==================================================
+   RESET STAGE 1
+================================================== */
 
 function resetGarden(){
 
-    water=0;
-    rabbitStep=0;
-    cloudClicks=0;
-    mirrorClicks=0;
-    flowerClicks=0;
+    game.gardenPuzzle=1;
 
-    document.getElementById("waterFill").style.width="0%";
+    game.water=0;
 
-    document.getElementById("pot").innerText="🪴";
+    game.rabbitStep=0;
 
-    document.getElementById("rabbit").style.left="40px";
-    document.getElementById("rabbit").style.top="160px";
+    game.cloudClicks=0;
 
-    document.getElementById("shadow").classList.remove("strange");
+    game.mirrorClicks=0;
 
-    document.getElementById("mirrorCharacter").style.transform=
+    game.flowerClicks=0;
+
+
+    $("waterFill").style.width="0%";
+
+    $("pot").innerText="🪴";
+
+
+    $("rabbit").style.left="40px";
+    $("rabbit").style.top="160px";
+
+
+    $("shadow").classList.remove("strange");
+
+
+    $("mirrorCharacter").style.transform=
         "scaleX(-1)";
 
-    document.getElementById("stage5").style.background="";
 
-    document.querySelectorAll(".gardenFlower").forEach(f=>{
-        f.style.transform="scale(1)";
-    });
+    $("puzzle5").style.background=
+        "radial-gradient(circle at 50% 40%,#f7f1d8,#c9d8c0)";
 
-    document.querySelectorAll(".nextButton").forEach(btn=>{
-        if(
-            btn.id &&
-            btn.id.startsWith("nextPuzzle")
-        ){
-            btn.style.display="none";
-        }
-    });
 
-    document.querySelectorAll(".gardenPuzzle").forEach(p=>{
-        p.classList.remove("active");
-    });
+    $("bigFlower").innerText="🌷";
 
-    document.getElementById("puzzle1").classList.add("active");
+
+    document
+        .querySelectorAll(".gardenFlower")
+        .forEach(flower=>{
+
+            flower.style.transform=
+                "scale(1)";
+
+        });
+
+
+    document
+        .querySelectorAll(".nextButton")
+        .forEach(button=>{
+
+            if(button.id!=="finishGardenButton"){
+
+                button.style.display="none";
+
+            }
+
+        });
+
+
+    document
+        .querySelectorAll(".gardenPuzzle")
+        .forEach(puzzle=>{
+
+            puzzle.classList.remove("active");
+
+        });
+
+
+    $("puzzle1").classList.add("active");
 
     updateGardenTitle();
 
 }
 
 
-/* =====================================================
-   STAGE 1 내부 진행
-===================================================== */
+/* ==================================================
+   GARDEN TITLE
+================================================== */
 
 function updateGardenTitle(){
 
     const titles=[
+
         "작은 화분",
+
         "길을 만들어주세요",
+
         "하늘의 그림자",
+
         "거울 속의 정원",
+
         "이상한 정원",
+
         "마지막 정원"
+
     ];
 
-    document.getElementById("gardenSubTitle").innerText=
-        titles[currentGardenPuzzle-1];
+
+    $("gardenSubTitle").innerText=
+        titles[
+            game.gardenPuzzle-1
+        ];
 
 }
 
 
+/* ==================================================
+   NEXT PUZZLE
+================================================== */
+
 function nextGardenPuzzle(){
 
-    if(currentGardenPuzzle>=6){
+    if(game.gardenPuzzle>=6){
         return;
     }
 
-    document
-        .getElementById("puzzle"+currentGardenPuzzle)
+
+    $("puzzle"+game.gardenPuzzle)
         .classList.remove("active");
 
-    currentGardenPuzzle++;
 
-    document
-        .getElementById("puzzle"+currentGardenPuzzle)
+    game.gardenPuzzle++;
+
+
+    $("puzzle"+game.gardenPuzzle)
         .classList.add("active");
+
 
     updateGardenTitle();
 
 }
 
 
-/* =====================================================
-   STAGE 1-1 화분
-===================================================== */
+/* ==================================================
+   PUZZLE 1
+================================================== */
 
 function giveWater(){
 
-    water+=20;
+    game.water+=20;
 
-    if(water>100){
-        water=100;
+    if(game.water>100){
+        game.water=100;
     }
 
-    document.getElementById("waterFill").style.width=
-        water+"%";
 
-    if(water>=80){
+    $("waterFill").style.width=
+        game.water+"%";
 
-        document.getElementById("pot").innerText="🌷";
 
-        document.getElementById("nextPuzzle1").style.display=
+    if(game.water>=80){
+
+        $("pot").innerText="🌷";
+
+        $("nextPuzzle1").style.display=
             "block";
 
     }
@@ -1663,25 +2127,29 @@ function giveWater(){
 }
 
 
-/* =====================================================
-   STAGE 1-2 토끼
-===================================================== */
+/* ==================================================
+   PUZZLE 2
+================================================== */
 
 function moveRabbit(step){
 
-    if(step!==rabbitStep+1){
+    if(step!==game.rabbitStep+1){
         return;
     }
 
-    rabbitStep=step;
 
-    const rabbit=document.getElementById("rabbit");
+    game.rabbitStep=step;
+
+
+    const rabbit=$("rabbit");
+
 
     if(step===1){
 
         rabbit.style.left="27%";
 
     }
+
 
     if(step===2){
 
@@ -1690,17 +2158,19 @@ function moveRabbit(step){
 
     }
 
+
     if(step===3){
 
         rabbit.style.left="63%";
         rabbit.style.top="150px";
 
+
         setTimeout(()=>{
 
             rabbit.style.left="78%";
 
-            document.getElementById("nextPuzzle2")
-                .style.display="block";
+            $("nextPuzzle2").style.display=
+                "block";
 
         },700);
 
@@ -1709,22 +2179,22 @@ function moveRabbit(step){
 }
 
 
-/* =====================================================
-   STAGE 1-3 그림자
-===================================================== */
+/* ==================================================
+   PUZZLE 3
+================================================== */
 
 function moveCloud(){
 
-    cloudClicks++;
+    game.cloudClicks++;
 
-    if(cloudClicks>=2){
 
-        document
-            .getElementById("shadow")
+    if(game.cloudClicks>=2){
+
+        $("shadow")
             .classList.add("strange");
 
-        document
-            .getElementById("nextPuzzle3")
+
+        $("nextPuzzle3")
             .style.display="block";
 
     }
@@ -1732,76 +2202,81 @@ function moveCloud(){
 }
 
 
-/* =====================================================
-   STAGE 1-4 거울
-===================================================== */
+/* ==================================================
+   PUZZLE 4
+================================================== */
 
-document
-    .getElementById("mirror")
-    .addEventListener("click",function(){
+function inspectMirror(){
 
-        mirrorClicks++;
-
-        const mirror=
-            document.getElementById("mirrorCharacter");
-
-        if(mirrorClicks===1){
-
-            mirror.style.transform=
-                "scaleX(1)";
-
-        }
-
-        if(mirrorClicks===2){
-
-            mirror.style.transform=
-                "scaleX(-1)";
-
-        }
-
-        if(mirrorClicks>=3){
-
-            mirror.style.transform=
-                "rotate(5deg) scaleX(-1)";
-
-            document
-                .getElementById("nextPuzzle4")
-                .style.display="block";
-
-        }
-
-    });
+    game.mirrorClicks++;
 
 
-/* =====================================================
-   STAGE 1-5 꽃
-===================================================== */
+    const mirror=
+        $("mirrorCharacter");
 
-function touchFlower(element){
 
-    flowerClicks++;
+    if(game.mirrorClicks===1){
 
-    element.style.transform=
+        mirror.style.transform=
+            "scaleX(1)";
+
+    }
+
+
+    if(game.mirrorClicks===2){
+
+        mirror.style.transform=
+            "scaleX(-1)";
+
+    }
+
+
+    if(game.mirrorClicks>=3){
+
+        mirror.style.transform=
+            "rotate(5deg) scaleX(-1)";
+
+
+        $("nextPuzzle4")
+            .style.display="block";
+
+    }
+
+}
+
+
+/* ==================================================
+   PUZZLE 5
+================================================== */
+
+function touchFlower(flower){
+
+    game.flowerClicks++;
+
+
+    flower.style.transform=
         "scale(.7) rotate(20deg)";
+
 
     setTimeout(()=>{
 
-        element.style.transform=
+        flower.style.transform=
             "scale(1)";
 
     },300);
 
-    if(flowerClicks===3){
 
-        document.getElementById("flowerPuzzle").style.background=
+    if(game.flowerClicks>=3){
+
+        $("puzzle5").style.background=
             "radial-gradient(circle,#ead5d5,#bda7a7)";
 
     }
 
-    if(flowerClicks>=5){
 
-        document
-            .getElementById("nextPuzzle5")
+    if(game.flowerClicks>=5){
+
+        $("nextPuzzle5")
             .style.display="block";
 
     }
@@ -1809,341 +2284,484 @@ function touchFlower(element){
 }
 
 
-/* =====================================================
-   STAGE 1-6 엔딩
-===================================================== */
+/* ==================================================
+   STAGE 1 CLEAR
+================================================== */
 
 function finishGarden(){
 
-    const flower=
-        document.getElementById("bigFlower");
+    $("bigFlower").innerText="🫀";
 
-    flower.innerText="🫀";
 
-    document
-        .getElementById("finalGardenPuzzle")
-        .classList.add("glitch");
+    $("puzzle6").classList.add("glitch");
+
 
     setTimeout(()=>{
 
         showScreen("stageTransition");
 
+
         setTimeout(()=>{
 
-            startUFOStage();
+            startUFOGame();
 
-        },2800);
+        },2600);
 
-    },1200);
+    },1100);
 
 }
 
 
-/* =====================================================
-   STAGE 2 UFO 설정
-===================================================== */
+/* ==================================================
+   UFO CONFIG
+================================================== */
 
-const MAX_FILM=8;
+const UFO_STAGES=[
 
-const ufoStages=[
     {
         target:5,
         speed:1,
-        golden:.03,
+        golden:.04,
         delay:1450
     },
+
     {
         target:7,
         speed:1.3,
-        golden:.06,
+        golden:.07,
         delay:1250
     },
+
     {
         target:9,
         speed:1.7,
-        golden:.1,
+        golden:.11,
         delay:1050
     }
+
 ];
 
-let ufoState;
-let spawnTimer;
-let cleanTimer;
-let feedbackTimer;
-let ufoId=0;
+
+const MAX_FILM=8;
 
 
-function ufoConfig(){
+/* ==================================================
+   UFO GAME START
+================================================== */
 
-    return ufoStages[
-        Math.min(
-            ufoState.stage-1,
-            ufoStages.length-1
-        )
-    ];
+function startUFOGame(){
 
-}
+    stopUFOTimers();
 
 
-/* =====================================================
-   UFO 시작
-===================================================== */
+    game.ufo={
 
-function startUFOStage(){
-
-    clearUfoTimers();
-
-    ufoState={
         stage:1,
+
         caught:0,
+
         score:0,
+
         combo:0,
+
         film:MAX_FILM,
+
         aim:{
             x:50,
             y:50
         },
+
         ufos:[],
-        captures:[],
-        feedback:null
+
+        nextId:0,
+
+        feedback:null,
+
+        captures:[]
+
     };
+
 
     showScreen("ufoStage");
 
+
     renderUFO();
 
-    startSpawning();
+
+    startUFOSpawning();
 
 }
 
 
-/* =====================================================
-   UFO 타이머
-===================================================== */
+/* ==================================================
+   UFO CONFIG
+================================================== */
 
-function clearUfoTimers(){
+function getUFOConfig(){
 
-    clearInterval(spawnTimer);
-    clearInterval(cleanTimer);
-    clearTimeout(feedbackTimer);
+    const index=
+        Math.min(
+            game.ufo.stage-1,
+            UFO_STAGES.length-1
+        );
+
+
+    return UFO_STAGES[index];
 
 }
 
 
-/* =====================================================
-   UFO 생성
-===================================================== */
+/* ==================================================
+   UFO TIMERS
+================================================== */
 
-function startSpawning(){
+let spawnTimer=null;
 
-    const c=ufoConfig();
+let cleanTimer=null;
 
-    spawnTimer=setInterval(()=>{
+let feedbackTimer=null;
 
-        const now=Date.now();
 
-        ufoState.ufos=[
-            ...ufoState.ufos.filter(
-                x=>x.until>now
-            ),
-            {
-                id:++ufoId,
+function stopUFOTimers(){
+
+    if(spawnTimer){
+
+        clearInterval(spawnTimer);
+
+        spawnTimer=null;
+
+    }
+
+
+    if(cleanTimer){
+
+        clearInterval(cleanTimer);
+
+        cleanTimer=null;
+
+    }
+
+
+    if(feedbackTimer){
+
+        clearTimeout(feedbackTimer);
+
+        feedbackTimer=null;
+
+    }
+
+}
+
+
+/* ==================================================
+   UFO SPAWN
+================================================== */
+
+function startUFOSpawning(){
+
+    if(!game.ufo){
+        return;
+    }
+
+
+    if(spawnTimer){
+        clearInterval(spawnTimer);
+    }
+
+
+    const config=
+        getUFOConfig();
+
+
+    spawnTimer=
+        setInterval(()=>{
+
+            if(!game.ufo){
+                return;
+            }
+
+
+            const now=Date.now();
+
+
+            game.ufo.ufos.push({
+
+                id:++game.ufo.nextId,
 
                 kind:
-                    Math.random()<c.golden
-                    ? "golden"
-                    : "scout",
+                    Math.random()<
+                    config.golden
+                    ?"golden"
+                    :"scout",
 
-                x:12+Math.random()*76,
+                x:12+
+                    Math.random()*76,
 
-                y:16+Math.random()*68,
+                y:16+
+                    Math.random()*68,
 
                 until:
                     now+
                     Math.max(
                         850,
-                        2600/c.speed
+                        2600/config.speed
                     )
+
+            });
+
+
+            game.ufo.ufos=
+                game.ufo.ufos.slice(-3);
+
+
+            renderUFO();
+
+
+        },config.delay);
+
+
+    cleanTimer=
+        setInterval(()=>{
+
+            if(!game.ufo){
+                return;
             }
 
-        ].slice(-3);
 
-        renderUFO();
-
-    },c.delay);
+            const now=Date.now();
 
 
-    cleanTimer=setInterval(()=>{
+            game.ufo.ufos=
+                game.ufo.ufos.filter(
+                    u=>u.until>now
+                );
 
-        ufoState.ufos=
-            ufoState.ufos.filter(
-                x=>x.until>Date.now()
-            );
 
-        renderUFO();
+            renderUFO();
 
-    },180);
+
+        },180);
 
 }
 
 
-/* =====================================================
-   UFO HTML
-===================================================== */
+/* ==================================================
+   UFO SPRITE
+================================================== */
 
-function ufoSprite(kind){
+function ufoSprite(){
 
     return `
-        <span class="sprite ${kind}">
+
+        <span class="sprite">
+
             <i class="dome"></i>
+
             <i class="body"></i>
+
             <i class="light l1"></i>
+
             <i class="light l2"></i>
+
             <i class="light l3"></i>
+
         </span>
+
     `;
 
 }
 
 
-/* =====================================================
-   UFO 렌더링
-===================================================== */
+/* ==================================================
+   RENDER UFO
+================================================== */
 
 function renderUFO(){
 
-    if(!ufoState){
+    if(!game.ufo){
         return;
     }
 
-    const config=ufoConfig();
 
-    document.getElementById("ufoStageNumber").innerText=
-        ufoState.stage;
+    const state=
+        game.ufo;
 
-    document.getElementById("caught").innerText=
-        ufoState.caught;
 
-    document.getElementById("target").innerText=
-        config.target;
+    const config=
+        getUFOConfig();
 
-    document.getElementById("score").innerText=
-        ufoState.score.toLocaleString();
 
-    document.getElementById("filmCount").innerText=
-        ufoState.film;
-
-    document.getElementById("comboText").innerText=
-        ufoState.combo>1
-        ? "×"+ufoState.combo+" COMBO"
-        : "";
-
-    document.getElementById("comboText")
-        .classList.toggle(
-            "combo",
-            ufoState.combo>1
+    $("ufoStageNumber").innerText=
+        Math.min(
+            state.stage,
+            UFO_STAGES.length
         );
 
 
-    document.getElementById("filmDots").innerHTML=
+    $("caught").innerText=
+        state.caught;
+
+
+    $("target").innerText=
+        config.target;
+
+
+    $("score").innerText=
+        state.score.toLocaleString();
+
+
+    $("filmCount").innerText=
+        state.film;
+
+
+    $("comboText").innerText=
+        state.combo>1
+        ?`×${state.combo} COMBO`
+        :"";
+
+
+    $("comboText").classList.toggle(
+        "combo",
+        state.combo>1
+    );
+
+
+    $("filmDots").innerHTML=
         Array.from(
-            {length:8},
-            (_,i)=>
-                `<i class="dot ${
-                    i<ufoState.film
-                    ?"full"
-                    :""
-                }"></i>`
+            {length:MAX_FILM},
+            (_,index)=>{
+
+                return `
+                    <i class="dot ${
+                        index<state.film
+                        ?"full"
+                        :""
+                    }"></i>
+                `;
+
+            }
         ).join("");
 
 
-    document.getElementById("finder").style.left=
-        ufoState.aim.x+"%";
-
-    document.getElementById("finder").style.top=
-        ufoState.aim.y+"%";
+    $("finder").style.left=
+        state.aim.x+"%";
 
 
-    document.getElementById("ufoContainer").innerHTML=
-        ufoState.ufos.map(u=>`
-
-            <div
-                class="ufo ${u.kind}"
-                style="
-                    left:${u.x}%;
-                    top:${u.y}%
-                ">
-
-                ${ufoSprite(u.kind)}
-
-            </div>
-
-        `).join("");
+    $("finder").style.top=
+        state.aim.y+"%";
 
 
-    if(ufoState.feedback){
+    $("ufoContainer").innerHTML=
+        state.ufos
+            .map(ufo=>{
 
-        const feedback=
-            document.getElementById("feedback");
+                return `
 
-        feedback.className=
-            "feedback "+ufoState.feedback.grade;
+                    <div
+                        class="ufo ${
+                            ufo.kind==="golden"
+                            ?"golden"
+                            :""
+                        }"
+                        style="
+                            left:${ufo.x}%;
+                            top:${ufo.y}%;
+                        "
+                    >
 
-        feedback.innerHTML=`
+                        ${ufoSprite()}
 
-            <b>${ufoState.feedback.grade}</b>
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
+
+    if(state.feedback){
+
+        $("feedback").className=
+            "feedback "+
+            state.feedback.grade;
+
+
+        $("feedback").innerHTML=`
+
+            <b>
+                ${state.feedback.grade}
+            </b>
 
             <span>
                 ${
-                    ufoState.feedback.score
-                    ? "+"+ufoState.feedback.score
-                    : ufoState.feedback.grade==="MISS"
-                    ? "UFO를 놓쳤어요"
-                    : ""
+                    state.feedback.grade==="MISS"
+                    ?"UFO를 놓쳤어요"
+                    :"+"+
+                    state.feedback.score
                 }
             </span>
 
         `;
+
+    }else{
+
+        $("feedback").className="";
+        $("feedback").innerHTML="";
 
     }
 
 }
 
 
-/* =====================================================
-   UFO 조준
-===================================================== */
+/* ==================================================
+   AIM
+================================================== */
 
-const sky=document.getElementById("sky");
+const sky=$("sky");
 
 let aiming=false;
 
 
-function updateAim(e){
+function updateAim(event){
 
-    const rect=sky.getBoundingClientRect();
+    if(!game.ufo){
+        return;
+    }
 
-    ufoState.aim={
 
-        x:Math.max(
+    const rect=
+        sky.getBoundingClientRect();
+
+
+    game.ufo.aim.x=
+        Math.max(
             0,
             Math.min(
                 100,
-                (e.clientX-rect.left)/
-                rect.width*100
+                (
+                    event.clientX-
+                    rect.left
+                )/
+                rect.width*
+                100
             )
-        ),
+        );
 
-        y:Math.max(
+
+    game.ufo.aim.y=
+        Math.max(
             0,
             Math.min(
                 100,
-                (e.clientY-rect.top)/
-                rect.height*100
+                (
+                    event.clientY-
+                    rect.top
+                )/
+                rect.height*
+                100
             )
-        )
+        );
 
-    };
 
     renderUFO();
 
@@ -2152,11 +2770,11 @@ function updateAim(e){
 
 sky.addEventListener(
     "pointerdown",
-    e=>{
+    event=>{
 
         aiming=true;
 
-        updateAim(e);
+        updateAim(event);
 
     }
 );
@@ -2164,17 +2782,19 @@ sky.addEventListener(
 
 sky.addEventListener(
     "pointermove",
-    e=>{
+    event=>{
 
         if(aiming){
-            updateAim(e);
+
+            updateAim(event);
+
         }
 
     }
 );
 
 
-sky.addEventListener(
+window.addEventListener(
     "pointerup",
     ()=>{
 
@@ -2184,65 +2804,53 @@ sky.addEventListener(
 );
 
 
-sky.addEventListener(
-    "pointerleave",
-    ()=>{
-
-        aiming=false;
-
-    }
-);
-
-
-/* =====================================================
-   촬영
-===================================================== */
-
-document
-    .getElementById("shutter")
-    .addEventListener(
-        "click",
-        shootUFO
-    );
-
+/* ==================================================
+   SHOOT
+================================================== */
 
 function shootUFO(){
 
-    if(!ufoState){
-        return;
-    }
-
-    if(ufoState.feedback){
-        return;
-    }
-
-    if(ufoState.film<=0){
+    if(!game.ufo){
         return;
     }
 
 
-    let target=
-        ufoState.ufos.reduce(
+    const state=
+        game.ufo;
 
-            (a,u)=>
 
-                !a ||
-                Math.hypot(
-                    u.x-ufoState.aim.x,
-                    u.y-ufoState.aim.y
-                )
-                <
-                Math.hypot(
-                    a.x-ufoState.aim.x,
-                    a.y-ufoState.aim.y
-                )
+    if(state.feedback){
+        return;
+    }
 
-                ?u
-                :a,
 
-            null
+    if(state.film<=0){
+        return;
+    }
 
-        );
+
+    let target=null;
+
+    let closest=Infinity;
+
+
+    state.ufos.forEach(ufo=>{
+
+        const distance=
+            Math.hypot(
+                ufo.x-state.aim.x,
+                ufo.y-state.aim.y
+            );
+
+
+        if(distance<closest){
+
+            closest=distance;
+            target=ufo;
+
+        }
+
+    });
 
 
     let grade="MISS";
@@ -2250,162 +2858,184 @@ function shootUFO(){
 
     if(target){
 
-        const distance=
-            Math.hypot(
-                target.x-ufoState.aim.x,
-                target.y-ufoState.aim.y
-            );
+        if(closest<=6){
 
-        grade=
-            distance<=6
-            ?"PERFECT"
-            :distance<=13
-            ?"GOOD"
-            :distance<=21
-            ?"OK"
-            :"MISS";
+            grade="PERFECT";
+
+        }else if(closest<=13){
+
+            grade="GOOD";
+
+        }else if(closest<=21){
+
+            grade="OK";
+
+        }
 
     }
 
 
-    /* ---------- MISS ---------- */
+    /* =========================
+       MISS
+    ========================= */
 
     if(grade==="MISS"){
 
-        ufoState.film=
+        state.film=
             Math.max(
                 0,
-                ufoState.film-2
+                state.film-2
             );
 
-        ufoState.combo=0;
 
-        flashUFO("MISS");
+        state.combo=0;
 
-        renderUFO();
 
-        if(ufoState.film===0){
+        showFeedback("MISS",0);
+
+
+        if(state.film<=0){
 
             setTimeout(
-                ufoResults,
-                700
+                finishUFOGame,
+                800
             );
 
         }
 
+
         return;
+
     }
 
 
-    /* ---------- 성공 ---------- */
+    /* =========================
+       SCORE
+    ========================= */
 
-    const base=
-        grade==="PERFECT"
-        ?300
-        :grade==="GOOD"
-        ?180
-        :100;
+    let base=100;
 
 
-    const earned=Math.round(
-
-        base*
-
-        (
-            target.kind==="golden"
-            ?5
-            :1
-        )*
-
-        (
-            1+
-            Math.min(
-                ufoState.combo,
-                20
-            )*.05
-        )
-
-    );
+    if(grade==="GOOD"){
+        base=180;
+    }
 
 
-    ufoState.score+=earned;
+    if(grade==="PERFECT"){
+        base=300;
+    }
 
-    ufoState.combo++;
+
+    let multiplier=1;
+
+
+    if(target.kind==="golden"){
+
+        multiplier=5;
+
+    }
+
+
+    const comboMultiplier=
+        1+
+        Math.min(
+            state.combo,
+            20
+        )*.05;
+
+
+    const earned=
+        Math.round(
+            base*
+            multiplier*
+            comboMultiplier
+        );
+
+
+    state.score+=earned;
+
+    state.combo++;
 
 
     if(grade!=="PERFECT"){
 
-        ufoState.film=
+        state.film=
             Math.max(
                 0,
-                ufoState.film-1
+                state.film-1
             );
 
     }
 
 
-    ufoState.ufos=
-        ufoState.ufos.filter(
-            u=>u.id!==target.id
+    state.ufos=
+        state.ufos.filter(
+            ufo=>ufo.id!==target.id
         );
 
 
-    ufoState.captures.push({
-
-        id:target.id,
+    state.captures.push({
 
         kind:target.kind,
 
-        grade:grade,
+        grade,
 
         score:earned
 
     });
 
 
-    ufoState.caught++;
+    state.caught++;
 
 
-    /* ---------- 스테이지 상승 ---------- */
+    showFeedback(
+        grade,
+        earned
+    );
+
+
+    /* =========================
+       STAGE CLEAR
+    ========================= */
 
     if(
-        ufoState.caught>=
-        ufoConfig().target
+        state.caught>=
+        getUFOConfig().target
     ){
 
-        ufoState.stage++;
+        state.caught=0;
 
-        ufoState.caught=0;
+        state.stage++;
 
-        ufoState.film=
-            Math.min(
-                MAX_FILM,
-                ufoState.film+2
-            );
 
-        clearUfoTimers();
+        if(
+            state.stage<=
+            UFO_STAGES.length
+        ){
 
-        if(ufoState.stage<=ufoStages.length){
+            state.film=
+                Math.min(
+                    MAX_FILM,
+                    state.film+2
+                );
 
-            startSpawning();
+
+            stopUFOTimers();
+
+            startUFOSpawning();
 
         }
 
     }
 
 
-    flashUFO(
-        grade,
-        earned
-    );
-
-    renderUFO();
-
-
-    if(ufoState.stage>ufoStages.length){
+    if(
+        state.stage>
+        UFO_STAGES.length
+    ){
 
         setTimeout(
-            ufoResults,
+            finishUFOGame,
             1200
         );
 
@@ -2414,44 +3044,65 @@ function shootUFO(){
     }
 
 
-    if(ufoState.film===0){
+    if(state.film<=0){
 
         setTimeout(
-            ufoResults,
-            700
+            finishUFOGame,
+            800
         );
 
     }
 
+
+    renderUFO();
+
 }
 
 
-/* =====================================================
-   촬영 피드백
-===================================================== */
+/* ==================================================
+   FEEDBACK
+================================================== */
 
-function flashUFO(
+function showFeedback(
     grade,
     score
 ){
 
-    ufoState.feedback={
-        grade,
-        score
-    };
+    if(!game.ufo){
+        return;
+    }
 
-    clearTimeout(
-        feedbackTimer
-    );
+
+    game.ufo.feedback={
+
+        grade,
+
+        score
+
+    };
 
 
     renderUFO();
 
 
+    if(feedbackTimer){
+
+        clearTimeout(
+            feedbackTimer
+        );
+
+    }
+
+
     feedbackTimer=
         setTimeout(()=>{
 
-            ufoState.feedback=null;
+            if(!game.ufo){
+                return;
+            }
+
+
+            game.ufo.feedback=null;
 
             renderUFO();
 
@@ -2460,35 +3111,161 @@ function flashUFO(
 }
 
 
-/* =====================================================
-   UFO 최종 결과
-===================================================== */
+/* ==================================================
+   STAGE 2 END
+================================================== */
 
-function ufoResults(){
+function finishUFOGame(){
 
-    clearUfoTimers();
+    stopUFOTimers();
 
-    showEnding();
-
-}
-
-
-/* =====================================================
-   최종 엔딩
-===================================================== */
-
-function showEnding(){
-
-    const ending=
-        document.getElementById("ending");
-
-    ending.classList.remove("active");
-
-    void ending.offsetWidth;
-
-    ending.classList.add("active");
+    showScreen("ending");
 
 }
+
+
+/* ==================================================
+   EVENTS
+================================================== */
+
+$("startButton")
+    .addEventListener(
+        "click",
+        startGame
+    );
+
+
+$("waterButton")
+    .addEventListener(
+        "click",
+        giveWater
+    );
+
+
+$("nextPuzzle1")
+    .addEventListener(
+        "click",
+        nextGardenPuzzle
+    );
+
+
+$("nextPuzzle2")
+    .addEventListener(
+        "click",
+        nextGardenPuzzle
+    );
+
+
+$("nextPuzzle3")
+    .addEventListener(
+        "click",
+        nextGardenPuzzle
+    );
+
+
+$("nextPuzzle4")
+    .addEventListener(
+        "click",
+        nextGardenPuzzle
+    );
+
+
+$("nextPuzzle5")
+    .addEventListener(
+        "click",
+        nextGardenPuzzle
+    );
+
+
+$("finishGardenButton")
+    .addEventListener(
+        "click",
+        finishGarden
+    );
+
+
+document
+    .querySelectorAll(".path")
+    .forEach(path=>{
+
+        path.addEventListener(
+            "click",
+            ()=>{
+
+                moveRabbit(
+                    Number(
+                        path.dataset.step
+                    )
+                );
+
+            }
+        );
+
+    });
+
+
+document
+    .querySelectorAll(".cloud")
+    .forEach(cloud=>{
+
+        cloud.addEventListener(
+            "click",
+            moveCloud
+        );
+
+    });
+
+
+$("mirror")
+    .addEventListener(
+        "click",
+        inspectMirror
+    );
+
+
+document
+    .querySelectorAll(".gardenFlower")
+    .forEach(flower=>{
+
+        flower.addEventListener(
+            "click",
+            ()=>{
+
+                touchFlower(flower);
+
+            }
+        );
+
+    });
+
+
+$("shutter")
+    .addEventListener(
+        "click",
+        shootUFO
+    );
+
+
+$("restartButton")
+    .addEventListener(
+        "click",
+        ()=>{
+
+            stopUFOTimers();
+
+            game.ufo=null;
+
+            showScreen("titleScreen");
+
+        }
+    );
+
+
+/* ==================================================
+   INITIALIZE
+================================================== */
+
+showScreen("titleScreen");
 
 </script>
 
