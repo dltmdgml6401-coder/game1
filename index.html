@@ -68,6 +68,7 @@
     mode:'intro',
     seconds:60,
     combo:0,
+    spawnCount:0,
     active:null,
     tick:null,
     pop:null
@@ -90,6 +91,7 @@
   function draw(){
     time.textContent=state.seconds;
     combo.textContent=state.combo+' / 5';
+
     topPips.replaceChildren(...Array.from({length:5},(_,i)=>{
       const p=document.createElement('i');
       if(i<state.combo)p.className='on';
@@ -99,18 +101,26 @@
 
   function clear(){
     clearTimeout(state.pop);
+
     if(state.active){
       state.active.el.classList.remove('active','crystalMouse');
       state.active=null;
     }
   }
 
-  function schedule(ms=500+Math.random()*350){
+  function nextDelay(){
+    const acceleration=Math.min(state.spawnCount*14,320);
+    return Math.max(210,500+Math.random()*350-acceleration);
+  }
+
+  function schedule(ms=nextDelay()){
     state.pop=setTimeout(pop,ms);
   }
 
   function pop(){
     if(state.mode!=='play')return;
+
+    state.spawnCount++;
 
     const el=holes.children[Math.floor(Math.random()*8)];
     const crystal=Math.random()<.34;
@@ -121,8 +131,10 @@
 
     state.pop=setTimeout(()=>{
       if(!state.active)return;
-      if(state.active.crystal)fail('MISS!');
-      else{
+
+      if(state.active.crystal){
+        fail('MISS!');
+      }else{
         clear();
         schedule();
       }
@@ -210,6 +222,7 @@
     state.mode='play';
     state.seconds=60;
     state.combo=0;
+    state.spawnCount=0;
 
     modal.classList.add('hide');
     draw();
