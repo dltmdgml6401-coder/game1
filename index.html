@@ -1,28 +1,15 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Poker: AUGMENT</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#080d22">
+<title>잠들지 못한 밤</title>
 
 <style>
 *{
     box-sizing:border-box;
-    user-select:none;
-}
-
-:root{
-    --bg:#070b12;
-    --panel:#101722;
-    --panel2:#151e2b;
-    --line:#263449;
-    --text:#f5f7fb;
-    --muted:#8e9aae;
-    --gold:#ffd166;
-    --green:#4ade80;
-    --red:#ff5c70;
-    --blue:#55aaff;
-    --purple:#b98cff;
 }
 
 html,body{
@@ -30,1010 +17,1037 @@ html,body{
     width:100%;
     height:100%;
     overflow:hidden;
-    font-family:
-        Inter,
-        Pretendard,
-        "Noto Sans KR",
-        system-ui,
-        sans-serif;
-    background:
-        radial-gradient(circle at 50% -10%,#253652 0,#101722 35%,#06090e 100%);
-    color:var(--text);
+}
+
+body{
+    font-family:"Arial","Malgun Gothic",sans-serif;
+    background:#080d22;
+    color:#fff;
 }
 
 button{
-    font:inherit;
+    font-family:inherit;
+    cursor:pointer;
 }
 
-#app{
-    width:100%;
-    height:100%;
+#game{
+    width:100vw;
+    height:100vh;
     position:relative;
     overflow:hidden;
 }
 
-.hidden{
-    display:none!important;
-}
-
-/* =========================
-   START
-========================= */
-
-#startScreen{
+.screen{
     position:absolute;
     inset:0;
+    display:none;
+}
+
+.screen.active{
     display:flex;
+}
+
+/* =====================================================
+   공통 전환
+===================================================== */
+
+.fade{
+    animation:fadeIn .8s ease;
+}
+
+@keyframes fadeIn{
+    from{opacity:0}
+    to{opacity:1}
+}
+
+.glitch{
+    animation:glitch .15s;
+}
+
+@keyframes glitch{
+    0%{transform:translate(0)}
+    25%{transform:translate(4px,-2px)}
+    50%{transform:translate(-4px,2px)}
+    75%{transform:translate(2px,1px)}
+    100%{transform:translate(0)}
+}
+
+/* =====================================================
+   TITLE
+===================================================== */
+
+#titleScreen{
     align-items:center;
     justify-content:center;
-    background:
-        radial-gradient(circle at 50% 40%,rgba(80,130,220,.18),transparent 35%),
-        #070b12;
-    z-index:100;
-}
-
-.startBox{
-    width:min(720px,92vw);
+    flex-direction:column;
     text-align:center;
-    padding:50px 40px;
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            #fffdf3 0%,
+            #e7eee5 45%,
+            #cad9d0 100%
+        );
+    color:#4e514d;
 }
 
-.logoSmall{
-    letter-spacing:8px;
-    font-size:13px;
-    color:#8da2c0;
-    margin-bottom:16px;
+.titleFlower{
+    font-size:90px;
+    animation:float 3s ease-in-out infinite;
 }
 
-.logo{
-    font-size:clamp(48px,8vw,88px);
-    font-weight:1000;
-    letter-spacing:-5px;
-    line-height:.95;
-    text-shadow:
-        0 0 30px rgba(100,160,255,.25),
-        0 8px 25px rgba(0,0,0,.6);
+@keyframes float{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-12px)}
 }
 
-.logo span{
-    color:#6fb3ff;
+.mainTitle{
+    margin-top:15px;
+    font-size:clamp(35px,6vw,58px);
+    letter-spacing:-4px;
+    font-weight:500;
 }
 
-.tagline{
-    margin-top:22px;
-    color:#9aa8bd;
+.mainSub{
+    margin-top:12px;
+    color:#8c948c;
     line-height:1.7;
 }
 
-.startBtn{
-    margin-top:36px;
-    border:1px solid #5b7fab;
-    background:linear-gradient(180deg,#315783,#1c3657);
-    color:white;
-    padding:17px 60px;
-    border-radius:12px;
-    font-weight:900;
-    letter-spacing:2px;
-    cursor:pointer;
-    box-shadow:
-        0 10px 40px rgba(0,0,0,.35),
-        0 0 25px rgba(70,140,230,.12);
-    transition:.2s;
-}
-
-.startBtn:hover{
-    transform:translateY(-3px);
-    box-shadow:
-        0 15px 50px rgba(0,0,0,.5),
-        0 0 35px rgba(70,140,230,.25);
-}
-
-.highscore{
-    margin-top:20px;
-    font-size:12px;
-    color:#67768b;
-}
-
-/* =========================
-   GAME
-========================= */
-
-#game{
-    width:100%;
-    height:100%;
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 290px;
-    grid-template-rows:80px minmax(0,1fr) 150px;
-    position:relative;
-}
-
-.topbar{
-    grid-column:1 / -1;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 24px;
-    background:rgba(7,11,18,.72);
-    backdrop-filter:blur(14px);
-    border-bottom:1px solid rgba(255,255,255,.06);
-    z-index:5;
-}
-
-.stage{
-    display:flex;
-    align-items:center;
-    gap:13px;
-}
-
-.stageNum{
-    font-size:25px;
-    font-weight:1000;
-}
-
-.stageLabel{
-    font-size:11px;
-    letter-spacing:2px;
-    color:#718096;
-}
-
-.progress{
-    display:flex;
-    gap:5px;
-}
-
-.progress i{
-    width:24px;
-    height:5px;
-    background:#202c3d;
-    border-radius:4px;
-}
-
-.progress i.done{
-    background:#5d8fd2;
-}
-
-.progress i.current{
-    background:#ffd166;
-    box-shadow:0 0 12px #ffd166;
-}
-
-.timerBox{
-    width:180px;
-}
-
-.timerText{
-    display:flex;
-    justify-content:space-between;
-    font-size:11px;
-    color:#8693a7;
-    margin-bottom:6px;
-}
-
-#timerNumber{
-    color:white;
-    font-weight:900;
-}
-
-.timerBar{
-    width:100%;
-    height:6px;
-    background:#202b3a;
-    border-radius:10px;
-    overflow:hidden;
-}
-
-#timerFill{
-    width:100%;
-    height:100%;
-    background:#6da8ee;
-    transition:width .15s linear;
-}
-
-.timerDanger #timerFill{
-    background:#ff5368;
-    box-shadow:0 0 15px #ff5368;
-}
-
-.timerDanger #timerNumber{
-    color:#ff5368;
-}
-
-/* =========================
-   TABLE
-========================= */
-
-.table{
-    position:relative;
-    min-width:0;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    padding:18px 30px 20px;
-}
-
-.felt{
-    position:absolute;
-    inset:12px 18px;
+.startButton{
+    margin-top:40px;
+    padding:16px 45px;
+    border:0;
     border-radius:30px;
-    background:
-        radial-gradient(circle at 50% 45%,rgba(39,87,73,.22),transparent 55%),
-        linear-gradient(145deg,#101b25,#0a1219);
-    border:1px solid rgba(94,123,153,.12);
-    box-shadow:
-        inset 0 0 100px rgba(0,0,0,.35),
-        0 20px 70px rgba(0,0,0,.22);
-    pointer-events:none;
-}
-
-.felt:after{
-    content:"";
-    position:absolute;
-    inset:20px;
-    border:1px solid rgba(255,255,255,.025);
-    border-radius:22px;
-}
-
-.opponentArea,
-.playerArea{
-    position:relative;
-    z-index:2;
-}
-
-.playerArea{
-    padding-top:5px;
-}
-
-.areaTitle{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin:0 0 10px 8px;
-}
-
-.areaTitle strong{
-    font-size:13px;
-}
-
-.areaTitle span{
-    font-size:10px;
-    color:#718096;
-}
-
-.hand{
-    min-height:112px;
-    display:flex;
-    justify-content:center;
-    gap:8px;
-    flex-wrap:wrap;
-}
-
-.card{
-    width:72px;
-    height:102px;
-    border-radius:9px;
-    position:relative;
-    background:
-        linear-gradient(145deg,#fff,#e7ebf0);
-    color:#10151d;
-    border:2px solid rgba(255,255,255,.9);
-    box-shadow:
-        0 8px 15px rgba(0,0,0,.3),
-        0 1px 0 rgba(255,255,255,.7) inset;
-    cursor:pointer;
-    transition:
-        transform .18s,
-        box-shadow .18s,
-        filter .18s;
-}
-
-.card:hover{
-    transform:translateY(-8px);
-    box-shadow:
-        0 16px 25px rgba(0,0,0,.45),
-        0 0 18px rgba(120,180,255,.2);
-}
-
-.card.selected{
-    transform:translateY(-17px);
-    border-color:#6fb3ff;
-    box-shadow:
-        0 20px 35px rgba(0,0,0,.5),
-        0 0 22px rgba(90,165,255,.5);
-}
-
-.card.red{
-    color:#d7354b;
-}
-
-.card .corner{
-    position:absolute;
-    left:7px;
-    top:5px;
-    display:flex;
-    flex-direction:column;
-    line-height:.9;
-    align-items:center;
-}
-
-.card .rank{
-    font-weight:1000;
-    font-size:19px;
-}
-
-.card .suit{
-    font-size:14px;
-}
-
-.card .bigSuit{
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:39px;
-    opacity:.9;
-}
-
-.card.back{
-    background:
-        repeating-linear-gradient(
-            45deg,
-            #192e4a 0,
-            #192e4a 5px,
-            #223c5f 5px,
-            #223c5f 10px
-        );
-    border-color:#54739a;
-}
-
-.card.back:after{
-    content:"◆";
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#7895b7;
-    font-size:28px;
-}
-
-/* =========================
-   AI
-========================= */
-
-.aiStatus{
-    position:absolute;
-    top:18px;
-    right:36px;
-    padding:7px 12px;
-    border-radius:20px;
-    background:#161f2c;
-    border:1px solid #26364c;
-    font-size:10px;
-    color:#8997aa;
-}
-
-.aiStatus strong{
-    color:#ff7182;
-}
-
-.speech{
-    position:absolute;
-    z-index:15;
-    top:110px;
-    left:50%;
-    transform:translateX(-50%) translateY(-10px);
-    min-width:250px;
-    max-width:440px;
-    padding:13px 20px;
-    border-radius:13px;
-    background:rgba(18,24,34,.95);
-    border:1px solid #36445a;
-    color:#f0f4fa;
-    font-size:13px;
-    text-align:center;
-    box-shadow:0 15px 45px rgba(0,0,0,.5);
-    opacity:0;
-    pointer-events:none;
-    transition:.25s;
-}
-
-.speech.show{
-    opacity:1;
-    transform:translateX(-50%) translateY(0);
-}
-
-.speech:after{
-    content:"";
-    position:absolute;
-    bottom:-7px;
-    left:50%;
-    transform:translateX(-50%) rotate(45deg);
-    width:12px;
-    height:12px;
-    background:#121822;
-    border-right:1px solid #36445a;
-    border-bottom:1px solid #36445a;
-}
-
-/* =========================
-   CENTER INFO
-========================= */
-
-.centerInfo{
-    position:absolute;
-    z-index:4;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    text-align:center;
-    pointer-events:none;
-}
-
-.centerHint{
-    color:#66768c;
-    font-size:10px;
-    letter-spacing:2px;
-    text-transform:uppercase;
-}
-
-.handPreview{
-    margin-top:8px;
-    font-weight:1000;
-    font-size:28px;
-    min-height:34px;
-}
-
-.scorePreview{
-    color:#ffd166;
-    font-size:12px;
-    margin-top:4px;
-}
-
-/* =========================
-   CONTROLS
-========================= */
-
-.controls{
-    position:relative;
-    z-index:3;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:9px;
-    padding-top:8px;
-}
-
-.actionBtn{
-    min-width:110px;
-    height:43px;
-    border-radius:9px;
-    border:1px solid #2d3b50;
-    background:#141d29;
-    color:#dbe5f2;
-    cursor:pointer;
-    font-weight:800;
-    font-size:12px;
-    transition:.18s;
-}
-
-.actionBtn:hover:not(:disabled){
-    transform:translateY(-2px);
-    border-color:#6082a8;
-    background:#1b2839;
-}
-
-.actionBtn.primary{
-    background:linear-gradient(180deg,#4a82bb,#2d5e91);
-    border-color:#6aa3df;
-    color:white;
-    box-shadow:0 7px 25px rgba(40,100,170,.18);
-}
-
-.actionBtn.danger{
-    background:linear-gradient(180deg,#74333d,#54232c);
-    border-color:#9e4654;
-}
-
-.actionBtn:disabled{
-    opacity:.3;
-    cursor:not-allowed;
-    filter:grayscale(.7);
-}
-
-.counter{
-    min-width:100px;
-    text-align:center;
-    font-size:11px;
-    color:#7c8b9e;
-}
-
-/* =========================
-   AUGMENTS
-========================= */
-
-.sidebar{
-    grid-row:2 / 4;
-    grid-column:2;
-    background:rgba(8,12,19,.8);
-    border-left:1px solid rgba(255,255,255,.06);
-    padding:18px 15px;
-    overflow:auto;
-    z-index:8;
-}
-
-.sideTitle{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:5px;
-}
-
-.sideTitle strong{
-    font-size:14px;
-    letter-spacing:1px;
-}
-
-.sideTitle span{
-    font-size:9px;
-    color:#66758a;
-}
-
-.sideDescription{
-    color:#68778b;
-    font-size:10px;
-    line-height:1.6;
-    margin-bottom:15px;
-}
-
-.augmentList{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-.augment{
-    position:relative;
-    padding:12px;
-    border-radius:10px;
-    background:#111925;
-    border:1px solid #253145;
-    cursor:pointer;
-    transition:.18s;
-}
-
-.augment:hover{
-    border-color:#5d7fa8;
-    background:#162131;
-    transform:translateX(-3px);
-}
-
-.augment.used{
-    opacity:.45;
-    filter:grayscale(.4);
-}
-
-.augmentHeader{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
-}
-
-.augmentName{
-    font-weight:900;
-    font-size:11px;
-}
-
-.rarity{
-    font-size:8px;
-    letter-spacing:1px;
-    padding:3px 5px;
-    border-radius:4px;
-}
-
-.rarity.silver{
-    background:#4b5663;
-    color:#e1e6eb;
-}
-
-.rarity.gold{
-    background:#795d20;
-    color:#ffe39a;
-}
-
-.rarity.platinum{
-    background:#614d83;
-    color:#f0ddff;
-}
-
-.augmentDesc{
-    color:#7f8da0;
-    font-size:10px;
-    line-height:1.5;
-    margin-top:7px;
-}
-
-.augmentStatus{
-    margin-top:8px;
-    font-size:8px;
-    color:#6f8198;
-}
-
-.augment.used .augmentStatus{
-    color:#ff6878;
-}
-
-/* =========================
-   MODAL
-========================= */
-
-.modal{
-    position:absolute;
-    inset:0;
-    z-index:80;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(3,6,10,.75);
-    backdrop-filter:blur(9px);
-}
-
-.modalBox{
-    width:min(850px,92vw);
-    max-height:90vh;
-    overflow:auto;
-    padding:30px;
-    border-radius:18px;
-    background:
-        linear-gradient(145deg,#141e2b,#0d141e);
-    border:1px solid #304157;
-    box-shadow:0 35px 100px rgba(0,0,0,.65);
-}
-
-.modalTitle{
-    text-align:center;
-    font-size:28px;
-    font-weight:1000;
-    margin-bottom:6px;
-}
-
-.modalSub{
-    text-align:center;
-    color:#78879a;
-    font-size:11px;
-    margin-bottom:25px;
-}
-
-.augmentChoices{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;
-}
-
-.choice{
-    position:relative;
-    padding:20px;
-    min-height:220px;
-    border-radius:14px;
-    background:#101925;
-    border:1px solid #29394f;
-    cursor:pointer;
+    background:#fffdf4;
+    color:#5c625d;
+    font-size:16px;
+    box-shadow:0 10px 30px rgba(70,80,70,.15);
     transition:.2s;
 }
 
-.choice:hover{
-    transform:translateY(-8px);
-    border-color:#6d9ed0;
-    box-shadow:0 15px 35px rgba(0,0,0,.4);
+.startButton:hover{
+    transform:translateY(-4px);
 }
 
-.choice.silver:hover{
-    box-shadow:0 15px 40px rgba(190,200,210,.08);
-}
+/* =====================================================
+   STAGE 1 - GARDEN
+===================================================== */
 
-.choice.gold:hover{
-    box-shadow:0 15px 40px rgba(255,190,50,.13);
-}
-
-.choice.platinum:hover{
-    box-shadow:0 15px 40px rgba(190,120,255,.18);
-}
-
-.choiceIcon{
-    font-size:30px;
-    margin-bottom:12px;
-}
-
-.choiceName{
-    font-size:17px;
-    font-weight:1000;
-}
-
-.choiceDesc{
-    color:#8a98aa;
-    line-height:1.65;
-    font-size:11px;
-    margin-top:10px;
-}
-
-.choiceTag{
-    position:absolute;
-    right:15px;
-    top:15px;
-    font-size:8px;
-    letter-spacing:1px;
-    padding:5px 7px;
-    border-radius:5px;
-}
-
-/* =========================
-   RESULT
-========================= */
-
-.resultBox{
-    width:min(700px,92vw);
-}
-
-.resultHands{
-    display:grid;
-    grid-template-columns:1fr auto 1fr;
-    gap:18px;
+#gardenStage{
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            #fff8e8,
+            #dce9dc
+        );
     align-items:center;
-}
-
-.resultSide{
-    padding:18px;
-    border-radius:12px;
-    background:#101925;
-    border:1px solid #26364a;
-    text-align:center;
-}
-
-.resultSide h3{
-    margin:0 0 12px;
-    font-size:10px;
-    letter-spacing:2px;
-    color:#77869a;
-}
-
-.resultCards{
-    min-height:50px;
-    display:flex;
     justify-content:center;
-    gap:5px;
-}
-
-.resultCard{
-    width:45px;
-    height:62px;
-    border-radius:6px;
-    background:#f0f2f5;
-    color:#111;
-    display:flex;
     flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    font-weight:1000;
-    font-size:13px;
+    color:#4e514d;
 }
 
-.resultCard.red{
-    color:#d7354b;
-}
-
-.resultHandName{
-    font-size:18px;
-    font-weight:1000;
-    margin-top:12px;
-}
-
-.resultScore{
-    color:#ffd166;
-    font-weight:1000;
-    font-size:22px;
-    margin-top:5px;
-}
-
-.vs{
-    color:#6c7d91;
-    font-size:12px;
-    font-weight:1000;
-}
-
-.reason{
-    margin:20px 0;
-    padding:15px;
-    background:#0b1119;
-    border:1px solid #1e2b3c;
-    border-radius:10px;
-    text-align:center;
-    color:#99a6b7;
-    font-size:12px;
-    line-height:1.6;
-}
-
-.resultButtons{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-}
-
-/* =========================
-   EFFECTS
-========================= */
-
-#fx{
+.stageTitle{
     position:absolute;
-    inset:0;
-    pointer-events:none;
-    z-index:200;
-    overflow:hidden;
-}
-
-.flash{
-    position:absolute;
-    inset:0;
-    background:white;
-    opacity:0;
-}
-
-.flash.play{
-    animation:flash .45s ease-out;
-}
-
-@keyframes flash{
-    0%{opacity:0}
-    10%{opacity:.28}
-    100%{opacity:0}
-}
-
-.bigText{
-    position:absolute;
+    top:28px;
     left:50%;
-    top:50%;
-    transform:translate(-50%,-50%) scale(.4);
-    font-weight:1000;
-    font-size:clamp(35px,7vw,90px);
-    letter-spacing:-3px;
-    text-shadow:0 8px 30px rgba(0,0,0,.7);
-    opacity:0;
+    transform:translateX(-50%);
+    font-size:22px;
+    color:#656c66;
+    letter-spacing:-1px;
+}
+
+.stageNumber{
+    position:absolute;
+    top:58px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:11px;
+    color:#a0a59f;
+}
+
+.subStageText{
+    position:absolute;
+    top:85px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:12px;
+    color:#9ca49d;
     white-space:nowrap;
 }
 
-.bigText.play{
-    animation:bigText 1.4s cubic-bezier(.15,.8,.2,1) forwards;
+.gardenPuzzle{
+    display:none;
+    width:100%;
+    height:100%;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
 }
 
-@keyframes bigText{
-    0%{
-        opacity:0;
-        transform:translate(-50%,-50%) scale(.35) rotate(-4deg);
-    }
-    18%{
-        opacity:1;
-        transform:translate(-50%,-50%) scale(1.12) rotate(1deg);
-    }
-    75%{
-        opacity:1;
-        transform:translate(-50%,-50%) scale(1) rotate(0);
-    }
-    100%{
-        opacity:0;
-        transform:translate(-50%,-60%) scale(1.05);
-    }
+.gardenPuzzle.active{
+    display:flex;
 }
 
-.scoreFloat{
+.hint{
+    position:absolute;
+    bottom:28px;
+    left:50%;
+    transform:translateX(-50%);
+    color:#89918b;
+    font-size:13px;
+    text-align:center;
+}
+
+.nextButton{
+    position:absolute;
+    bottom:25px;
+    right:30px;
+    padding:12px 25px;
+    border:0;
+    border-radius:25px;
+    background:#fffdf4;
+    color:#59605b;
+    display:none;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.nextButton:hover{
+    transform:translateY(-2px);
+}
+
+/* ---------- 화분 ---------- */
+
+.pot{
+    font-size:120px;
+    transition:.4s;
+}
+
+.waterArea{
+    margin-top:25px;
+    display:flex;
+    gap:15px;
+}
+
+.water{
+    border:0;
+    background:#fffdf3;
+    border-radius:25px;
+    padding:14px 25px;
+    font-size:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.waterMeter{
+    margin-top:20px;
+    width:300px;
+    height:12px;
+    border-radius:20px;
+    background:#cbd5ce;
+    overflow:hidden;
+}
+
+.waterFill{
+    height:100%;
+    width:0%;
+    background:#9ec9b4;
+    transition:.3s;
+}
+
+/* ---------- 토끼 ---------- */
+
+.rabbitWorld{
+    width:min(650px,90vw);
+    height:380px;
+    position:relative;
+    background:#dfe9d8;
+    border-radius:30px;
+    overflow:hidden;
+}
+
+.rabbit{
+    position:absolute;
+    left:40px;
+    top:160px;
+    font-size:65px;
+    transition:.7s;
+}
+
+.rabbitDoor{
+    position:absolute;
+    right:40px;
+    top:145px;
+    font-size:75px;
+}
+
+.path{
+    position:absolute;
+    width:100px;
+    height:70px;
+    border-radius:15px;
+    background:#c7bba2;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.path:hover{
+    transform:rotate(10deg) scale(1.05);
+}
+
+.path1{
+    left:23%;
+    top:150px;
+}
+
+.path2{
+    left:42%;
+    top:210px;
+}
+
+.path3{
+    left:60%;
+    top:150px;
+}
+
+/* ---------- 그림자 ---------- */
+
+#shadowPuzzle{
+    background:#a9c8d8;
+}
+
+.cloudWorld{
+    width:min(700px,90vw);
+    height:420px;
+    position:relative;
+}
+
+.cloud{
+    position:absolute;
+    font-size:80px;
+    cursor:pointer;
+    transition:.4s;
+}
+
+.cloud:hover{
+    transform:scale(1.08);
+}
+
+.cloud1{
+    left:80px;
+    top:60px;
+}
+
+.cloud2{
+    right:100px;
+    top:90px;
+}
+
+.sun{
     position:absolute;
     left:50%;
-    top:46%;
-    transform:translate(-50%,0);
-    color:#ffd166;
-    font-weight:1000;
-    font-size:30px;
-    opacity:0;
-    text-shadow:0 4px 20px rgba(0,0,0,.8);
+    top:40px;
+    transform:translateX(-50%);
+    font-size:75px;
 }
 
-.scoreFloat.play{
-    animation:scoreFloat 1.3s ease-out forwards;
-}
-
-@keyframes scoreFloat{
-    0%{opacity:0;transform:translate(-50%,20px) scale(.7)}
-    20%{opacity:1}
-    100%{opacity:0;transform:translate(-50%,-100px) scale(1.3)}
-}
-
-.particle{
+.shadow{
     position:absolute;
-    width:7px;
-    height:7px;
+    width:120px;
+    height:35px;
+    background:rgba(70,80,90,.3);
     border-radius:50%;
-    background:#fff;
-    animation:particle 1.2s ease-out forwards;
+    left:50%;
+    bottom:80px;
+    transform:translateX(-50%);
+    transition:.8s;
 }
 
-@keyframes particle{
+.shadow.strange{
+    width:80px;
+    height:100px;
+    border-radius:50% 50% 20% 20%;
+}
+
+/* ---------- 거울 ---------- */
+
+#mirrorPuzzle{
+    background:#dcd8d4;
+}
+
+.mirrorRoom{
+    display:flex;
+    gap:60px;
+    align-items:center;
+}
+
+.roomCharacter{
+    font-size:80px;
+    transition:.3s;
+}
+
+.mirror{
+    width:250px;
+    height:330px;
+    border:15px solid #b8aaa0;
+    border-radius:20px;
+    background:#bcd1d3;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:80px;
+    cursor:pointer;
+}
+
+.mirrorCharacter{
+    transform:scaleX(-1);
+    transition:.4s;
+}
+
+/* ---------- 이상한 정원 ---------- */
+
+#flowerPuzzle{
+    background:
+        radial-gradient(
+            circle at 50% 40%,
+            #f7f1d8,
+            #c9d8c0
+        );
+}
+
+.garden{
+    width:min(700px,90vw);
+    height:450px;
+    position:relative;
+}
+
+.gardenFlower{
+    position:absolute;
+    font-size:70px;
+    cursor:pointer;
+    transition:.4s;
+}
+
+.gardenFlower:hover{
+    transform:scale(1.15);
+}
+
+.gf1{left:14%;top:100px}
+.gf2{left:43%;top:40px}
+.gf3{right:14%;top:120px}
+.gf4{left:31%;bottom:50px}
+.gf5{right:32%;bottom:40px}
+
+/* ---------- 마지막 정원 ---------- */
+
+#finalGardenPuzzle{
+    background:#34353b;
+    color:#fff;
+}
+
+.finalGarden{
+    width:600px;
+    height:500px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.bigFlower{
+    font-size:180px;
+    animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.05)}
+}
+
+.finalText{
+    position:absolute;
+    bottom:40px;
+    color:#b9bbb9;
+    font-size:13px;
+    letter-spacing:1px;
+}
+
+/* =====================================================
+   STAGE TRANSITION
+===================================================== */
+
+#stageTransition{
+    background:#05070d;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+    color:#fff;
+}
+
+.transitionSmall{
+    color:#8891ae;
+    font:10px "DM Mono",monospace;
+    letter-spacing:.2em;
+}
+
+.transitionTitle{
+    margin-top:15px;
+    font-size:clamp(35px,7vw,70px);
+    letter-spacing:-4px;
+}
+
+.transitionText{
+    margin-top:20px;
+    color:#aab1c8;
+    line-height:2;
+    font-size:14px;
+}
+
+.transitionUfo{
+    margin-top:30px;
+    font-size:55px;
+    animation:ufoFloat 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes ufoFloat{
+    from{transform:translateY(0)}
+    to{transform:translateY(-15px)}
+}
+
+/* =====================================================
+   STAGE 2 - UFO
+===================================================== */
+
+#ufoStage{
+    background:#080d22;
+    color:#f6f5ff;
+}
+
+.ufoGame{
+    width:100%;
+    height:100%;
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    overflow:hidden;
+}
+
+.hud{
+    display:flex;
+    justify-content:space-between;
+    padding:17px clamp(16px,5vw,70px);
+    background:#0c1229;
+    border-bottom:1px solid #20294c;
+    z-index:2;
+}
+
+.hud div{
+    min-width:100px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+}
+
+.hud .score{
+    text-align:center;
+}
+
+.hud .film{
+    text-align:right;
+    align-items:end;
+}
+
+.hud b{
+    font-size:20px;
+    letter-spacing:-.04em;
+}
+
+.hud small{
+    font:10px "DM Mono",monospace;
+    color:#8f9ac4;
+}
+
+.label{
+    font:500 10px "DM Mono",monospace;
+    letter-spacing:.18em;
+    color:#aab5e5;
+}
+
+.combo{
+    color:#f4d36e!important;
+}
+
+.dot{
+    display:inline-block;
+    width:8px;
+    height:14px;
+    border:1px solid #6572a0;
+    margin-left:3px;
+    border-radius:1px;
+}
+
+.dot.full{
+    background:#f1d071;
+    border-color:#f1d071;
+    box-shadow:0 0 7px #f1d07188;
+}
+
+.sky{
+    position:relative;
+    overflow:hidden;
+    touch-action:none;
+    cursor:crosshair;
+    background:
+        radial-gradient(
+            ellipse at 50% 64%,
+            #25355e 0,
+            #151c41 31%,
+            #080d22 77%
+        );
+}
+
+.sky:after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+        linear-gradient(#0000 75%,#050714aa),
+        radial-gradient(
+            ellipse at center,
+            #0000 48%,
+            #02030b99 100%
+        );
+}
+
+.stars{
+    position:absolute;
+    inset:0;
+    opacity:.65;
+    background-image:
+        radial-gradient(#fff 1px,transparent 1.2px),
+        radial-gradient(#b6ccff 1px,transparent 1.4px),
+        radial-gradient(#fff 1px,transparent 1.3px);
+    background-size:
+        75px 75px,
+        129px 129px,
+        191px 191px;
+    background-position:
+        14px 22px,
+        62px 5px,
+        20px 94px;
+}
+
+.ufo{
+    position:absolute;
+    z-index:1;
+    transform:translate(-50%,-50%);
+    animation:
+        enter .25s ease-out,
+        hover 1.2s ease-in-out infinite alternate;
+}
+
+.ufo.golden{
+    filter:drop-shadow(0 0 12px #ffcc4d);
+}
+
+@keyframes enter{
     from{
-        opacity:1;
-        transform:translate(0,0) scale(1);
+        opacity:0;
+        transform:translate(-50%,-30%) scale(.6);
     }
     to{
-        opacity:0;
-        transform:translate(var(--x),var(--y)) scale(0);
+        opacity:1;
+        transform:translate(-50%,-50%) scale(1);
     }
 }
 
-/* =========================
-   MOBILE
-========================= */
+@keyframes hover{
+    to{margin-top:-6px}
+}
 
-@media(max-width:850px){
-    body{
-        overflow:auto;
+.sprite{
+    display:inline-block;
+    width:70px;
+    height:43px;
+    position:relative;
+}
+
+.sprite.small{
+    transform:scale(.58);
+    transform-origin:center;
+    margin:-7px 0;
+}
+
+.dome{
+    position:absolute;
+    width:31px;
+    height:19px;
+    left:20px;
+    top:3px;
+    border-radius:50% 50% 9px 9px;
+    background:
+        linear-gradient(
+            130deg,
+            #e5f7ff,
+            #76cfff 55%,
+            #4d74c7
+        );
+    border:2px solid #c7eaff;
+}
+
+.body{
+    position:absolute;
+    width:68px;
+    height:21px;
+    left:1px;
+    top:19px;
+    border-radius:50%;
+    background:
+        linear-gradient(
+            #d8e4f5,
+            #7185ad 50%,
+            #33456f 52%,
+            #a2b4cf
+        );
+    border:2px solid #dceeff;
+}
+
+.golden .body{
+    background:
+        linear-gradient(
+            #fff1ac,
+            #d98d2d 52%,
+            #80501f 55%,
+            #f5c856
+        );
+}
+
+.golden .dome{
+    background:
+        linear-gradient(
+            130deg,
+            #fffde5,
+            #ffe06a 55%,
+            #bd7525
+        );
+}
+
+.light{
+    position:absolute;
+    width:6px;
+    height:4px;
+    border-radius:50%;
+    top:30px;
+    background:#61ffbb;
+    z-index:1;
+    box-shadow:0 0 6px #61ffbb;
+}
+
+.golden .light{
+    background:#fff4a5;
+    box-shadow:0 0 6px #fff4a5;
+}
+
+.l1{left:16px}
+.l2{left:32px}
+.l3{left:49px}
+
+.finder{
+    position:absolute;
+    width:112px;
+    height:112px;
+    z-index:3;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+}
+
+.finder i{
+    position:absolute;
+    width:27px;
+    height:27px;
+    border-color:#ecf1ff;
+    border-style:solid;
+}
+
+.finder i:nth-child(1){
+    left:0;
+    top:0;
+    border-width:2px 0 0 2px;
+}
+
+.finder i:nth-child(2){
+    right:0;
+    top:0;
+    border-width:2px 2px 0 0;
+}
+
+.finder i:nth-child(3){
+    left:0;
+    bottom:0;
+    border-width:0 0 2px 2px;
+}
+
+.finder i:nth-child(4){
+    right:0;
+    bottom:0;
+    border-width:0 2px 2px 0;
+}
+
+.finder b{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:9px;
+    height:9px;
+    border:1px solid #fff;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    box-shadow:0 0 6px #fff;
+}
+
+.feedback{
+    position:absolute;
+    z-index:5;
+    left:50%;
+    top:24%;
+    transform:translateX(-50%);
+    display:flex;
+    flex-direction:column;
+    text-align:center;
+    animation:feedback .9s ease-out forwards;
+}
+
+.feedback b{
+    font-size:clamp(30px,7vw,54px);
+    letter-spacing:.06em;
+}
+
+.feedback span{
+    font:13px "DM Mono";
+    color:#fff;
+}
+
+.PERFECT b{
+    color:#f6da75;
+    text-shadow:0 0 18px #e7b94a;
+}
+
+.GOOD b{color:#9de4ff}
+.OK b{color:#d1d9f5}
+.MISS b{color:#ff8b91}
+
+@keyframes feedback{
+    to{
+        transform:translate(-50%,-22px);
+        opacity:0;
+    }
+}
+
+.skyHint{
+    position:absolute;
+    z-index:3;
+    bottom:20px;
+    left:0;
+    right:0;
+    text-align:center;
+    font-size:11px;
+    color:#b7c1e5;
+    pointer-events:none;
+}
+
+.controls{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    min-height:115px;
+    padding:11px clamp(18px,6vw,80px);
+    background:#0c1229;
+    border-top:1px solid #20294c;
+    z-index:4;
+}
+
+.controls p{
+    font-size:11px;
+    color:#96a1cd;
+}
+
+.controls small{
+    text-align:center;
+    color:#b9c4eb;
+    font:10px "DM Mono";
+    letter-spacing:.13em;
+    grid-column:2;
+}
+
+.shutter{
+    width:65px;
+    height:65px;
+    border-radius:50%;
+    border:4px solid #dfe6ff;
+    background:#a8b4dd;
+    padding:5px;
+    box-shadow:
+        0 0 0 4px #58638c,
+        0 4px 15px #0008;
+    grid-column:2;
+    cursor:pointer;
+}
+
+.shutter span{
+    display:block;
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    background:#e05d69;
+    border:2px solid #ffb1b7;
+    box-shadow:inset 0 -5px #a63b4a;
+}
+
+.shutter:active{
+    transform:translateY(2px);
+    filter:brightness(.85);
+}
+
+/* =====================================================
+   FINAL
+===================================================== */
+
+#ending{
+    background:#070911;
+    color:#fff;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+}
+
+.endUfo{
+    font-size:80px;
+    animation:ufoFloat 2s ease-in-out infinite alternate;
+}
+
+.endFlower{
+    font-size:90px;
+    margin-top:-10px;
+}
+
+.endTitle{
+    margin-top:25px;
+    font-size:clamp(30px,6vw,55px);
+    letter-spacing:-3px;
+}
+
+.endText{
+    margin-top:20px;
+    color:#aeb5c8;
+    line-height:2;
+    font-size:14px;
+}
+
+.restart{
+    margin-top:35px;
+    padding:13px 30px;
+    border:0;
+    border-radius:25px;
+    background:#eee;
+    color:#333;
+}
+
+@media(max-width:580px){
+
+    .stageTitle{
+        top:20px;
+        font-size:19px;
     }
 
-    #game{
-        height:auto;
-        min-height:100%;
-        grid-template-columns:1fr;
-        grid-template-rows:65px auto auto;
+    .stageNumber{
+        top:47px;
     }
 
-    .sidebar{
-        grid-column:1;
-        grid-row:3;
-        border-left:0;
-        border-top:1px solid rgba(255,255,255,.06);
+    .subStageText{
+        top:70px;
+        font-size:10px;
     }
 
-    .table{
-        min-height:700px;
-        padding:12px 10px;
+    .rabbitWorld{
+        height:320px;
     }
 
-    .felt{
-        inset:5px;
+    .rabbit{
+        font-size:50px;
+        top:135px;
     }
 
-    .card{
-        width:58px;
-        height:84px;
+    .rabbitDoor{
+        font-size:60px;
+        top:120px;
     }
 
-    .card .rank{
-        font-size:15px;
+    .path{
+        width:80px;
+        height:55px;
     }
 
-    .card .bigSuit{
-        font-size:30px;
+    .cloudWorld{
+        height:330px;
     }
 
-    .hand{
-        gap:4px;
+    .cloud{
+        font-size:60px;
     }
 
-    .augmentChoices{
-        grid-template-columns:1fr;
+    .mirrorRoom{
+        gap:20px;
+        transform:scale(.75);
     }
 
-    .resultHands{
-        grid-template-columns:1fr;
+    .garden{
+        transform:scale(.8);
     }
 
-    .vs{
-        display:none;
+    .hud{
+        padding:13px 15px;
+    }
+
+    .hud div{
+        min-width:0;
+    }
+
+    .hud b{
+        font-size:17px;
+    }
+
+    .hud small{
+        font-size:8px;
+    }
+
+    .dot{
+        width:5px;
+        height:10px;
+        margin-left:2px;
+    }
+
+    .finder{
+        width:92px;
+        height:92px;
     }
 
     .controls{
-        flex-wrap:wrap;
+        min-height:98px;
     }
 
-    .actionBtn{
-        min-width:95px;
+    .controls p{
+        display:none;
+    }
+
+    .shutter{
+        width:58px;
+        height:58px;
+    }
+
+    .skyHint{
+        bottom:12px;
+        font-size:10px;
     }
 }
 </style>
@@ -1041,3125 +1055,1443 @@ button{
 
 <body>
 
-<div id="app">
+<div id="game">
 
-    <!-- START -->
-    <section id="startScreen">
-        <div class="startBox">
-            <div class="logoSmall">AI CARD ROGUELIKE</div>
-            <div class="logo">AI <span>POKER</span></div>
-            <div class="tagline">
-                8 STAGES · 1 LIFE · AUGMENTS<br>
-                당신의 패와 AI의 패, 더 높은 족보가 살아남는다.
-            </div>
+<!-- =====================================================
+     TITLE
+===================================================== -->
 
-            <button class="startBtn" id="startBtn">
-                GAME START
-            </button>
+<section id="titleScreen" class="screen active">
 
-            <div class="highscore" id="highscore">
-                최고 도달 단계: -
-            </div>
+    <div class="titleFlower">🌷</div>
+
+    <div class="mainTitle">
+        잠들지 못한 밤
+    </div>
+
+    <div class="mainSub">
+        작은 정원을 지나,<br>
+        밤하늘에 남은 흔적을 찾아보세요.
+    </div>
+
+    <button class="startButton" onclick="startGame()">
+        시작하기
+    </button>
+
+</section>
+
+
+<!-- =====================================================
+     STAGE 1
+===================================================== -->
+
+<section id="gardenStage" class="screen">
+
+    <div class="stageTitle">
+        잠들지 못한 정원
+    </div>
+
+    <div class="stageNumber">
+        STAGE 1
+    </div>
+
+    <div class="subStageText" id="gardenSubTitle">
+        작은 화분
+    </div>
+
+
+    <!-- 1-1 화분 -->
+
+    <div id="puzzle1" class="gardenPuzzle active">
+
+        <div class="pot" id="pot">
+            🪴
         </div>
-    </section>
+
+        <div class="waterMeter">
+            <div id="waterFill" class="waterFill"></div>
+        </div>
+
+        <div class="waterArea">
+            <button class="water" onclick="giveWater()">
+                💧
+            </button>
+        </div>
+
+        <div class="hint">
+            꽃이 피도록 물을 주세요.
+        </div>
+
+        <button
+            id="nextPuzzle1"
+            class="nextButton"
+            onclick="nextGardenPuzzle()">
+            다음 →
+        </button>
+
+    </div>
 
 
-    <!-- GAME -->
-    <main id="game" class="hidden">
+    <!-- 1-2 토끼 -->
 
-        <header class="topbar">
+    <div id="puzzle2" class="gardenPuzzle">
 
-            <div class="stage">
-                <div>
-                    <div class="stageLabel">CURRENT STAGE</div>
-                    <div class="stageNum">
-                        STAGE <span id="stageNum">1</span>
-                    </div>
-                </div>
+        <div class="rabbitWorld">
 
-                <div class="progress" id="progress"></div>
+            <div id="rabbit" class="rabbit">
+                🐇
             </div>
 
-            <div class="timerBox" id="timerBox">
-                <div class="timerText">
-                    <span>TIME LIMIT</span>
-                    <span id="timerNumber">45.0</span>
+            <div class="rabbitDoor">
+                🚪
+            </div>
+
+            <div class="path path1"
+                 onclick="moveRabbit(1)">
+            </div>
+
+            <div class="path path2"
+                 onclick="moveRabbit(2)">
+            </div>
+
+            <div class="path path3"
+                 onclick="moveRabbit(3)">
+            </div>
+
+        </div>
+
+        <div class="hint">
+            길을 이어 토끼를 문까지 보내세요.
+        </div>
+
+        <button
+            id="nextPuzzle2"
+            class="nextButton"
+            onclick="nextGardenPuzzle()">
+            다음 →
+        </button>
+
+    </div>
+
+
+    <!-- 1-3 그림자 -->
+
+    <div id="puzzle3" class="gardenPuzzle">
+
+        <div class="cloudWorld">
+
+            <div class="sun">
+                ☀️
+            </div>
+
+            <div
+                class="cloud cloud1"
+                onclick="moveCloud()">
+                ☁️
+            </div>
+
+            <div
+                class="cloud cloud2"
+                onclick="moveCloud()">
+                ☁️
+            </div>
+
+            <div id="shadow" class="shadow"></div>
+
+        </div>
+
+        <div class="hint">
+            구름을 움직여 그림자를 완성하세요.
+        </div>
+
+        <button
+            id="nextPuzzle3"
+            class="nextButton"
+            onclick="nextGardenPuzzle()">
+            다음 →
+        </button>
+
+    </div>
+
+
+    <!-- 1-4 거울 -->
+
+    <div id="puzzle4" class="gardenPuzzle">
+
+        <div class="mirrorRoom">
+
+            <div id="character" class="roomCharacter">
+                🧍
+            </div>
+
+            <div id="mirror" class="mirror">
+
+                <div
+                    id="mirrorCharacter"
+                    class="mirrorCharacter">
+                    🧍
                 </div>
 
-                <div class="timerBar">
-                    <div id="timerFill"></div>
-                </div>
+            </div>
+
+        </div>
+
+        <div class="hint">
+            거울 속의 모습을 관찰하세요.
+        </div>
+
+        <button
+            id="nextPuzzle4"
+            class="nextButton"
+            onclick="nextGardenPuzzle()">
+            다음 →
+        </button>
+
+    </div>
+
+
+    <!-- 1-5 꽃 -->
+
+    <div id="puzzle5" class="gardenPuzzle">
+
+        <div class="garden">
+
+            <div
+                class="gardenFlower gf1"
+                onclick="touchFlower(this)">
+                🌷
+            </div>
+
+            <div
+                class="gardenFlower gf2"
+                onclick="touchFlower(this)">
+                🌷
+            </div>
+
+            <div
+                class="gardenFlower gf3"
+                onclick="touchFlower(this)">
+                🌷
+            </div>
+
+            <div
+                class="gardenFlower gf4"
+                onclick="touchFlower(this)">
+                🌷
+            </div>
+
+            <div
+                class="gardenFlower gf5"
+                onclick="touchFlower(this)">
+                🌷
+            </div>
+
+        </div>
+
+        <div class="hint">
+            정원의 꽃을 살펴보세요.
+        </div>
+
+        <button
+            id="nextPuzzle5"
+            class="nextButton"
+            onclick="nextGardenPuzzle()">
+            다음 →
+        </button>
+
+    </div>
+
+
+    <!-- 1-6 마지막 꽃 -->
+
+    <div id="puzzle6" class="gardenPuzzle">
+
+        <div class="finalGarden">
+
+            <div
+                id="bigFlower"
+                class="bigFlower">
+                🌷
+            </div>
+
+            <div class="finalText">
+                조금 이상하게 뛰고 있다.
+            </div>
+
+        </div>
+
+        <button
+            class="nextButton"
+            style="display:block;"
+            onclick="finishGarden()">
+            바라보기
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     STAGE TRANSITION
+===================================================== -->
+
+<section id="stageTransition" class="screen">
+
+    <div class="transitionSmall">
+        STAGE 1 CLEAR
+    </div>
+
+    <div class="transitionTitle">
+        정원 밖으로
+    </div>
+
+    <div class="transitionText">
+        꽃은 다시 조용해졌다.<br>
+        그런데 하늘에서 작은 빛 하나가 움직였다.
+    </div>
+
+    <div class="transitionUfo">
+        🛸
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     STAGE 2 UFO
+===================================================== -->
+
+<section id="ufoStage" class="screen">
+
+    <main class="ufoGame">
+
+        <header class="hud">
+
+            <div>
+                <span class="label">STAGE</span>
+                <b id="ufoStageNumber">2</b>
+                <small>
+                    <span id="caught">0</span> /
+                    <span id="target">5</span> 발견
+                </small>
+            </div>
+
+            <div class="score">
+                <span class="label">SCORE</span>
+                <b id="score">0</b>
+                <small id="comboText"></small>
+            </div>
+
+            <div class="film">
+                <span class="label">FILM</span>
+                <b id="filmDots"></b>
+                <small>
+                    <span id="filmCount">8</span> / 8
+                </small>
             </div>
 
         </header>
 
 
-        <section class="table">
+        <div class="sky" id="sky">
 
-            <div class="felt"></div>
+            <div class="stars"></div>
 
-            <div class="aiStatus">
-                AI DIFFICULTY:
-                <strong id="aiDifficulty">BEGINNER</strong>
-            </div>
+            <div
+                class="finder"
+                id="finder">
 
-            <div class="speech" id="speech"></div>
-
-            <!-- AI -->
-            <div class="opponentArea">
-
-                <div class="areaTitle">
-                    <strong>AI OPPONENT</strong>
-                    <span id="aiInfo">8 CARDS</span>
-                </div>
-
-                <div class="hand" id="aiHand"></div>
+                <i></i>
+                <i></i>
+                <i></i>
+                <i></i>
+                <b></b>
 
             </div>
 
+            <div id="ufoContainer"></div>
 
-            <div class="centerInfo">
+            <div id="feedback"></div>
 
-                <div class="centerHint">
-                    SELECT EXACTLY 5 CARDS
-                </div>
+            <p class="skyHint">
+                하늘을 드래그하여 UFO를 조준하세요
+            </p>
 
-                <div class="handPreview" id="handPreview">
-                    -
-                </div>
-
-                <div class="scorePreview" id="scorePreview">
-                    -
-                </div>
-
-            </div>
+        </div>
 
 
-            <!-- PLAYER -->
-            <div class="playerArea">
+        <footer class="controls">
 
-                <div class="areaTitle">
-                    <strong>YOUR HAND</strong>
+            <p>
+                셔터는 신중하게!<br>
+                MISS 시 필름 2장이 소모됩니다.
+            </p>
 
-                    <span>
-                        <span id="cardCount">8</span> CARDS
-                    </span>
-                </div>
+            <button
+                class="shutter"
+                id="shutter"
+                aria-label="UFO 촬영">
 
-                <div class="hand" id="playerHand"></div>
+                <span></span>
 
-                <div class="controls">
+            </button>
 
-                    <button
-                        class="actionBtn danger"
-                        id="discardBtn"
-                    >
-                        버리기
-                    </button>
+            <small>
+                SHUTTER
+            </small>
 
-                    <div class="counter">
-                        버리기
-                        <strong id="discardCount">2</strong>
-                        회 남음
-                    </div>
-
-                    <button
-                        class="actionBtn primary"
-                        id="submitBtn"
-                        disabled
-                    >
-                        제출
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- AUGMENTS -->
-        <aside class="sidebar">
-
-            <div class="sideTitle">
-                <strong>MY AUGMENTS</strong>
-                <span id="augmentCount">0 / 5</span>
-            </div>
-
-            <div class="sideDescription">
-                증강은 라운드마다 한 번 사용할 수 있습니다.<br>
-                사용하지 않은 증강은 다음 라운드에도 유지됩니다.
-            </div>
-
-            <div class="augmentList" id="augmentList"></div>
-
-        </aside>
+        </footer>
 
     </main>
 
+</section>
 
-    <!-- AUGMENT CHOICE -->
-    <div id="augmentModal" class="modal hidden">
 
-        <div class="modalBox">
+<!-- =====================================================
+     ENDING
+===================================================== -->
 
-            <div class="modalTitle">
-                AUGMENT SELECT
-            </div>
+<section id="ending" class="screen">
 
-            <div class="modalSub" id="augmentModalSub">
-                다음 전투를 위한 힘을 선택하세요.
-            </div>
+    <div class="endUfo">
+        🛸
+    </div>
 
-            <div
-                class="augmentChoices"
-                id="augmentChoices"
-            ></div>
+    <div class="endFlower">
+        🌷
+    </div>
 
-        </div>
+    <div class="endTitle">
+        잠들지 못한 밤
+    </div>
+
+    <div class="endText">
+
+        당신은 정원을 지나<br>
+        밤하늘의 흔적까지 기록했다.<br><br>
+
+        그런데 마지막 사진 속에는<br>
+        UFO보다 더 이상한 것이 찍혀 있었다.<br><br>
+
+        <span style="color:#f0d276;">
+            정원에서 본 그 꽃이었다.
+        </span>
 
     </div>
 
+    <button
+        class="restart"
+        onclick="location.reload()">
+        다시 보기
+    </button>
 
-    <!-- RESULT -->
-    <div id="resultModal" class="modal hidden">
-
-        <div class="modalBox resultBox">
-
-            <div class="modalTitle" id="resultTitle">
-                YOU WIN
-            </div>
-
-            <div class="modalSub" id="resultSub">
-                결과
-            </div>
-
-            <div class="resultHands">
-
-                <div class="resultSide">
-
-                    <h3>YOUR HAND</h3>
-
-                    <div
-                        class="resultCards"
-                        id="resultPlayerCards"
-                    ></div>
-
-                    <div
-                        class="resultHandName"
-                        id="resultPlayerHand"
-                    ></div>
-
-                    <div
-                        class="resultScore"
-                        id="resultPlayerScore"
-                    ></div>
-
-                </div>
-
-                <div class="vs">VS</div>
-
-                <div class="resultSide">
-
-                    <h3>AI HAND</h3>
-
-                    <div
-                        class="resultCards"
-                        id="resultAiCards"
-                    ></div>
-
-                    <div
-                        class="resultHandName"
-                        id="resultAiHand"
-                    ></div>
-
-                    <div
-                        class="resultScore"
-                        id="resultAiScore"
-                    ></div>
-
-                </div>
-
-            </div>
-
-            <div
-                class="reason"
-                id="resultReason"
-            ></div>
-
-            <div class="resultButtons">
-
-                <button
-                    class="actionBtn primary"
-                    id="resultContinue"
-                >
-                    계속
-                </button>
-
-                <button
-                    class="actionBtn danger hidden"
-                    id="resultRestart"
-                >
-                    처음부터 다시
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- CARD MODAL -->
-    <div id="cardModal" class="modal hidden">
-
-        <div class="modalBox" style="max-width:500px">
-
-            <div class="modalTitle" id="cardModalTitle">
-                카드 변경
-            </div>
-
-            <div class="modalSub">
-                원하는 값을 클릭해서 선택하세요.
-            </div>
-
-            <div id="cardModalContent"></div>
-
-            <div
-                style="
-                    display:flex;
-                    justify-content:center;
-                    margin-top:20px
-                "
-            >
-                <button
-                    class="actionBtn"
-                    id="cardModalCancel"
-                >
-                    취소
-                </button>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div id="fx">
-        <div class="flash" id="flash"></div>
-        <div class="bigText" id="bigText"></div>
-        <div class="scoreFloat" id="scoreFloat"></div>
-    </div>
+</section>
 
 </div>
 
 
 <script>
-/* =========================================================
-   AI POKER ROGUELIKE
-   Single-file browser build
-========================================================= */
 
-"use strict";
+/* =====================================================
+   전체 게임 상태
+===================================================== */
 
+let currentGardenPuzzle = 1;
 
-/* =========================================================
-   DOM
-========================================================= */
+let water = 0;
+let rabbitStep = 0;
+let cloudClicks = 0;
+let mirrorClicks = 0;
+let flowerClicks = 0;
 
-const $ = id => document.getElementById(id);
 
-const startScreen = $("startScreen");
-const game = $("game");
+/* =====================================================
+   공통 화면 전환
+===================================================== */
 
-const startBtn = $("startBtn");
+function showScreen(id){
 
-const stageNumEl = $("stageNum");
-const progressEl = $("progress");
-
-const timerBox = $("timerBox");
-const timerNumber = $("timerNumber");
-const timerFill = $("timerFill");
-
-const aiDifficultyEl = $("aiDifficulty");
-const aiHandEl = $("aiHand");
-const playerHandEl = $("playerHand");
-
-const cardCountEl = $("cardCount");
-const discardCountEl = $("discardCount");
-
-const submitBtn = $("submitBtn");
-const discardBtn = $("discardBtn");
-
-const handPreview = $("handPreview");
-const scorePreview = $("scorePreview");
-
-const augmentList = $("augmentList");
-const augmentCount = $("augmentCount");
-
-const speech = $("speech");
-
-const augmentModal = $("augmentModal");
-const augmentChoices = $("augmentChoices");
-const augmentModalSub = $("augmentModalSub");
-
-const resultModal = $("resultModal");
-const resultTitle = $("resultTitle");
-const resultSub = $("resultSub");
-
-const resultPlayerCards = $("resultPlayerCards");
-const resultAiCards = $("resultAiCards");
-
-const resultPlayerHand = $("resultPlayerHand");
-const resultAiHand = $("resultAiHand");
-
-const resultPlayerScore = $("resultPlayerScore");
-const resultAiScore = $("resultAiScore");
-
-const resultReason = $("resultReason");
-const resultContinue = $("resultContinue");
-const resultRestart = $("resultRestart");
-
-const cardModal = $("cardModal");
-const cardModalTitle = $("cardModalTitle");
-const cardModalContent = $("cardModalContent");
-const cardModalCancel = $("cardModalCancel");
-
-const flash = $("flash");
-const bigText = $("bigText");
-const scoreFloat = $("scoreFloat");
-
-
-/* =========================================================
-   AUDIO
-========================================================= */
-
-let audioCtx = null;
-
-function initAudio(){
-
-    if(!audioCtx){
-
-        audioCtx =
-            new (
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
-
-    }
-
-    if(audioCtx.state === "suspended"){
-        audioCtx.resume();
-    }
-}
-
-function tone(
-    frequency,
-    duration=.12,
-    type="sine",
-    volume=.04,
-    delay=0
-){
-
-    if(!audioCtx) return;
-
-    const osc =
-        audioCtx.createOscillator();
-
-    const gain =
-        audioCtx.createGain();
-
-    osc.type = type;
-    osc.frequency.value = frequency;
-
-    gain.gain.setValueAtTime(
-        0,
-        audioCtx.currentTime + delay
-    );
-
-    gain.gain.linearRampToValueAtTime(
-        volume,
-        audioCtx.currentTime + delay + .01
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-        .0001,
-        audioCtx.currentTime + delay + duration
-    );
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    osc.start(audioCtx.currentTime + delay);
-
-    osc.stop(
-        audioCtx.currentTime +
-        delay +
-        duration +
-        .03
-    );
-}
-
-function soundCard(){
-    tone(360,.06,"triangle",.035);
-}
-
-function soundDraw(){
-    tone(300,.07,"triangle",.035);
-    tone(470,.09,"triangle",.025,.05);
-}
-
-function soundDiscard(){
-    tone(170,.12,"sawtooth",.03);
-    tone(110,.14,"sawtooth",.02,.06);
-}
-
-function soundSubmit(){
-    tone(440,.08,"square",.025);
-    tone(620,.1,"square",.03,.07);
-    tone(820,.14,"square",.04,.14);
-}
-
-function soundWin(){
-
-    const notes=[
-        440,
-        554,
-        659,
-        880
-    ];
-
-    notes.forEach(
-        (n,i)=>
-            tone(
-                n,
-                .18,
-                "triangle",
-                .055,
-                i*.09
-            )
-    );
-}
-
-function soundLose(){
-
-    tone(220,.2,"sawtooth",.05);
-    tone(165,.25,"sawtooth",.045,.12);
-    tone(110,.35,"sawtooth",.035,.27);
-}
-
-function soundRare(){
-
-    const notes=[
-        330,
-        440,
-        554,
-        659,
-        880,
-        1100
-    ];
-
-    notes.forEach(
-        (n,i)=>
-            tone(
-                n,
-                .22,
-                "sine",
-                .045,
-                i*.055
-            )
-    );
-}
-
-
-/* =========================================================
-   CARD DATA
-========================================================= */
-
-const SUITS = [
-    {
-        id:"spades",
-        symbol:"♠",
-        name:"스페이드",
-        red:false
-    },
-    {
-        id:"hearts",
-        symbol:"♥",
-        name:"하트",
-        red:true
-    },
-    {
-        id:"diamonds",
-        symbol:"♦",
-        name:"다이아",
-        red:true
-    },
-    {
-        id:"clubs",
-        symbol:"♣",
-        name:"클럽",
-        red:false
-    }
-];
-
-const RANKS = [
-    {value:2,label:"2"},
-    {value:3,label:"3"},
-    {value:4,label:"4"},
-    {value:5,label:"5"},
-    {value:6,label:"6"},
-    {value:7,label:"7"},
-    {value:8,label:"8"},
-    {value:9,label:"9"},
-    {value:10,label:"10"},
-    {value:11,label:"J"},
-    {value:12,label:"Q"},
-    {value:13,label:"K"},
-    {value:14,label:"A"}
-];
-
-function createDeck(){
-
-    const deck=[];
-
-    for(const suit of SUITS){
-
-        for(const rank of RANKS){
-
-            deck.push({
-                id:
-                    suit.id +
-                    "-" +
-                    rank.value +
-                    "-" +
-                    Math.random(),
-
-                suit:suit.id,
-                suitSymbol:suit.symbol,
-
-                rank:rank.value,
-                label:rank.label
-            });
-
-        }
-
-    }
-
-    return deck;
-}
-
-function shuffle(array){
-
-    const arr=[...array];
-
-    for(let i=arr.length-1;i>0;i--){
-
-        const j =
-            Math.floor(
-                Math.random()*(i+1)
-            );
-
-        [arr[i],arr[j]] =
-            [arr[j],arr[i]];
-
-    }
-
-    return arr;
-}
-
-
-/* =========================================================
-   GAME STATE
-========================================================= */
-
-const MAX_STAGE = 8;
-const ROUND_TIME = 45;
-
-let state = {
-
-    stage:1,
-
-    playerHand:[],
-    aiHand:[],
-    deck:[],
-
-    selected:new Set(),
-
-    discardsLeft:2,
-
-    time:ROUND_TIME,
-    timer:null,
-
-    augments:[],
-
-    roundEnded:false,
-    augmentSelecting:false,
-
-    pendingCardAction:null,
-    pendingCardIndex:null
-};
-
-
-/* =========================================================
-   AUGMENTS
-========================================================= */
-
-const AUGMENTS = [
-
-    {
-        id:"extra_card",
-        name:"한 장 더",
-        rarity:"silver",
-        icon:"＋",
-        desc:"사용하면 덱에서 카드 1장을 추가합니다.",
-        action:"draw",
-        amount:1
-    },
-
-    {
-        id:"change_suit",
-        name:"수트 변환",
-        rarity:"silver",
-        icon:"♠",
-        desc:"내 카드 1장의 수트를 원하는 수트로 변경합니다.",
-        action:"changeSuit",
-        amount:1
-    },
-
-    {
-        id:"pair_boost",
-        name:"원페어 전문가",
-        rarity:"silver",
-        icon:"◆",
-        desc:"원페어의 기본 점수에 +25% 보너스를 줍니다.",
-        hand:"ONE_PAIR",
-        scoreMult:1.25
-    },
-
-    {
-        id:"lucky_draw",
-        name:"행운의 한 장",
-        rarity:"silver",
-        icon:"★",
-        desc:"카드 1장을 즉시 추가합니다.",
-        action:"draw",
-        amount:1
-    },
-
-    {
-        id:"two_suits",
-        name:"두 번의 손길",
-        rarity:"gold",
-        icon:"♣",
-        desc:"카드 2장의 수트를 각각 원하는 수트로 변경합니다.",
-        action:"changeSuit",
-        amount:2
-    },
-
-    {
-        id:"two_pair_boost",
-        name:"쌍의 축복",
-        rarity:"gold",
-        icon:"◆◆",
-        desc:"투페어 기본 점수에 +50% 보너스를 줍니다.",
-        hand:"TWO_PAIR",
-        scoreMult:1.5
-    },
-
-    {
-        id:"swap_one",
-        name:"운명의 교환",
-        rarity:"gold",
-        icon:"⇄",
-        desc:"내 카드 1장과 AI 카드 1장을 교환합니다.",
-        action:"swap",
-        amount:1
-    },
-
-    {
-        id:"trips_boost",
-        name:"트리플 헌터",
-        rarity:"gold",
-        icon:"♣♣♣",
-        desc:"트리플 점수에 +75% 보너스를 줍니다.",
-        hand:"THREE_KIND",
-        scoreMult:1.75
-    },
-
-    {
-        id:"two_draw",
-        name:"추가 드로우",
-        rarity:"gold",
-        icon:"＋＋",
-        desc:"덱에서 카드 2장을 추가합니다.",
-        action:"draw",
-        amount:2
-    },
-
-    {
-        id:"wild_two",
-        name:"두 장의 변신",
-        rarity:"platinum",
-        icon:"✦",
-        desc:"카드 2장의 수트를 원하는 수트로 변경합니다.",
-        action:"changeSuit",
-        amount:2
-    },
-
-    {
-        id:"full_boost",
-        name:"풀하우스의 왕",
-        rarity:"platinum",
-        icon:"♛",
-        desc:"풀하우스 점수에 +100% 보너스를 줍니다.",
-        hand:"FULL_HOUSE",
-        scoreMult:2
-    },
-
-    {
-        id:"four_boost",
-        name:"포카드의 왕",
-        rarity:"platinum",
-        icon:"✦✦",
-        desc:"포카드 점수에 +125% 보너스를 줍니다.",
-        hand:"FOUR_KIND",
-        scoreMult:2.25
-    },
-
-    {
-        id:"royal_boost",
-        name:"로열 블러드",
-        rarity:"platinum",
-        icon:"♕",
-        desc:"스트레이트 플러시 점수에 +150% 보너스를 줍니다.",
-        hand:"STRAIGHT_FLUSH",
-        scoreMult:2.5
-    },
-
-    {
-        id:"swap_two",
-        name:"운명의 양손",
-        rarity:"platinum",
-        icon:"⇄⇄",
-        desc:"내 카드 2장과 AI 카드 2장을 서로 교환합니다.",
-        action:"swap",
-        amount:2
-    },
-
-    {
-        id:"triple_suit",
-        name:"플러시의 축복",
-        rarity:"platinum",
-        icon:"♠♥♦♣",
-        desc:"플러시 점수에 +100% 보너스를 줍니다.",
-        hand:"FLUSH",
-        scoreMult:2
-    },
-
-    {
-        id:"straight_boost",
-        name:"직선의 길",
-        rarity:"gold",
-        icon:"➜",
-        desc:"스트레이트 점수에 +75% 보너스를 줍니다.",
-        hand:"STRAIGHT",
-        scoreMult:1.75
-    },
-
-    {
-        id:"full_draw",
-        name:"도박사의 욕심",
-        rarity:"platinum",
-        icon:"★",
-        desc:"덱에서 카드 3장을 추가합니다.",
-        action:"draw",
-        amount:3
-    }
-];
-
-
-/* =========================================================
-   AUGMENT HELPERS
-========================================================= */
-
-function rarityPool(){
-
-    const roll=Math.random();
-
-    if(state.stage>=7 && roll<.24){
-        return "platinum";
-    }
-
-    if(state.stage>=4 && roll<.48){
-        return "gold";
-    }
-
-    return "silver";
-}
-
-function getRandomAugments(){
-
-    const rarity=rarityPool();
-
-    let pool =
-        AUGMENTS.filter(
-            a=>a.rarity===rarity
-        );
-
-    pool=shuffle(pool);
-
-    return pool.slice(0,3);
-}
-
-function useAugment(index){
-
-    const augment =
-        state.augments[index];
-
-    if(!augment) return;
-
-    if(augment.usedThisRound){
-        return;
-    }
-
-    augment.usedThisRound=true;
-
-    soundCard();
-
-    if(augment.action==="draw"){
-
-        drawCards(augment.amount);
-
-        showSpeech("카드를 늘렸군. 꽤 욕심이 많네.");
-
-    }
-
-    else if(
-        augment.action==="changeSuit"
-    ){
-
-        state.pendingCardAction={
-            type:"changeSuit",
-            amount:augment.amount,
-            remaining:augment.amount
-        };
-
-        showCardSelector(
-            "수트를 변경할 카드를 클릭하세요."
-        );
-
-        showSpeech(
-            "어디까지 운을 바꿀 수 있을까?"
-        );
-
-        return;
-    }
-
-    else if(
-        augment.action==="swap"
-    ){
-
-        state.pendingCardAction={
-            type:"swap",
-            amount:augment.amount,
-            remaining:augment.amount
-        };
-
-        showCardSelector(
-            "교환할 내 카드를 클릭하세요."
-        );
-
-        showSpeech(
-            "좋아. 서로의 운을 바꿔보자고."
-        );
-
-        return;
-    }
-
-    renderAll();
-}
-
-
-/* =========================================================
-   CARD DRAW
-========================================================= */
-
-function drawCards(amount){
-
-    for(let i=0;i<amount;i++){
-
-        if(state.deck.length===0){
-
-            state.deck=createDeck();
-            state.deck=shuffle(
-                state.deck
-            );
-
-        }
-
-        const card =
-            state.deck.pop();
-
-        state.playerHand.push(card);
-
-        soundDraw();
-    }
-
-    renderAll();
-}
-
-
-/* =========================================================
-   HAND EVALUATION
-========================================================= */
-
-const HANDS = {
-    HIGH_CARD:{
-        name:"하이 카드",
-        rank:1,
-        base:10
-    },
-
-    ONE_PAIR:{
-        name:"원페어",
-        rank:2,
-        base:25
-    },
-
-    TWO_PAIR:{
-        name:"투페어",
-        rank:3,
-        base:45
-    },
-
-    THREE_KIND:{
-        name:"트리플",
-        rank:4,
-        base:80
-    },
-
-    STRAIGHT:{
-        name:"스트레이트",
-        rank:5,
-        base:120
-    },
-
-    FLUSH:{
-        name:"플러시",
-        rank:6,
-        base:145
-    },
-
-    FULL_HOUSE:{
-        name:"풀하우스",
-        rank:7,
-        base:200
-    },
-
-    FOUR_KIND:{
-        name:"포카드",
-        rank:8,
-        base:300
-    },
-
-    STRAIGHT_FLUSH:{
-        name:"스트레이트 플러시",
-        rank:9,
-        base:500
-    }
-};
-
-function evaluateHand(cards){
-
-    if(cards.length!==5){
-
-        return {
-            type:"INVALID",
-            name:"5장을 선택하세요",
-            rank:0,
-            base:0,
-            mult:0,
-            score:0,
-            values:[]
-        };
-
-    }
-
-    const ranks =
-        cards
-            .map(c=>c.rank)
-            .sort((a,b)=>b-a);
-
-    const suits =
-        cards.map(c=>c.suit);
-
-    const counts={};
-
-    for(const rank of ranks){
-        counts[rank] =
-            (counts[rank]||0)+1;
-    }
-
-    const groups =
-        Object.entries(counts)
-            .map(
-                ([rank,count])=>({
-                    rank:Number(rank),
-                    count
-                })
-            )
-            .sort(
-                (a,b)=>
-                    b.count-a.count ||
-                    b.rank-a.rank
-            );
-
-    const unique =
-        [...new Set(ranks)];
-
-    let straight=false;
-
-    if(unique.length===5){
-
-        const normal =
-            unique[0]-unique[4]===4;
-
-        const wheel =
-            unique.join(",") ===
-            "14,5,4,3,2";
-
-        straight=normal||wheel;
-    }
-
-    const flush =
-        suits.every(
-            s=>s===suits[0]
-        );
-
-    let type="HIGH_CARD";
-
-    if(straight && flush){
-        type="STRAIGHT_FLUSH";
-    }
-    else if(groups[0].count===4){
-        type="FOUR_KIND";
-    }
-    else if(
-        groups[0].count===3 &&
-        groups[1].count===2
-    ){
-        type="FULL_HOUSE";
-    }
-    else if(flush){
-        type="FLUSH";
-    }
-    else if(straight){
-        type="STRAIGHT";
-    }
-    else if(groups[0].count===3){
-        type="THREE_KIND";
-    }
-    else if(
-        groups[0].count===2 &&
-        groups[1].count===2
-    ){
-        type="TWO_PAIR";
-    }
-    else if(groups[0].count===2){
-        type="ONE_PAIR";
-    }
-
-    const info=HANDS[type];
-
-    let tieValues=[...ranks];
-
-    if(type==="STRAIGHT" || type==="STRAIGHT_FLUSH"){
-
-        if(
-            unique.join(",") ===
-            "14,5,4,3,2"
-        ){
-
-            tieValues=[
-                5,
-                4,
-                3,
-                2,
-                1
-            ];
-        }
-    }
-
-    return {
-        type,
-        name:info.name,
-        rank:info.rank,
-        base:info.base,
-        mult:calculateMultiplier(type),
-        score:0,
-        values:tieValues
-    };
-}
-
-function calculateMultiplier(type){
-
-    let mult=1;
-
-    for(const augment of state.augments){
-
-        if(
-            augment.hand===type &&
-            augment.scoreMult
-        ){
-
-            mult *= augment.scoreMult;
-        }
-    }
-
-    return mult;
-}
-
-function calculateScore(result){
-
-    if(result.type==="INVALID"){
-        return 0;
-    }
-
-    return Math.floor(
-        result.base * result.mult
-    );
-}
-
-
-/* =========================================================
-   TIE BREAK
-========================================================= */
-
-function compareHands(a,b){
-
-    if(a.rank!==b.rank){
-        return a.rank>b.rank ? 1 : -1;
-    }
-
-    for(
-        let i=0;
-        i<Math.min(
-            a.values.length,
-            b.values.length
-        );
-        i++
-    ){
-
-        if(
-            a.values[i] !==
-            b.values[i]
-        ){
-
-            return
-                a.values[i] >
-                b.values[i]
-                ? 1
-                : -1;
-        }
-
-    }
-
-    return 0;
-}
-
-
-/* =========================================================
-   AI
-========================================================= */
-
-const AI_NAMES = [
-    "BEGINNER",
-    "APPRENTICE",
-    "SKILLED",
-    "CHALLENGER",
-    "ELITE",
-    "MASTER",
-    "CHAMPION",
-    "FINAL BOSS"
-];
-
-function aiChooseBestFive(){
-
-    const cards=state.aiHand;
-
-    let combinations=[];
-
-    for(let a=0;a<cards.length-4;a++){
-        for(let b=a+1;b<cards.length-3;b++){
-            for(let c=b+1;c<cards.length-2;c++){
-                for(let d=c+1;d<cards.length-1;d++){
-                    for(let e=d+1;e<cards.length;e++){
-
-                        const hand=[
-                            cards[a],
-                            cards[b],
-                            cards[c],
-                            cards[d],
-                            cards[e]
-                        ];
-
-                        const evaluation=
-                            evaluateWithoutPlayerAugments(
-                                hand
-                            );
-
-                        combinations.push({
-                            hand,
-                            evaluation
-                        });
-
-                    }
-                }
-            }
-        }
-    }
-
-    combinations.sort(
-        (x,y)=>{
-            const comparison =
-                compareHands(
-                    x.evaluation,
-                    y.evaluation
-                );
-
-            if(comparison!==0){
-                return -comparison;
-            }
-
-            return (
-                calculateRawScore(
-                    y.evaluation
-                ) -
-                calculateRawScore(
-                    x.evaluation
-                )
-            );
-        }
-    );
-
-    let best =
-        combinations[0];
-
-    const difficulty=state.stage;
-
-    if(difficulty<=2){
-
-        const badPool =
-            combinations.slice(
-                0,
-                Math.min(
-                    combinations.length,
-                    3
-                )
-            );
-
-        best =
-            badPool[
-                Math.floor(
-                    Math.random()*
-                    badPool.length
-                )
-            ];
-
-    }
-
-    else if(difficulty===3){
-
-        const pool =
-            combinations.slice(
-                0,
-                Math.min(
-                    combinations.length,
-                    4
-                )
-            );
-
-        best =
-            pool[
-                Math.floor(
-                    Math.random()*
-                    pool.length
-                )
-            ];
-
-    }
-
-    else if(difficulty===4){
-
-        const pool =
-            combinations.slice(
-                0,
-                Math.min(
-                    combinations.length,
-                    2
-                )
-            );
-
-        best =
-            pool[
-                Math.floor(
-                    Math.random()*
-                    pool.length
-                )
-            ];
-    }
-
-    return best.hand;
-}
-
-function evaluateWithoutPlayerAugments(cards){
-
-    const ranks =
-        cards
-            .map(c=>c.rank)
-            .sort((a,b)=>b-a);
-
-    const suits =
-        cards.map(c=>c.suit);
-
-    const counts={};
-
-    ranks.forEach(
-        r=>{
-            counts[r]=(counts[r]||0)+1;
-        }
-    );
-
-    const groups =
-        Object.values(counts)
-            .sort((a,b)=>b-a);
-
-    const unique =
-        [...new Set(ranks)];
-
-    const straight =
-        unique.length===5 &&
-        (
-            unique[0]-unique[4]===4 ||
-            unique.join(",") ===
-            "14,5,4,3,2"
-        );
-
-    const flush =
-        suits.every(
-            s=>s===suits[0]
-        );
-
-    let type="HIGH_CARD";
-
-    if(straight&&flush)
-        type="STRAIGHT_FLUSH";
-    else if(groups[0]===4)
-        type="FOUR_KIND";
-    else if(
-        groups[0]===3 &&
-        groups[1]===2
-    )
-        type="FULL_HOUSE";
-    else if(flush)
-        type="FLUSH";
-    else if(straight)
-        type="STRAIGHT";
-    else if(groups[0]===3)
-        type="THREE_KIND";
-    else if(
-        groups[0]===2 &&
-        groups[1]===2
-    )
-        type="TWO_PAIR";
-    else if(groups[0]===2)
-        type="ONE_PAIR";
-
-    const result=evaluateHandBase(cards,type);
-
-    return result;
-}
-
-function evaluateHandBase(cards,type){
-
-    const ranks =
-        cards
-            .map(c=>c.rank)
-            .sort((a,b)=>b-a);
-
-    const info=HANDS[type];
-
-    return {
-        type,
-        name:info.name,
-        rank:info.rank,
-        base:info.base,
-        mult:1,
-        score:info.base,
-        values:ranks
-    };
-}
-
-function calculateRawScore(result){
-
-    return result.base;
-}
-
-
-/* =========================================================
-   RENDER CARD
-========================================================= */
-
-function cardHTML(card,index,selected=false){
-
-    const suit =
-        SUITS.find(
-            s=>s.id===card.suit
-        );
-
-    return `
-        <div
-            class="card ${suit.red ? "red":""}
-            ${selected ? "selected":""}"
-            data-index="${index}"
-        >
-
-            <div class="corner">
-
-                <span class="rank">
-                    ${card.label}
-                </span>
-
-                <span class="suit">
-                    ${suit.symbol}
-                </span>
-
-            </div>
-
-            <div class="bigSuit">
-                ${suit.symbol}
-            </div>
-
-        </div>
-    `;
-}
-
-
-/* =========================================================
-   RENDER
-========================================================= */
-
-function renderAll(){
-
-    renderStage();
-    renderPlayerHand();
-    renderAIHand();
-    renderAugments();
-    renderSelectionInfo();
-
-}
-
-function renderStage(){
-
-    stageNumEl.textContent=state.stage;
-
-    progressEl.innerHTML="";
-
-    for(
-        let i=1;
-        i<=MAX_STAGE;
-        i++
-    ){
-
-        const el=
-            document.createElement("i");
-
-        if(i<state.stage)
-            el.className="done";
-
-        if(i===state.stage)
-            el.className="current";
-
-        progressEl.appendChild(el);
-    }
-
-    aiDifficultyEl.textContent =
-        AI_NAMES[
-            state.stage-1
-        ];
-}
-
-function renderPlayerHand(){
-
-    playerHandEl.innerHTML =
-        state.playerHand
-            .map(
-                (card,index)=>
-                    cardHTML(
-                        card,
-                        index,
-                        state.selected.has(index)
-                    )
-            )
-            .join("");
-
-    playerHandEl
-        .querySelectorAll(".card")
-        .forEach(card=>{
-
-            card.addEventListener(
-                "click",
-                ()=>{
-                    handlePlayerCardClick(
-                        Number(
-                            card.dataset.index
-                        )
-                    );
-                }
-            );
-
+    document
+        .querySelectorAll(".screen")
+        .forEach(screen=>{
+            screen.classList.remove("active");
         });
 
-    cardCountEl.textContent =
-        state.playerHand.length;
+    const screen=document.getElementById(id);
 
-    discardCountEl.textContent =
-        state.discardsLeft;
+    screen.classList.add("active");
+    screen.classList.remove("fade");
 
-    discardBtn.disabled =
-        state.discardsLeft<=0 ||
-        state.roundEnded ||
-        state.selected.size===0;
+    void screen.offsetWidth;
 
-}
-
-function renderAIHand(){
-
-    aiHandEl.innerHTML =
-        state.aiHand
-            .map(
-                ()=>`
-                    <div class="card back"></div>
-                `
-            )
-            .join("");
-
-    $("aiInfo").textContent =
-        state.aiHand.length +
-        " CARDS";
-}
-
-function renderSelectionInfo(){
-
-    const count =
-        state.selected.size;
-
-    if(count===0){
-
-        handPreview.textContent="-";
-        scorePreview.textContent=
-            "카드를 선택하세요";
-
-    }
-    else if(count<5){
-
-        handPreview.textContent =
-            `${count} / 5`;
-
-        scorePreview.textContent =
-            "5장을 선택하세요";
-
-    }
-    else{
-
-        const cards =
-            [...state.selected]
-                .map(
-                    i=>state.playerHand[i]
-                );
-
-        const evaluation =
-            evaluateHand(cards);
-
-        const score =
-            calculateScore(evaluation);
-
-        handPreview.textContent =
-            evaluation.name;
-
-        scorePreview.textContent =
-            `${evaluation.base} × ${evaluation.mult} = ${score}`;
-    }
-
-    submitBtn.disabled =
-        state.selected.size!==5 ||
-        state.roundEnded;
-}
-
-function renderAugments(){
-
-    augmentCount.textContent =
-        `${state.augments.length} / 5`;
-
-    augmentList.innerHTML="";
-
-    state.augments.forEach(
-        (augment,index)=>{
-
-            const el =
-                document.createElement("div");
-
-            el.className =
-                `augment ${
-                    augment.usedThisRound
-                    ? "used"
-                    : ""
-                }`;
-
-            el.innerHTML=`
-
-                <div class="augmentHeader">
-
-                    <div class="augmentName">
-                        ${augment.icon}
-                        ${augment.name}
-                    </div>
-
-                    <div class="rarity ${augment.rarity}">
-                        ${augment.rarity.toUpperCase()}
-                    </div>
-
-                </div>
-
-                <div class="augmentDesc">
-                    ${augment.desc}
-                </div>
-
-                <div class="augmentStatus">
-                    ${
-                        augment.usedThisRound
-                        ? "사용 완료"
-                        : "사용 가능 · 클릭하여 사용"
-                    }
-                </div>
-
-            `;
-
-            el.addEventListener(
-                "click",
-                ()=>{
-                    useAugment(index);
-                }
-            );
-
-            augmentList.appendChild(el);
-
-        }
-    );
+    screen.classList.add("fade");
 }
 
 
-/* =========================================================
-   PLAYER CARD CLICK
-========================================================= */
-
-function handlePlayerCardClick(index){
-
-    if(state.roundEnded) return;
-
-    if(
-        state.pendingCardAction
-    ){
-
-        handlePendingCardAction(index);
-        return;
-    }
-
-    if(
-        state.selected.has(index)
-    ){
-
-        state.selected.delete(index);
-
-    }
-    else{
-
-        if(state.selected.size>=5){
-
-            showSpeech(
-                "5장만 고를 수 있다고."
-            );
-
-            return;
-        }
-
-        state.selected.add(index);
-
-        soundCard();
-    }
-
-    renderAll();
-}
-
-
-/* =========================================================
-   DISCARD
-========================================================= */
-
-function discardSelected(){
-
-    if(
-        state.discardsLeft<=0 ||
-        state.selected.size===0 ||
-        state.roundEnded
-    ){
-        return;
-    }
-
-    const indexes =
-        [...state.selected]
-            .sort((a,b)=>b-a);
-
-    for(const index of indexes){
-
-        state.playerHand.splice(
-            index,
-            1
-        );
-
-    }
-
-    state.selected.clear();
-
-    state.discardsLeft--;
-
-    soundDiscard();
-
-    if(state.discardsLeft===0){
-
-        showSpeech(
-            "손패가 너무 안좋으신가봐?"
-        );
-
-    }
-    else{
-
-        showSpeech(
-            "버렸네. 그 카드가 그렇게 싫었나?"
-        );
-
-    }
-
-    renderAll();
-}
-
-
-/* =========================================================
-   SUBMIT
-========================================================= */
-
-function submitHand(){
-
-    if(
-        state.selected.size!==5 ||
-        state.roundEnded
-    ){
-        return;
-    }
-
-    clearInterval(state.timer);
-
-    state.roundEnded=true;
-
-    soundSubmit();
-
-    const playerCards =
-        [...state.selected]
-            .map(
-                i=>state.playerHand[i]
-            );
-
-    const aiCards =
-        aiChooseBestFive();
-
-    const playerEval =
-        evaluateHand(playerCards);
-
-    playerEval.score =
-        calculateScore(playerEval);
-
-    const aiEval =
-        evaluateWithoutPlayerAugments(
-            aiCards
-        );
-
-    aiEval.score =
-        calculateRawScore(aiEval);
-
-    const comparison =
-        compareHands(
-            playerEval,
-            aiEval
-        );
-
-    let playerWins=false;
-
-    if(comparison>0){
-
-        playerWins=true;
-
-    }
-    else if(comparison===0){
-
-        playerWins =
-            playerEval.score >=
-            aiEval.score;
-
-    }
-
-    showResult(
-        playerCards,
-        aiCards,
-        playerEval,
-        aiEval,
-        playerWins
-    );
-}
-
-
-/* =========================================================
-   RESULT
-========================================================= */
-
-function createResultCards(cards){
-
-    return cards.map(card=>{
-
-        const suit =
-            SUITS.find(
-                s=>s.id===card.suit
-            );
-
-        return `
-            <div
-                class="resultCard ${
-                    suit.red ? "red": ""
-                }"
-            >
-                ${card.label}
-                ${suit.symbol}
-            </div>
-        `;
-
-    }).join("");
-}
-
-function showResult(
-    playerCards,
-    aiCards,
-    playerEval,
-    aiEval,
-    playerWins
-){
-
-    resultPlayerCards.innerHTML =
-        createResultCards(
-            playerCards
-        );
-
-    resultAiCards.innerHTML =
-        createResultCards(
-            aiCards
-        );
-
-    resultPlayerHand.textContent =
-        playerEval.name;
-
-    resultAiHand.textContent =
-        aiEval.name;
-
-    resultPlayerScore.textContent =
-        playerEval.score;
-
-    resultAiScore.textContent =
-        aiEval.score;
-
-    if(playerWins){
-
-        resultTitle.textContent =
-            "YOU WIN";
-
-        resultTitle.style.color =
-            "#5fe58b";
-
-        resultSub.textContent =
-            `STAGE ${state.stage} CLEAR`;
-
-        resultReason.textContent =
-            buildReason(
-                playerEval,
-                aiEval,
-                true
-            );
-
-        resultContinue.classList.remove(
-            "hidden"
-        );
-
-        resultRestart.classList.add(
-            "hidden"
-        );
-
-        soundWin();
-
-        playHandEffect(
-            playerEval.type,
-            playerEval.score
-        );
-
-    }
-    else{
-
-        resultTitle.textContent =
-            "YOU LOSE";
-
-        resultTitle.style.color =
-            "#ff6275";
-
-        resultSub.textContent =
-            "RUN FAILED";
-
-        resultReason.textContent =
-            buildReason(
-                playerEval,
-                aiEval,
-                false
-            );
-
-        resultContinue.classList.add(
-            "hidden"
-        );
-
-        resultRestart.classList.remove(
-            "hidden"
-        );
-
-        soundLose();
-
-        playBigText(
-            "DEFEAT"
-        );
-
-    }
-
-    resultModal.classList.remove(
-        "hidden"
-    );
-}
-
-function buildReason(
-    player,
-    ai,
-    win
-){
-
-    if(
-        player.type==="INVALID"
-    ){
-
-        return "5장의 카드를 제대로 선택하지 못했습니다.";
-
-    }
-
-    if(
-        player.rank >
-        ai.rank
-    ){
-
-        return `
-            당신의 <strong>${player.name}</strong>이
-            AI의 <strong>${ai.name}</strong>보다
-            높은 족보입니다.
-        `;
-
-    }
-
-    if(
-        player.rank <
-        ai.rank
-    ){
-
-        return `
-            AI의 <strong>${ai.name}</strong>이
-            당신의 <strong>${player.name}</strong>보다
-            높은 족보입니다.
-        `;
-
-    }
-
-    if(
-        player.score >
-        ai.score
-    ){
-
-        return `
-            같은 <strong>${player.name}</strong>이지만
-            증강과 기본 점수 계산에서 앞섰습니다.
-        `;
-
-    }
-
-    if(
-        player.score <
-        ai.score
-    ){
-
-        return `
-            같은 <strong>${player.name}</strong>이지만
-            AI의 카드 점수가 더 높았습니다.
-        `;
-
-    }
-
-    return win
-        ? "동률이지만 당신의 점수가 더 높습니다."
-        : "모든 조건이 같아도 이번에는 AI가 이겼습니다.";
-}
-
-
-/* =========================================================
-   CONTINUE
-========================================================= */
-
-resultContinue.addEventListener(
-    "click",
-    ()=>{
-
-        resultModal.classList.add(
-            "hidden"
-        );
-
-        if(state.stage>=MAX_STAGE){
-
-            finishGame();
-
-            return;
-        }
-
-        state.stage++;
-
-        state.augmentSelecting=true;
-
-        openAugmentSelection();
-
-    }
-);
-
-resultRestart.addEventListener(
-    "click",
-    ()=>{
-
-        resultModal.classList.add(
-            "hidden"
-        );
-
-        startGame();
-
-    }
-);
-
-
-/* =========================================================
-   FINAL GAME
-========================================================= */
-
-function finishGame(){
-
-    saveHighScore();
-
-    resultModal.classList.remove(
-        "hidden"
-    );
-
-    resultTitle.textContent =
-        "ALL 8 STAGES CLEAR";
-
-    resultTitle.style.color =
-        "#ffd166";
-
-    resultSub.textContent =
-        "YOU ARE THE POKER CHAMPION";
-
-    resultReason.innerHTML =
-        `
-            8개의 스테이지를 모두 돌파했습니다.<br>
-            당신의 최종 증강 빌드가 AI를 무너뜨렸습니다.
-        `;
-
-    resultContinue.classList.add(
-        "hidden"
-    );
-
-    resultRestart.classList.remove(
-        "hidden"
-    );
-
-    soundRare();
-
-    playBigText(
-        "CHAMPION"
-    );
-
-}
-
-
-/* =========================================================
-   AUGMENT SELECT
-========================================================= */
-
-function openAugmentSelection(){
-
-    const choices =
-        getRandomAugments();
-
-    augmentChoices.innerHTML="";
-
-    augmentModalSub.textContent =
-        `STAGE ${state.stage-1} CLEAR · ${choices[0].rarity.toUpperCase()} AUGMENTS`;
-
-    choices.forEach(
-        augment=>{
-
-            const choice =
-                document.createElement("div");
-
-            choice.className =
-                `choice ${augment.rarity}`;
-
-            choice.innerHTML=`
-
-                <div class="choiceTag rarity ${augment.rarity}">
-                    ${augment.rarity.toUpperCase()}
-                </div>
-
-                <div class="choiceIcon">
-                    ${augment.icon}
-                </div>
-
-                <div class="choiceName">
-                    ${augment.name}
-                </div>
-
-                <div class="choiceDesc">
-                    ${augment.desc}
-                </div>
-
-            `;
-
-            choice.addEventListener(
-                "click",
-                ()=>{
-
-                    selectAugment(
-                        augment
-                    );
-
-                }
-            );
-
-            augmentChoices.appendChild(
-                choice
-            );
-
-        }
-    );
-
-    augmentModal.classList.remove(
-        "hidden"
-    );
-}
-
-function selectAugment(augment){
-
-    if(state.augments.length>=5){
-
-        state.augments.shift();
-
-    }
-
-    state.augments.push({
-        ...augment,
-        usedThisRound:false
-    });
-
-    augmentModal.classList.add(
-        "hidden"
-    );
-
-    state.augmentSelecting=false;
-
-    showSpeech(
-        `좋은 선택이네. "${augment.name}"...`
-    );
-
-    startRound();
-
-}
-
-
-/* =========================================================
-   ROUND START
-========================================================= */
-
-function startRound(){
-
-    state.playerHand=[];
-    state.aiHand=[];
-
-    state.selected.clear();
-
-    state.discardsLeft=2;
-
-    state.roundEnded=false;
-
-    state.time=ROUND_TIME;
-
-    state.deck =
-        shuffle(
-            createDeck()
-        );
-
-    for(
-        const augment of state.augments
-    ){
-
-        augment.usedThisRound=false;
-
-    }
-
-    for(let i=0;i<8;i++){
-
-        state.playerHand.push(
-            state.deck.pop()
-        );
-
-        state.aiHand.push(
-            state.deck.pop()
-        );
-
-    }
-
-    renderAll();
-
-    startTimer();
-
-    showSpeech(
-        getStartLine()
-    );
-}
-
-function getStartLine(){
-
-    const lines=[
-
-        "이번엔 운이 좋을까?",
-
-        "8장이라니. 충분히 어렵지?",
-
-        "좋은 패가 들어오면 좋겠네.",
-
-        "네가 뭘 만들지 지켜보지.",
-
-        "이번에도 운에 맡길 건가?",
-
-        "나는 이미 네 패가 보이는 것 같은데."
-
-    ];
-
-    return lines[
-        Math.floor(
-            Math.random()*lines.length
-        )
-    ];
-}
-
-
-/* =========================================================
-   TIMER
-========================================================= */
-
-function startTimer(){
-
-    clearInterval(
-        state.timer
-    );
-
-    const start=Date.now();
-
-    state.timer =
-        setInterval(
-            ()=>{
-
-                const elapsed =
-                    (Date.now()-start)/1000;
-
-                state.time =
-                    Math.max(
-                        0,
-                        ROUND_TIME-elapsed
-                    );
-
-                updateTimer();
-
-                if(
-                    state.time<=10 &&
-                    state.time>9.8
-                ){
-
-                    showSpeech(
-                        "카드 5장 고르는게 그렇게 어렵나?"
-                    );
-
-                }
-
-                if(state.time<=0){
-
-                    clearInterval(
-                        state.timer
-                    );
-
-                    timeOut();
-
-                }
-
-            },
-            100
-        );
-}
-
-function updateTimer(){
-
-    timerNumber.textContent =
-        state.time.toFixed(1);
-
-    const percent =
-        Math.max(
-            0,
-            state.time /
-            ROUND_TIME *
-            100
-        );
-
-    timerFill.style.width =
-        percent + "%";
-
-    if(state.time<=10){
-
-        timerBox.classList.add(
-            "timerDanger"
-        );
-
-    }
-    else{
-
-        timerBox.classList.remove(
-            "timerDanger"
-        );
-
-    }
-}
-
-function timeOut(){
-
-    if(state.roundEnded) return;
-
-    state.roundEnded=true;
-
-    soundLose();
-
-    resultPlayerCards.innerHTML="";
-    resultAiCards.innerHTML="";
-
-    resultPlayerHand.textContent =
-        "TIME OUT";
-
-    resultAiHand.textContent =
-        "TIME OUT";
-
-    resultPlayerScore.textContent =
-        "0";
-
-    resultAiScore.textContent =
-        "-";
-
-    resultTitle.textContent =
-        "TIME OUT";
-
-    resultTitle.style.color =
-        "#ff6275";
-
-    resultSub.textContent =
-        "RUN FAILED";
-
-    resultReason.textContent =
-        "제한시간 안에 5장의 카드를 제출하지 못했습니다.";
-
-    resultContinue.classList.add(
-        "hidden"
-    );
-
-    resultRestart.classList.remove(
-        "hidden"
-    );
-
-    resultModal.classList.remove(
-        "hidden"
-    );
-
-}
-
-
-/* =========================================================
-   CARD SELECTOR
-========================================================= */
-
-function showCardSelector(title){
-
-    cardModalTitle.textContent=title;
-
-    cardModalContent.innerHTML=`
-
-        <div style="
-            display:grid;
-            grid-template-columns:
-                repeat(auto-fit,minmax(65px,1fr));
-            gap:8px;
-        ">
-
-            ${state.playerHand.map(
-                (card,index)=>`
-
-                <button
-                    class="actionBtn"
-                    data-select-card="${index}"
-                >
-                    ${card.label}
-                    ${card.suitSymbol}
-                </button>
-
-            `).join("")}
-
-        </div>
-
-    `;
-
-    cardModal
-        .querySelectorAll(
-            "[data-select-card]"
-        )
-        .forEach(btn=>{
-
-            btn.addEventListener(
-                "click",
-                ()=>{
-
-                    const index =
-                        Number(
-                            btn.dataset.selectCard
-                        );
-
-                    handlePendingCardAction(
-                        index
-                    );
-
-                }
-            );
-
-        });
-
-    cardModal.classList.remove(
-        "hidden"
-    );
-}
-
-function handlePendingCardAction(index){
-
-    const action =
-        state.pendingCardAction;
-
-    if(!action) return;
-
-    if(action.type==="changeSuit"){
-
-        state.pendingCardAction={
-            ...action,
-            targetIndex:index
-        };
-
-        showSuitSelector();
-
-    }
-
-    else if(action.type==="swap"){
-
-        state.pendingCardAction={
-            ...action,
-            targetIndex:index
-        };
-
-        showAISwapSelector();
-
-    }
-
-}
-
-function showSuitSelector(){
-
-    cardModalTitle.textContent =
-        "원하는 수트를 선택";
-
-    cardModalContent.innerHTML=`
-
-        <div style="
-            display:grid;
-            grid-template-columns:
-                repeat(2,1fr);
-            gap:10px;
-        ">
-
-            ${SUITS.map(
-                suit=>`
-
-                <button
-                    class="actionBtn"
-                    data-suit="${suit.id}"
-                    style="
-                        height:70px;
-                        font-size:22px;
-                    "
-                >
-                    ${suit.symbol}
-                    <small
-                        style="
-                            display:block;
-                            font-size:9px;
-                            opacity:.6;
-                        "
-                    >
-                        ${suit.name}
-                    </small>
-                </button>
-
-            `).join("")}
-
-        </div>
-    `;
-
-    cardModal
-        .querySelectorAll(
-            "[data-suit]"
-        )
-        .forEach(btn=>{
-
-            btn.addEventListener(
-                "click",
-                ()=>{
-
-                    const suit =
-                        btn.dataset.suit;
-
-                    const index =
-                        state.pendingCardAction
-                            .targetIndex;
-
-                    changeCardSuit(
-                        index,
-                        suit
-                    );
-
-                }
-            );
-
-        });
-}
-
-function changeCardSuit(index,suitId){
-
-    const suit =
-        SUITS.find(
-            s=>s.id===suitId
-        );
-
-    if(!suit) return;
-
-    const card =
-        state.playerHand[index];
-
-    card.suit=suit.id;
-    card.suitSymbol=suit.symbol;
-
-    const action =
-        state.pendingCardAction;
-
-    action.remaining--;
-
-    if(action.remaining<=0){
-
-        state.pendingCardAction=null;
-
-        cardModal.classList.add(
-            "hidden"
-        );
-
-        renderAll();
-
-        showSpeech(
-            "이제야 패가 좀 볼만해졌네."
-        );
-
-    }
-    else{
-
-        showCardSelector(
-            "다음 카드를 선택하세요."
-        );
-
-    }
-
-}
-
-function showAISwapSelector(){
-
-    cardModalTitle.textContent =
-        "AI의 카드를 선택";
-
-    cardModalContent.innerHTML=`
-
-        <div style="
-            display:grid;
-            grid-template-columns:
-                repeat(5,1fr);
-            gap:8px;
-        ">
-
-            ${state.aiHand.map(
-                (card,index)=>`
-
-                <button
-                    class="actionBtn"
-                    data-ai-card="${index}"
-                    style="
-                        height:75px;
-                        font-size:15px;
-                    "
-                >
-                    ?
-                </button>
-
-            `).join("")}
-
-        </div>
-
-        <div style="
-            text-align:center;
-            color:#66758a;
-            font-size:10px;
-            margin-top:12px;
-        ">
-            AI의 실제 카드는 교환 순간 공개됩니다.
-        </div>
-    `;
-
-    cardModal
-        .querySelectorAll(
-            "[data-ai-card]"
-        )
-        .forEach(btn=>{
-
-            btn.addEventListener(
-                "click",
-                ()=>{
-
-                    swapCards(
-                        state.pendingCardAction
-                            .targetIndex,
-                        Number(
-                            btn.dataset.aiCard
-                        )
-                    );
-
-                }
-            );
-
-        });
-}
-
-function swapCards(
-    playerIndex,
-    aiIndex
-){
-
-    const temp =
-        state.playerHand[
-            playerIndex
-        ];
-
-    state.playerHand[
-        playerIndex
-    ] =
-        state.aiHand[
-            aiIndex
-        ];
-
-    state.aiHand[
-        aiIndex
-    ] = temp;
-
-    const action =
-        state.pendingCardAction;
-
-    action.remaining--;
-
-    soundCard();
-
-    if(action.remaining<=0){
-
-        state.pendingCardAction=null;
-
-        cardModal.classList.add(
-            "hidden"
-        );
-
-        renderAll();
-
-        showSpeech(
-            "서로의 운을 바꿔버렸군."
-        );
-
-    }
-    else{
-
-        showCardSelector(
-            "다음 내 카드를 선택하세요."
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   EFFECTS
-========================================================= */
-
-function playBigText(text){
-
-    bigText.textContent=text;
-
-    bigText.classList.remove("play");
-
-    void bigText.offsetWidth;
-
-    bigText.classList.add("play");
-
-}
-
-function playScoreFloat(score){
-
-    scoreFloat.textContent =
-        "+" + score;
-
-    scoreFloat.classList.remove(
-        "play"
-    );
-
-    void scoreFloat.offsetWidth;
-
-    scoreFloat.classList.add(
-        "play"
-    );
-
-}
-
-function particles(amount=30){
-
-    for(let i=0;i<amount;i++){
-
-        const p =
-            document.createElement(
-                "div"
-            );
-
-        p.className="particle";
-
-        p.style.left =
-            "50%";
-
-        p.style.top =
-            "50%";
-
-        p.style.setProperty(
-            "--x",
-            (
-                Math.random()*700-350
-            )+"px"
-        );
-
-        p.style.setProperty(
-            "--y",
-            (
-                Math.random()*500-250
-            )+"px"
-        );
-
-        fx.appendChild(p);
-
-        setTimeout(
-            ()=>p.remove(),
-            1300
-        );
-    }
-}
-
-function playHandEffect(
-    type,
-    score
-){
-
-    const intensity = {
-        HIGH_CARD:1,
-        ONE_PAIR:1,
-        TWO_PAIR:1.5,
-        THREE_KIND:2,
-        STRAIGHT:3,
-        FLUSH:3,
-        FULL_HOUSE:4,
-        FOUR_KIND:5,
-        STRAIGHT_FLUSH:8
-    }[type] || 1;
-
-    flash.classList.remove("play");
-
-    void flash.offsetWidth;
-
-    flash.classList.add("play");
-
-    playBigText(
-        HANDS[type].name.toUpperCase()
-    );
-
-    playScoreFloat(score);
-
-    particles(
-        Math.floor(
-            15*intensity
-        )
-    );
-
-    if(intensity>=5){
-        soundRare();
-    }
-}
-
-
-/* =========================================================
-   SPEECH
-========================================================= */
-
-let speechTimeout=null;
-
-function showSpeech(text){
-
-    clearTimeout(
-        speechTimeout
-    );
-
-    speech.textContent=text;
-
-    speech.classList.remove(
-        "show"
-    );
-
-    void speech.offsetWidth;
-
-    speech.classList.add(
-        "show"
-    );
-
-    speechTimeout =
-        setTimeout(
-            ()=>{
-                speech.classList.remove(
-                    "show"
-                );
-            },
-            2600
-        );
-}
-
-
-/* =========================================================
-   HIGH SCORE
-========================================================= */
-
-function saveHighScore(){
-
-    const old =
-        Number(
-            localStorage.getItem(
-                "aiPokerHighStage"
-            ) || 0
-        );
-
-    if(state.stage>old){
-
-        localStorage.setItem(
-            "aiPokerHighStage",
-            state.stage
-        );
-
-    }
-
-    updateHighScore();
-}
-
-function updateHighScore(){
-
-    const high =
-        Number(
-            localStorage.getItem(
-                "aiPokerHighStage"
-            ) || 0
-        );
-
-    $("highscore").textContent =
-        `최고 도달 단계: ${
-            high || "-"
-        }`;
-
-}
-
-
-/* =========================================================
-   GAME START
-========================================================= */
+/* =====================================================
+   게임 시작
+===================================================== */
 
 function startGame(){
 
-    initAudio();
+    currentGardenPuzzle=1;
 
-    startScreen.classList.add(
-        "hidden"
-    );
+    resetGarden();
 
-    game.classList.remove(
-        "hidden"
-    );
-
-    state={
-        stage:1,
-
-        playerHand:[],
-        aiHand:[],
-        deck:[],
-
-        selected:new Set(),
-
-        discardsLeft:2,
-
-        time:ROUND_TIME,
-        timer:null,
-
-        augments:[],
-
-        roundEnded:false,
-        augmentSelecting:false,
-
-        pendingCardAction:null,
-        pendingCardIndex:null
-    };
-
-    startRound();
+    showScreen("gardenStage");
 
 }
 
 
-/* =========================================================
-   EVENTS
-========================================================= */
+/* =====================================================
+   STAGE 1 초기화
+===================================================== */
 
-startBtn.addEventListener(
-    "click",
-    startGame
-);
+function resetGarden(){
 
-submitBtn.addEventListener(
-    "click",
-    submitHand
-);
+    water=0;
+    rabbitStep=0;
+    cloudClicks=0;
+    mirrorClicks=0;
+    flowerClicks=0;
 
-discardBtn.addEventListener(
-    "click",
-    discardSelected
-);
+    document.getElementById("waterFill").style.width="0%";
 
-cardModalCancel.addEventListener(
-    "click",
-    ()=>{
-        state.pendingCardAction=null;
-        cardModal.classList.add(
-            "hidden"
+    document.getElementById("pot").innerText="🪴";
+
+    document.getElementById("rabbit").style.left="40px";
+    document.getElementById("rabbit").style.top="160px";
+
+    document.getElementById("shadow").classList.remove("strange");
+
+    document.getElementById("mirrorCharacter").style.transform=
+        "scaleX(-1)";
+
+    document.getElementById("stage5").style.background="";
+
+    document.querySelectorAll(".gardenFlower").forEach(f=>{
+        f.style.transform="scale(1)";
+    });
+
+    document.querySelectorAll(".nextButton").forEach(btn=>{
+        if(
+            btn.id &&
+            btn.id.startsWith("nextPuzzle")
+        ){
+            btn.style.display="none";
+        }
+    });
+
+    document.querySelectorAll(".gardenPuzzle").forEach(p=>{
+        p.classList.remove("active");
+    });
+
+    document.getElementById("puzzle1").classList.add("active");
+
+    updateGardenTitle();
+
+}
+
+
+/* =====================================================
+   STAGE 1 내부 진행
+===================================================== */
+
+function updateGardenTitle(){
+
+    const titles=[
+        "작은 화분",
+        "길을 만들어주세요",
+        "하늘의 그림자",
+        "거울 속의 정원",
+        "이상한 정원",
+        "마지막 정원"
+    ];
+
+    document.getElementById("gardenSubTitle").innerText=
+        titles[currentGardenPuzzle-1];
+
+}
+
+
+function nextGardenPuzzle(){
+
+    if(currentGardenPuzzle>=6){
+        return;
+    }
+
+    document
+        .getElementById("puzzle"+currentGardenPuzzle)
+        .classList.remove("active");
+
+    currentGardenPuzzle++;
+
+    document
+        .getElementById("puzzle"+currentGardenPuzzle)
+        .classList.add("active");
+
+    updateGardenTitle();
+
+}
+
+
+/* =====================================================
+   STAGE 1-1 화분
+===================================================== */
+
+function giveWater(){
+
+    water+=20;
+
+    if(water>100){
+        water=100;
+    }
+
+    document.getElementById("waterFill").style.width=
+        water+"%";
+
+    if(water>=80){
+
+        document.getElementById("pot").innerText="🌷";
+
+        document.getElementById("nextPuzzle1").style.display=
+            "block";
+
+    }
+
+}
+
+
+/* =====================================================
+   STAGE 1-2 토끼
+===================================================== */
+
+function moveRabbit(step){
+
+    if(step!==rabbitStep+1){
+        return;
+    }
+
+    rabbitStep=step;
+
+    const rabbit=document.getElementById("rabbit");
+
+    if(step===1){
+
+        rabbit.style.left="27%";
+
+    }
+
+    if(step===2){
+
+        rabbit.style.left="45%";
+        rabbit.style.top="220px";
+
+    }
+
+    if(step===3){
+
+        rabbit.style.left="63%";
+        rabbit.style.top="150px";
+
+        setTimeout(()=>{
+
+            rabbit.style.left="78%";
+
+            document.getElementById("nextPuzzle2")
+                .style.display="block";
+
+        },700);
+
+    }
+
+}
+
+
+/* =====================================================
+   STAGE 1-3 그림자
+===================================================== */
+
+function moveCloud(){
+
+    cloudClicks++;
+
+    if(cloudClicks>=2){
+
+        document
+            .getElementById("shadow")
+            .classList.add("strange");
+
+        document
+            .getElementById("nextPuzzle3")
+            .style.display="block";
+
+    }
+
+}
+
+
+/* =====================================================
+   STAGE 1-4 거울
+===================================================== */
+
+document
+    .getElementById("mirror")
+    .addEventListener("click",function(){
+
+        mirrorClicks++;
+
+        const mirror=
+            document.getElementById("mirrorCharacter");
+
+        if(mirrorClicks===1){
+
+            mirror.style.transform=
+                "scaleX(1)";
+
+        }
+
+        if(mirrorClicks===2){
+
+            mirror.style.transform=
+                "scaleX(-1)";
+
+        }
+
+        if(mirrorClicks>=3){
+
+            mirror.style.transform=
+                "rotate(5deg) scaleX(-1)";
+
+            document
+                .getElementById("nextPuzzle4")
+                .style.display="block";
+
+        }
+
+    });
+
+
+/* =====================================================
+   STAGE 1-5 꽃
+===================================================== */
+
+function touchFlower(element){
+
+    flowerClicks++;
+
+    element.style.transform=
+        "scale(.7) rotate(20deg)";
+
+    setTimeout(()=>{
+
+        element.style.transform=
+            "scale(1)";
+
+    },300);
+
+    if(flowerClicks===3){
+
+        document.getElementById("flowerPuzzle").style.background=
+            "radial-gradient(circle,#ead5d5,#bda7a7)";
+
+    }
+
+    if(flowerClicks>=5){
+
+        document
+            .getElementById("nextPuzzle5")
+            .style.display="block";
+
+    }
+
+}
+
+
+/* =====================================================
+   STAGE 1-6 엔딩
+===================================================== */
+
+function finishGarden(){
+
+    const flower=
+        document.getElementById("bigFlower");
+
+    flower.innerText="🫀";
+
+    document
+        .getElementById("finalGardenPuzzle")
+        .classList.add("glitch");
+
+    setTimeout(()=>{
+
+        showScreen("stageTransition");
+
+        setTimeout(()=>{
+
+            startUFOStage();
+
+        },2800);
+
+    },1200);
+
+}
+
+
+/* =====================================================
+   STAGE 2 UFO 설정
+===================================================== */
+
+const MAX_FILM=8;
+
+const ufoStages=[
+    {
+        target:5,
+        speed:1,
+        golden:.03,
+        delay:1450
+    },
+    {
+        target:7,
+        speed:1.3,
+        golden:.06,
+        delay:1250
+    },
+    {
+        target:9,
+        speed:1.7,
+        golden:.1,
+        delay:1050
+    }
+];
+
+let ufoState;
+let spawnTimer;
+let cleanTimer;
+let feedbackTimer;
+let ufoId=0;
+
+
+function ufoConfig(){
+
+    return ufoStages[
+        Math.min(
+            ufoState.stage-1,
+            ufoStages.length-1
+        )
+    ];
+
+}
+
+
+/* =====================================================
+   UFO 시작
+===================================================== */
+
+function startUFOStage(){
+
+    clearUfoTimers();
+
+    ufoState={
+        stage:1,
+        caught:0,
+        score:0,
+        combo:0,
+        film:MAX_FILM,
+        aim:{
+            x:50,
+            y:50
+        },
+        ufos:[],
+        captures:[],
+        feedback:null
+    };
+
+    showScreen("ufoStage");
+
+    renderUFO();
+
+    startSpawning();
+
+}
+
+
+/* =====================================================
+   UFO 타이머
+===================================================== */
+
+function clearUfoTimers(){
+
+    clearInterval(spawnTimer);
+    clearInterval(cleanTimer);
+    clearTimeout(feedbackTimer);
+
+}
+
+
+/* =====================================================
+   UFO 생성
+===================================================== */
+
+function startSpawning(){
+
+    const c=ufoConfig();
+
+    spawnTimer=setInterval(()=>{
+
+        const now=Date.now();
+
+        ufoState.ufos=[
+            ...ufoState.ufos.filter(
+                x=>x.until>now
+            ),
+            {
+                id:++ufoId,
+
+                kind:
+                    Math.random()<c.golden
+                    ? "golden"
+                    : "scout",
+
+                x:12+Math.random()*76,
+
+                y:16+Math.random()*68,
+
+                until:
+                    now+
+                    Math.max(
+                        850,
+                        2600/c.speed
+                    )
+            }
+
+        ].slice(-3);
+
+        renderUFO();
+
+    },c.delay);
+
+
+    cleanTimer=setInterval(()=>{
+
+        ufoState.ufos=
+            ufoState.ufos.filter(
+                x=>x.until>Date.now()
+            );
+
+        renderUFO();
+
+    },180);
+
+}
+
+
+/* =====================================================
+   UFO HTML
+===================================================== */
+
+function ufoSprite(kind){
+
+    return `
+        <span class="sprite ${kind}">
+            <i class="dome"></i>
+            <i class="body"></i>
+            <i class="light l1"></i>
+            <i class="light l2"></i>
+            <i class="light l3"></i>
+        </span>
+    `;
+
+}
+
+
+/* =====================================================
+   UFO 렌더링
+===================================================== */
+
+function renderUFO(){
+
+    if(!ufoState){
+        return;
+    }
+
+    const config=ufoConfig();
+
+    document.getElementById("ufoStageNumber").innerText=
+        ufoState.stage;
+
+    document.getElementById("caught").innerText=
+        ufoState.caught;
+
+    document.getElementById("target").innerText=
+        config.target;
+
+    document.getElementById("score").innerText=
+        ufoState.score.toLocaleString();
+
+    document.getElementById("filmCount").innerText=
+        ufoState.film;
+
+    document.getElementById("comboText").innerText=
+        ufoState.combo>1
+        ? "×"+ufoState.combo+" COMBO"
+        : "";
+
+    document.getElementById("comboText")
+        .classList.toggle(
+            "combo",
+            ufoState.combo>1
         );
+
+
+    document.getElementById("filmDots").innerHTML=
+        Array.from(
+            {length:8},
+            (_,i)=>
+                `<i class="dot ${
+                    i<ufoState.film
+                    ?"full"
+                    :""
+                }"></i>`
+        ).join("");
+
+
+    document.getElementById("finder").style.left=
+        ufoState.aim.x+"%";
+
+    document.getElementById("finder").style.top=
+        ufoState.aim.y+"%";
+
+
+    document.getElementById("ufoContainer").innerHTML=
+        ufoState.ufos.map(u=>`
+
+            <div
+                class="ufo ${u.kind}"
+                style="
+                    left:${u.x}%;
+                    top:${u.y}%
+                ">
+
+                ${ufoSprite(u.kind)}
+
+            </div>
+
+        `).join("");
+
+
+    if(ufoState.feedback){
+
+        const feedback=
+            document.getElementById("feedback");
+
+        feedback.className=
+            "feedback "+ufoState.feedback.grade;
+
+        feedback.innerHTML=`
+
+            <b>${ufoState.feedback.grade}</b>
+
+            <span>
+                ${
+                    ufoState.feedback.score
+                    ? "+"+ufoState.feedback.score
+                    : ufoState.feedback.grade==="MISS"
+                    ? "UFO를 놓쳤어요"
+                    : ""
+                }
+            </span>
+
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   UFO 조준
+===================================================== */
+
+const sky=document.getElementById("sky");
+
+let aiming=false;
+
+
+function updateAim(e){
+
+    const rect=sky.getBoundingClientRect();
+
+    ufoState.aim={
+
+        x:Math.max(
+            0,
+            Math.min(
+                100,
+                (e.clientX-rect.left)/
+                rect.width*100
+            )
+        ),
+
+        y:Math.max(
+            0,
+            Math.min(
+                100,
+                (e.clientY-rect.top)/
+                rect.height*100
+            )
+        )
+
+    };
+
+    renderUFO();
+
+}
+
+
+sky.addEventListener(
+    "pointerdown",
+    e=>{
+
+        aiming=true;
+
+        updateAim(e);
+
     }
 );
 
 
-/* =========================================================
-   KEYBOARD SAFETY
-   No keyboard card editing.
-========================================================= */
-
-document.addEventListener(
-    "keydown",
+sky.addEventListener(
+    "pointermove",
     e=>{
 
-        if(
-            e.key==="Escape" &&
-            !cardModal.classList.contains(
-                "hidden"
-            )
-        ){
-
-            state.pendingCardAction=null;
-
-            cardModal.classList.add(
-                "hidden"
-            );
-
+        if(aiming){
+            updateAim(e);
         }
 
     }
 );
 
 
-/* =========================================================
-   INITIAL
-========================================================= */
+sky.addEventListener(
+    "pointerup",
+    ()=>{
 
-updateHighScore();
+        aiming=false;
 
-
-/* =========================================================
-   OPTIONAL: prevent accidental context menu
-========================================================= */
-
-document.addEventListener(
-    "contextmenu",
-    e=>e.preventDefault()
+    }
 );
+
+
+sky.addEventListener(
+    "pointerleave",
+    ()=>{
+
+        aiming=false;
+
+    }
+);
+
+
+/* =====================================================
+   촬영
+===================================================== */
+
+document
+    .getElementById("shutter")
+    .addEventListener(
+        "click",
+        shootUFO
+    );
+
+
+function shootUFO(){
+
+    if(!ufoState){
+        return;
+    }
+
+    if(ufoState.feedback){
+        return;
+    }
+
+    if(ufoState.film<=0){
+        return;
+    }
+
+
+    let target=
+        ufoState.ufos.reduce(
+
+            (a,u)=>
+
+                !a ||
+                Math.hypot(
+                    u.x-ufoState.aim.x,
+                    u.y-ufoState.aim.y
+                )
+                <
+                Math.hypot(
+                    a.x-ufoState.aim.x,
+                    a.y-ufoState.aim.y
+                )
+
+                ?u
+                :a,
+
+            null
+
+        );
+
+
+    let grade="MISS";
+
+
+    if(target){
+
+        const distance=
+            Math.hypot(
+                target.x-ufoState.aim.x,
+                target.y-ufoState.aim.y
+            );
+
+        grade=
+            distance<=6
+            ?"PERFECT"
+            :distance<=13
+            ?"GOOD"
+            :distance<=21
+            ?"OK"
+            :"MISS";
+
+    }
+
+
+    /* ---------- MISS ---------- */
+
+    if(grade==="MISS"){
+
+        ufoState.film=
+            Math.max(
+                0,
+                ufoState.film-2
+            );
+
+        ufoState.combo=0;
+
+        flashUFO("MISS");
+
+        renderUFO();
+
+        if(ufoState.film===0){
+
+            setTimeout(
+                ufoResults,
+                700
+            );
+
+        }
+
+        return;
+    }
+
+
+    /* ---------- 성공 ---------- */
+
+    const base=
+        grade==="PERFECT"
+        ?300
+        :grade==="GOOD"
+        ?180
+        :100;
+
+
+    const earned=Math.round(
+
+        base*
+
+        (
+            target.kind==="golden"
+            ?5
+            :1
+        )*
+
+        (
+            1+
+            Math.min(
+                ufoState.combo,
+                20
+            )*.05
+        )
+
+    );
+
+
+    ufoState.score+=earned;
+
+    ufoState.combo++;
+
+
+    if(grade!=="PERFECT"){
+
+        ufoState.film=
+            Math.max(
+                0,
+                ufoState.film-1
+            );
+
+    }
+
+
+    ufoState.ufos=
+        ufoState.ufos.filter(
+            u=>u.id!==target.id
+        );
+
+
+    ufoState.captures.push({
+
+        id:target.id,
+
+        kind:target.kind,
+
+        grade:grade,
+
+        score:earned
+
+    });
+
+
+    ufoState.caught++;
+
+
+    /* ---------- 스테이지 상승 ---------- */
+
+    if(
+        ufoState.caught>=
+        ufoConfig().target
+    ){
+
+        ufoState.stage++;
+
+        ufoState.caught=0;
+
+        ufoState.film=
+            Math.min(
+                MAX_FILM,
+                ufoState.film+2
+            );
+
+        clearUfoTimers();
+
+        if(ufoState.stage<=ufoStages.length){
+
+            startSpawning();
+
+        }
+
+    }
+
+
+    flashUFO(
+        grade,
+        earned
+    );
+
+    renderUFO();
+
+
+    if(ufoState.stage>ufoStages.length){
+
+        setTimeout(
+            ufoResults,
+            1200
+        );
+
+        return;
+
+    }
+
+
+    if(ufoState.film===0){
+
+        setTimeout(
+            ufoResults,
+            700
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   촬영 피드백
+===================================================== */
+
+function flashUFO(
+    grade,
+    score
+){
+
+    ufoState.feedback={
+        grade,
+        score
+    };
+
+    clearTimeout(
+        feedbackTimer
+    );
+
+
+    renderUFO();
+
+
+    feedbackTimer=
+        setTimeout(()=>{
+
+            ufoState.feedback=null;
+
+            renderUFO();
+
+        },900);
+
+}
+
+
+/* =====================================================
+   UFO 최종 결과
+===================================================== */
+
+function ufoResults(){
+
+    clearUfoTimers();
+
+    showEnding();
+
+}
+
+
+/* =====================================================
+   최종 엔딩
+===================================================== */
+
+function showEnding(){
+
+    const ending=
+        document.getElementById("ending");
+
+    ending.classList.remove("active");
+
+    void ending.offsetWidth;
+
+    ending.classList.add("active");
+
+}
 
 </script>
 
 </body>
 </html>
+```
