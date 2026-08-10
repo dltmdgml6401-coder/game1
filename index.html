@@ -2,3296 +2,1458 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-
-<title>빛나는 구슬을 지켜라!</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>구슬을 지켜라!</title>
 
 <style>
 * {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-html,
-body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #17270e;
-    font-family:
-        "Arial Black",
-        "Noto Sans KR",
-        "Pretendard",
-        sans-serif;
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: Arial, "Malgun Gothic", sans-serif;
+  background: #173c22;
 }
 
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+#game {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  cursor: crosshair;
+  background:
+    radial-gradient(circle at 50% 45%, #d6f77c 0%, #9fd957 20%, #55a83f 48%, #28713c 100%);
 }
 
-#gameWrap {
-    position: relative;
-
-    width: min(100vw, 177.7778vh);
-    height: min(56.25vw, 100vh);
-
-    overflow: hidden;
-
-    background: #72bd45;
-
-    box-shadow:
-        0 0 60px rgba(0,0,0,.5);
+/* 숲 느낌 */
+#game::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 8% 15%, rgba(255,255,255,.2) 0 3px, transparent 4px),
+    radial-gradient(circle at 18% 70%, rgba(255,255,255,.15) 0 4px, transparent 5px),
+    radial-gradient(circle at 85% 22%, rgba(255,255,255,.18) 0 3px, transparent 4px),
+    radial-gradient(circle at 75% 75%, rgba(255,255,255,.13) 0 5px, transparent 6px);
+  opacity: .7;
+  pointer-events: none;
 }
 
-canvas {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    cursor: crosshair;
-
-    touch-action: none;
+/* 잔디 */
+.grass {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(20,100,45,.22);
+  filter: blur(12px);
 }
 
-/* =========================================================
-   TOP UI
-========================================================= */
+.g1 { left:-80px; bottom:-70px; }
+.g2 { right:-80px; top:-60px; }
+.g3 { left:40%; bottom:-120px; }
+
+/* ---------------- UI ---------------- */
 
 #topUI {
-    position: absolute;
-
-    top: 18px;
-    left: 20px;
-    right: 20px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-
-    z-index: 20;
-
-    pointer-events: none;
+  position: absolute;
+  z-index: 50;
+  top: 18px;
+  left: 18px;
+  right: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  pointer-events: none;
 }
 
-.uiPanel {
-    background:
-        linear-gradient(
-            #fffdf2,
-            #f4dfae
-        );
-
-    border: 3px solid #79502a;
-
-    border-radius: 17px;
-
-    box-shadow:
-        0 5px 0 rgba(70,40,10,.25),
-        inset 0 2px 0 rgba(255,255,255,.9);
-
-    color: #392719;
-}
-
-/* Timer */
-
-#timerBox {
-    min-width: 155px;
-
-    padding: 7px 16px;
-
-    text-align: center;
-
-    font-size: 16px;
-}
-
-.timerIcon {
-    font-size: 26px;
-    vertical-align: middle;
+.uiBox {
+  background: linear-gradient(#fff8df, #ffe9bd);
+  border: 3px solid #754c28;
+  border-radius: 17px;
+  padding: 9px 18px;
+  color: #392817;
+  font-weight: 900;
+  box-shadow:
+    0 5px 0 rgba(77,42,18,.35),
+    inset 0 2px rgba(255,255,255,.8);
 }
 
 #timer {
-    font-size: 29px;
-    font-weight: 900;
-
-    letter-spacing: 1px;
+  font-size: clamp(22px, 3vw, 36px);
 }
 
-/* Hearts */
-
-#heartBox {
-    padding: 7px 13px;
-
-    font-size: 32px;
-
-    letter-spacing: 3px;
+#lives {
+  display: flex;
+  gap: 5px;
+  font-size: clamp(25px, 3vw, 38px);
 }
 
-.heart {
-    color: #ff5669;
-
-    text-shadow:
-        0 2px 0 #ae2638,
-        0 0 8px rgba(255,70,90,.35);
+/* 안내 */
+#instructions {
+  position: absolute;
+  z-index: 50;
+  left: 18px;
+  top: 95px;
+  width: min(210px, 22vw);
+  min-width: 160px;
 }
 
-.heart.empty {
-    opacity: .18;
-    filter: grayscale(1);
+.help {
+  background: rgba(26,91,42,.88);
+  border: 2px solid rgba(255,255,255,.2);
+  color: white;
+  padding: 10px 13px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  font-size: clamp(11px, 1.2vw, 16px);
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(0,0,0,.2);
 }
 
-/* =========================================================
-   BOTTOM UI
-========================================================= */
-
-#bottomUI {
-    position: absolute;
-
-    left: 50%;
-    bottom: 22px;
-
-    transform: translateX(-50%);
-
-    width: min(540px, 55%);
-
-    z-index: 20;
-
-    pointer-events: none;
+.help.pink {
+  background: rgba(126,54,72,.92);
 }
 
-#progressOuter {
-    height: 24px;
+/* ---------------- CORE ---------------- */
 
-    padding: 3px;
-
-    background: #283b19;
-
-    border: 3px solid #66451f;
-
-    border-radius: 15px;
-
-    box-shadow:
-        inset 0 3px 5px rgba(0,0,0,.35),
-        0 4px 0 rgba(0,0,0,.18);
+#coreArea {
+  position: absolute;
+  z-index: 10;
+  left: 50%;
+  top: 53%;
+  transform: translate(-50%, -50%);
+  width: min(300px, 25vw);
+  height: min(300px, 25vw);
+  min-width: 210px;
+  min-height: 210px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-#progress {
-    width: 100%;
-    height: 100%;
-
-    border-radius: 10px;
-
-    background:
-        linear-gradient(
-            #a5ec69,
-            #55bd39
-        );
-
-    box-shadow:
-        inset 0 2px 0 rgba(255,255,255,.6),
-        0 0 8px rgba(100,255,50,.3);
-
-    transition: width .15s linear;
+.coreGlow {
+  position: absolute;
+  width: 75%;
+  height: 75%;
+  border-radius: 50%;
+  background: #ffe14b;
+  box-shadow:
+    0 0 25px #fff7a1,
+    0 0 55px #ffd52d,
+    0 0 100px rgba(255,206,30,.8);
+  animation: corePulse 1.3s infinite ease-in-out;
 }
 
-#progressText {
-    margin-top: 5px;
-
-    text-align: center;
-
-    color: white;
-
-    font-size: 16px;
-    font-weight: 900;
-
-    text-shadow:
-        0 2px 3px #264314,
-        0 0 4px #264314;
+@keyframes corePulse {
+  0%,100% { transform: scale(.92); opacity: .75; }
+  50% { transform: scale(1.08); opacity: 1; }
 }
 
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-#message {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    z-index: 25;
-
-    padding: 12px 24px;
-
-    color: white;
-
-    font-size: 28px;
-    font-weight: 900;
-
-    text-shadow:
-        0 3px 4px rgba(0,0,0,.5);
-
-    pointer-events: none;
-
-    opacity: 0;
+.core {
+  position: relative;
+  width: 48%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 25%, #fff 0 6%, #fff8a4 7%, transparent 17%),
+    radial-gradient(circle at 42% 40%, #fff48b, #ffd321 55%, #f1a600);
+  border: 5px solid #fff6b0;
+  box-shadow:
+    inset -10px -10px 18px rgba(255,145,0,.25),
+    0 0 20px #fff7a5,
+    0 0 45px #ffd83d;
 }
 
-/* =========================================================
-   START / END
-========================================================= */
-
-.overlay {
-    position: absolute;
-    inset: 0;
-
-    z-index: 100;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(255,244,170,.18),
-            rgba(0,0,0,.68)
-        );
+.coreRing {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 3px solid rgba(255,245,125,.8);
+  border-radius: 50%;
+  animation: ring 2s infinite;
 }
 
-.modal {
-    width: min(560px, 82%);
-
-    padding: 32px 30px;
-
-    text-align: center;
-
-    border-radius: 27px;
-
-    background:
-        linear-gradient(
-            #fffcef,
-            #f4dfac
-        );
-
-    border: 5px solid #68401f;
-
-    box-shadow:
-        0 10px 0 rgba(50,30,10,.25),
-        0 20px 60px rgba(0,0,0,.4),
-        inset 0 3px white;
+@keyframes ring {
+  from { transform: scale(.7); opacity: 1; }
+  to { transform: scale(1.7); opacity: 0; }
 }
 
-.modal h1 {
-    margin: 0 0 12px;
-
-    color: #39220d;
-
-    font-size: clamp(32px,5vw,58px);
-
-    line-height: 1.1;
-
-    text-shadow:
-        0 4px 0 #d9b97c;
+#damageCounter {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #713c1d;
+  background: #fff1c9;
+  border: 2px solid #81532c;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-weight: 900;
+  white-space: nowrap;
 }
 
-.modal p {
-    color: #604725;
-
-    line-height: 1.7;
-
-    font-size: clamp(14px,1.6vw,20px);
-}
-
-.mainButton {
-    margin-top: 10px;
-
-    padding: 14px 40px;
-
-    border: 4px solid #2c7420;
-    border-radius: 18px;
-
-    background:
-        linear-gradient(
-            #8ce45a,
-            #38aa2c
-        );
-
-    color: white;
-
-    font-size: 24px;
-    font-weight: 900;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 6px 0 #205817,
-        0 10px 25px rgba(30,110,20,.3);
-}
-
-.mainButton:active {
-    transform: translateY(5px);
-
-    box-shadow:
-        0 1px 0 #205817;
-}
-
-/* =========================================================
-   PINK COMBO SCREEN
-========================================================= */
-
-#comboOverlay {
-    position: absolute;
-    inset: 0;
-
-    z-index: 80;
-
-    display: none;
-
-    justify-content: center;
-    align-items: center;
-
-    overflow: hidden;
-
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(255,255,255,.38),
-            rgba(255,116,155,.3) 40%,
-            rgba(255,60,120,.72)
-        );
-
-    cursor: pointer;
-
-    touch-action: none;
-}
-
-/* radial rays */
-
-#comboOverlay::before {
-    content: "";
-
-    position: absolute;
-
-    width: 180%;
-    height: 180%;
-
-    background:
-        repeating-conic-gradient(
-            from 0deg,
-            rgba(255,255,255,.14) 0deg 6deg,
-            transparent 6deg 18deg
-        );
-
-    animation:
-        rotateRays 7s linear infinite;
-}
-
-@keyframes rotateRays {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.comboContent {
-    position: relative;
-
-    z-index: 2;
-
-    width: 100%;
-
-    text-align: center;
-
-    pointer-events: none;
-}
+/* ---------------- PLAYER ---------------- */
 
 /*
-    실제 클릭은 comboOverlay에서 받는다.
-    따라서 귀신 그림이나 글자를 클릭하지 않아도
-    화면 어디를 눌러도 카운트된다.
+  character-sheet.png
+  = 사용자가 올린 1536x1536 캐릭터 시트
+
+  아래 .playerSprite는 시트 왼쪽 위의 정면 캐릭터를
+  확대해서 보여주는 방식.
 */
-
-#comboGhost {
-    width: min(350px, 42vw);
-    height: min(350px, 42vw);
-
-    margin: 0 auto;
-
-    position: relative;
+#player {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  top: 53%;
+  transform: translate(-50%, -50%);
+  width: min(125px, 11vw);
+  height: min(180px, 15vw);
+  min-width: 90px;
+  min-height: 130px;
+  pointer-events: none;
 }
 
-.comboPinkGhost {
-    position: absolute;
+.playerSprite {
+  width: 100%;
+  height: 100%;
+  background-image: url("character-sheet.png");
+  background-repeat: no-repeat;
 
-    left: 50%;
-    top: 50%;
+  /*
+    원본 시트에서 왼쪽 위 정면 캐릭터 영역.
+    시트 크기가 1536x1536일 때 기준.
+  */
+  background-size: 420% 420%;
+  background-position: 4% 5%;
 
-    width: 80%;
-    height: 80%;
+  filter: drop-shadow(0 8px 4px rgba(0,0,0,.22));
+}
 
+/* ---------------- GHOST ---------------- */
+
+.ghost {
+  position: absolute;
+  z-index: 30;
+  width: 65px;
+  height: 65px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: filter .1s;
+}
+
+.ghost:hover {
+  filter: brightness(1.15) drop-shadow(0 0 10px rgba(255,255,255,.5));
+}
+
+.ghostBody {
+  width: 100%;
+  height: 100%;
+  border-radius: 48% 48% 42% 42%;
+  position: relative;
+  border: 4px solid rgba(35,79,90,.8);
+  box-shadow: inset -8px -8px 0 rgba(0,0,0,.08);
+}
+
+.ghostBody::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -10px;
+  height: 25px;
+  background: inherit;
+  clip-path: polygon(
+    0 0, 20% 55%, 40% 0,
+    60% 55%, 80% 0, 100% 55%,
+    100% 100%, 0 100%
+  );
+  z-index: -1;
+}
+
+.ghost.blue .ghostBody {
+  background: linear-gradient(145deg, #aeeeff, #54bde9);
+}
+
+.ghost.pink .ghostBody {
+  background: linear-gradient(145deg, #ffd0df, #f47fa5);
+  border-color: #91475e;
+}
+
+.eyes {
+  position: absolute;
+  top: 22px;
+  left: 13px;
+  right: 13px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.eye {
+  width: 13px;
+  height: 19px;
+  background: #142d39;
+  border-radius: 50%;
+}
+
+.mouth {
+  position: absolute;
+  left: 50%;
+  top: 43px;
+  transform: translateX(-50%);
+  width: 13px;
+  height: 7px;
+  border-radius: 50%;
+  background: #263842;
+}
+
+.pink .mouth {
+  height: 12px;
+}
+
+/* 맞았을 때 */
+.hit {
+  animation: ghostHit .18s ease-out;
+}
+
+@keyframes ghostHit {
+  0% { transform: translate(-50%,-50%) scale(1); }
+  40% { transform: translate(-50%,-50%) scale(1.3) rotate(8deg); }
+  100% { transform: translate(-50%,-50%) scale(0); opacity: 0; }
+}
+
+/* ---------------- EFFECTS ---------------- */
+
+.particle {
+  position: absolute;
+  z-index: 80;
+  pointer-events: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff36d;
+  animation: particle .65s ease-out forwards;
+}
+
+@keyframes particle {
+  to {
     transform:
-        translate(-50%,-50%);
-
-    border-radius:
-        48% 48% 42% 42%;
-
-    background:
-        radial-gradient(
-            circle at 32% 22%,
-            #ffe8ef 0 6%,
-            transparent 7%
-        ),
-        linear-gradient(
-            145deg,
-            #ffb2c9,
-            #ff668f
-        );
-
-    border: 6px solid #713143;
-
-    box-shadow:
-        inset -20px -20px 0 rgba(170,40,80,.15),
-        0 18px 30px rgba(90,20,40,.3);
-
-    animation:
-        angryGhost .3s infinite alternate;
+      translate(var(--x), var(--y))
+      scale(0);
+    opacity: 0;
+  }
 }
 
-.comboPinkGhost::before,
-.comboPinkGhost::after {
-    content: "";
-
-    position: absolute;
-
-    top: 32%;
-
-    width: 48px;
-    height: 68px;
-
-    background: #29131b;
-
-    border-radius: 50%;
+.clickBurst {
+  position: absolute;
+  z-index: 100;
+  pointer-events: none;
+  color: #fff;
+  font-weight: 1000;
+  font-size: 26px;
+  text-shadow:
+    0 3px #8d4059,
+    0 0 10px #ff9ab8;
+  animation: clickBurst .45s ease-out forwards;
 }
 
-.comboPinkGhost::before {
-    left: 22%;
-    transform: rotate(25deg);
+@keyframes clickBurst {
+  0% {
+    transform: translate(-50%,-50%) scale(.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%,-110%) scale(1.3);
+    opacity: 0;
+  }
 }
 
-.comboPinkGhost::after {
-    right: 22%;
-    transform: rotate(-25deg);
+/* ---------------- PINK MODAL ---------------- */
+
+#pinkOverlay {
+  position: absolute;
+  z-index: 200;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle, rgba(255,174,199,.95), rgba(226,93,130,.9));
+  overflow: hidden;
 }
 
-@keyframes angryGhost {
-    from {
-        transform:
-            translate(-50%,-50%)
-            rotate(-2deg)
-            scale(1);
-    }
-
-    to {
-        transform:
-            translate(-50%,-50%)
-            rotate(2deg)
-            scale(1.035);
-    }
+#pinkOverlay.active {
+  display: flex;
 }
 
-.comboPinkGhostMouth {
-    position: absolute;
-
-    left: 50%;
-    top: 57%;
-
-    transform: translateX(-50%);
-
-    width: 55px;
-    height: 45px;
-
-    background: #40141f;
-
-    border-radius:
-        50% 50% 55% 55%;
+.speedLines {
+  position: absolute;
+  inset: -50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255,255,255,.2) 0deg 3deg,
+    transparent 3deg 10deg
+  );
+  animation: spinLines 5s linear infinite;
 }
 
-.comboTitle {
-    margin-top: -20px;
-
-    font-size: clamp(55px,8vw,105px);
-
-    font-weight: 900;
-
-    color: #fff;
-
-    -webkit-text-stroke: 5px #4d1c2b;
-
-    text-shadow:
-        0 7px 0 #ce3d6d,
-        0 12px 20px rgba(80,20,40,.35);
-
-    transform: rotate(-5deg);
+@keyframes spinLines {
+  to { transform: rotate(360deg); }
 }
 
-#comboCounter {
-    width: min(260px,50vw);
-
-    margin: 12px auto;
-
-    padding: 8px;
-
-    border-radius: 15px;
-
-    background: rgba(25,15,20,.9);
-
-    color: white;
-
-    font-size: clamp(24px,3vw,40px);
-
-    font-weight: 900;
+#pinkBattle {
+  position: relative;
+  z-index: 2;
+  width: min(650px, 75vw);
+  text-align: center;
 }
 
-#comboBarOuter {
-    width: min(360px,60vw);
+#angryGhost {
+  width: min(270px, 40vw);
+  height: min(270px, 40vw);
+  margin: auto;
+  position: relative;
+  animation: angry .35s infinite alternate;
+}
 
-    height: 22px;
+@keyframes angry {
+  from { transform: rotate(-2deg) scale(1); }
+  to { transform: rotate(2deg) scale(1.04); }
+}
 
-    margin: auto;
+.bigGhost {
+  width: 100%;
+  height: 100%;
+  border-radius: 50% 50% 45% 45%;
+  background: linear-gradient(#ffd0df,#f0719b);
+  border: 8px solid #87394f;
+  box-shadow:
+    inset -20px -20px 0 rgba(170,45,90,.1),
+    0 15px 0 rgba(110,37,62,.2);
+  position: relative;
+}
 
-    padding: 3px;
+.bigEye {
+  position: absolute;
+  top: 30%;
+  width: 55px;
+  height: 72px;
+  background: #16121a;
+  border-radius: 45% 20% 50% 20%;
+}
 
-    background: rgba(35,10,20,.75);
+.bigEye.left {
+  left: 22%;
+  transform: rotate(25deg);
+}
 
-    border-radius: 14px;
+.bigEye.right {
+  right: 22%;
+  transform: rotate(-25deg);
+}
+
+.bigMouth {
+  position: absolute;
+  width: 80px;
+  height: 70px;
+  left: 50%;
+  top: 52%;
+  transform: translateX(-50%);
+  background: #561c2d;
+  border-radius: 50% 50% 45% 45%;
+  border: 5px solid #7f2c43;
+}
+
+#comboText {
+  margin-top: 15px;
+  font-size: clamp(48px, 7vw, 90px);
+  font-weight: 1000;
+  color: #fff;
+  -webkit-text-stroke: 4px #592536;
+  text-shadow: 0 8px #a94162;
+  transform: rotate(-4deg);
+}
+
+#comboCount {
+  display: inline-block;
+  margin-top: 5px;
+  padding: 10px 35px;
+  border-radius: 18px;
+  background: rgba(30,18,22,.9);
+  color: white;
+  font-size: clamp(28px,4vw,48px);
+  font-weight: 1000;
 }
 
 #comboBar {
-    width: 0%;
-    height: 100%;
+  width: min(500px, 70vw);
+  height: 24px;
+  margin: 18px auto 0;
+  background: #4b2633;
+  border-radius: 30px;
+  overflow: hidden;
+  border: 3px solid white;
+}
 
-    border-radius: 10px;
-
-    background:
-        linear-gradient(
-            90deg,
-            #fff16a,
-            #ff4784
-        );
-
-    box-shadow:
-        0 0 15px #ff5689;
-
-    transition: width .08s linear;
+#comboProgress {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg,#ffe36b,#ff8cae);
+  transition: width .08s linear;
 }
 
 #comboHint {
-    margin-top: 12px;
-
-    color: white;
-
-    font-size: 17px;
-    font-weight: 900;
-
-    text-shadow:
-        0 2px 4px rgba(70,10,30,.6);
+  color: white;
+  font-size: 18px;
+  font-weight: 900;
+  margin-top: 10px;
 }
 
-/* =========================================================
-   FLASH
-========================================================= */
+/* ---------------- START / END ---------------- */
 
-#whiteFlash,
-#redFlash {
-    position: absolute;
-    inset: 0;
-
-    z-index: 90;
-
-    pointer-events: none;
-
-    opacity: 0;
+.screen {
+  position: absolute;
+  z-index: 500;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20,60,30,.7);
+  backdrop-filter: blur(5px);
 }
 
-#whiteFlash {
-    background: white;
+.panel {
+  width: min(550px, 88vw);
+  background: linear-gradient(#fff8dc,#ffe7b4);
+  border: 5px solid #714621;
+  border-radius: 30px;
+  padding: 35px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0,0,0,.3);
 }
 
-#redFlash {
-    background: rgba(255,30,50,.38);
+.panel h1 {
+  margin: 0 0 15px;
+  font-size: clamp(32px,5vw,58px);
+  color: #392618;
 }
 
-/* =========================================================
-   MOBILE
-========================================================= */
+.panel p {
+  font-size: 18px;
+  line-height: 1.7;
+  font-weight: 700;
+  color: #5b4029;
+}
 
+button {
+  border: 0;
+  border-radius: 18px;
+  padding: 15px 40px;
+  font-size: 23px;
+  font-weight: 1000;
+  color: white;
+  background: linear-gradient(#8ee75d,#48ad48);
+  border: 4px solid #2e7132;
+  box-shadow: 0 6px 0 #2d6730;
+  cursor: pointer;
+}
+
+button:active {
+  transform: translateY(5px);
+  box-shadow: 0 1px 0 #2d6730;
+}
+
+#gameOver,
+#clearScreen {
+  display: none;
+}
+
+#gameOver.show,
+#clearScreen.show {
+  display: flex;
+}
+
+/* 모바일 */
 @media(max-width:700px) {
+  #instructions {
+    top: 80px;
+    left: 8px;
+    min-width: 125px;
+    width: 145px;
+  }
 
-    #topUI {
-        top: 10px;
-        left: 10px;
-        right: 10px;
-    }
+  .help {
+    padding: 6px 8px;
+  }
 
-    #timerBox {
-        min-width: 120px;
-        padding: 5px 9px;
-    }
+  #coreArea {
+    width: 250px;
+    height: 250px;
+  }
 
-    #timer {
-        font-size: 22px;
-    }
-
-    .timerIcon {
-        font-size: 20px;
-    }
-
-    #heartBox {
-        font-size: 24px;
-        padding: 5px 8px;
-    }
-
-    #bottomUI {
-        width: 70%;
-        bottom: 12px;
-    }
-
-    #progressOuter {
-        height: 19px;
-    }
-
-    #progressText {
-        font-size: 12px;
-    }
+  .ghost {
+    width: 52px;
+    height: 52px;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div id="gameWrap">
+<div id="game">
 
-<canvas id="game"></canvas>
+  <div class="grass g1"></div>
+  <div class="grass g2"></div>
+  <div class="grass g3"></div>
 
-<!-- =========================
-     TOP UI
-========================= -->
-
-<div id="topUI">
-
-    <div id="timerBox" class="uiPanel">
-        <span class="timerIcon">⏱</span>
-        <span id="timer">01:00</span>
+  <!-- UI -->
+  <div id="topUI">
+    <div class="uiBox">
+      ⏱️ <span id="timer">01:00</span>
     </div>
 
-    <div id="heartBox" class="uiPanel">
-        <span class="heart">♥</span>
-        <span class="heart">♥</span>
-        <span class="heart">♥</span>
+    <div class="uiBox" id="lives">
+      ❤️ ❤️ ❤️
     </div>
+  </div>
+
+  <div id="instructions">
+    <div class="help">🔵 파란 귀신<br>한 번 클릭!</div>
+    <div class="help pink">🩷 분홍 귀신<br>연타 10번!</div>
+  </div>
+
+  <!-- 중앙 구슬 -->
+  <div id="coreArea">
+    <div class="coreGlow"></div>
+    <div class="coreRing"></div>
+    <div class="core"></div>
+    <div id="damageCounter">구슬 피해 0 / 3</div>
+  </div>
+
+  <!-- 캐릭터 -->
+  <div id="player">
+    <div class="playerSprite"></div>
+  </div>
+
+  <!-- 귀신들이 들어오는 곳 -->
+  <div id="ghostLayer"></div>
+
+  <!-- 분홍 귀신 연타 -->
+  <div id="pinkOverlay">
+
+    <div class="speedLines"></div>
+
+    <div id="pinkBattle">
+
+      <div id="angryGhost">
+        <div class="bigGhost">
+          <div class="bigEye left"></div>
+          <div class="bigEye right"></div>
+          <div class="bigMouth"></div>
+        </div>
+      </div>
+
+      <div id="comboText">연타!</div>
+
+      <div id="comboCount">
+        <span id="comboNumber">0</span> / 10
+      </div>
+
+      <div id="comboBar">
+        <div id="comboProgress"></div>
+      </div>
+
+      <div id="comboHint">
+        빠르게 10번 클릭하세요!
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 시작 -->
+  <div class="screen" id="startScreen">
+    <div class="panel">
+      <h1>🌱 구슬을 지켜라!</h1>
+
+      <p>
+        노란 빛나는 구슬을 1분 동안 지켜주세요!<br>
+        🔵 파란 귀신 → 한 번 클릭<br>
+        🩷 분홍 귀신 → 클릭 후 10연타
+      </p>
+
+      <button id="startBtn">게임 시작!</button>
+    </div>
+  </div>
+
+  <!-- 게임오버 -->
+  <div class="screen" id="gameOver">
+    <div class="panel">
+      <h1>💥 게임 오버!</h1>
+      <p>
+        귀신이 구슬에 너무 많이 닿았어요!
+      </p>
+      <button onclick="location.reload()">다시 하기</button>
+    </div>
+  </div>
+
+  <!-- 클리어 -->
+  <div class="screen" id="clearScreen">
+    <div class="panel">
+      <h1>✨ 클리어!</h1>
+      <p>
+        1분 동안 노란 구슬을 지켜냈어요!
+      </p>
+      <button onclick="location.reload()">다시 하기</button>
+    </div>
+  </div>
 
 </div>
-
-<!-- =========================
-     BOTTOM
-========================= -->
-
-<div id="bottomUI">
-
-    <div id="progressOuter">
-        <div id="progress"></div>
-    </div>
-
-    <div id="progressText">
-        남은 시간: 01:00
-    </div>
-
-</div>
-
-<div id="message"></div>
-
-<!-- =========================
-     START
-========================= -->
-
-<div id="startScreen" class="overlay">
-
-    <div class="modal">
-
-        <h1>
-            빛나는 구슬을<br>
-            지켜라!
-        </h1>
-
-        <p>
-            사방에서 귀신들이 몰려옵니다!<br>
-            파란 귀신은 <b>한 번 클릭</b>해서 처치하세요.<br>
-            분홍 귀신은 <b>연타!</b>해서 처치하세요.<br><br>
-
-            귀신이 구슬에 <b>3번</b> 닿으면 게임 오버!<br>
-            <b>1분</b> 동안 버티면 클리어입니다.
-        </p>
-
-        <button
-            class="mainButton"
-            id="startBtn">
-            게임 시작
-        </button>
-
-    </div>
-
-</div>
-
-<!-- =========================
-     END
-========================= -->
-
-<div id="endScreen"
-     class="overlay"
-     style="display:none;">
-
-    <div class="modal">
-
-        <h1 id="endTitle">
-            게임 오버!
-        </h1>
-
-        <p id="endText"></p>
-
-        <button
-            class="mainButton"
-            id="restartBtn">
-            다시 하기
-        </button>
-
-    </div>
-
-</div>
-
-<!-- =========================
-     PINK COMBO
-========================= -->
-
-<div id="comboOverlay">
-
-    <div class="comboContent">
-
-        <div id="comboGhost">
-
-            <div class="comboPinkGhost">
-
-                <div class="comboPinkGhostMouth"></div>
-
-            </div>
-
-        </div>
-
-        <div class="comboTitle">
-            연타!
-        </div>
-
-        <div id="comboCounter">
-            0 / 10
-        </div>
-
-        <div id="comboBarOuter">
-            <div id="comboBar"></div>
-        </div>
-
-        <div id="comboHint">
-            화면을 빠르게 클릭하세요!
-        </div>
-
-    </div>
-
-</div>
-
-<div id="whiteFlash"></div>
-<div id="redFlash"></div>
 
 <script>
-
 /* ============================================================
-   SETUP
-============================================================ */
-
-const canvas =
-    document.getElementById("game");
-
-const ctx =
-    canvas.getContext("2d");
-
-const wrap =
-    document.getElementById("gameWrap");
-
-const W = 1280;
-const H = 720;
-
-canvas.width = W;
-canvas.height = H;
-
-
-/* ============================================================
-   IMAGE
-============================================================ */
-
-/*
-    업로드해주신 캐릭터 시트.
-
-    파일명:
-        character.png
-
-    시트에서 좌측 상단의
-    정면 캐릭터를 잘라 사용합니다.
-*/
-
-const characterImage =
-    new Image();
-
-characterImage.src =
-    "character.png";
-
-let characterLoaded = false;
-
-characterImage.onload = () => {
-    characterLoaded = true;
-};
-
-
-/* ============================================================
-   DOM
-============================================================ */
-
-const timerEl =
-    document.getElementById("timer");
-
-const progressEl =
-    document.getElementById("progress");
-
-const progressText =
-    document.getElementById("progressText");
-
-const heartBox =
-    document.getElementById("heartBox");
-
-const startScreen =
-    document.getElementById("startScreen");
-
-const endScreen =
-    document.getElementById("endScreen");
-
-const endTitle =
-    document.getElementById("endTitle");
-
-const endText =
-    document.getElementById("endText");
-
-const comboOverlay =
-    document.getElementById("comboOverlay");
-
-const comboCounter =
-    document.getElementById("comboCounter");
-
-const comboBar =
-    document.getElementById("comboBar");
-
-const whiteFlash =
-    document.getElementById("whiteFlash");
-
-const redFlash =
-    document.getElementById("redFlash");
-
-
-/* ============================================================
-   AUDIO
-============================================================ */
-
-let audioCtx = null;
-
-function initAudio() {
-
-    if (!audioCtx) {
-
-        audioCtx =
-            new (
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
-    }
-
-    if (audioCtx.state === "suspended") {
-        audioCtx.resume();
-    }
-}
-
-
-function playSound(
-    type
-) {
-
-    if (!audioCtx) return;
-
-    const now =
-        audioCtx.currentTime;
-
-    const osc =
-        audioCtx.createOscillator();
-
-    const gain =
-        audioCtx.createGain();
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    let frequency = 300;
-    let duration = .08;
-    let wave = "sine";
-
-    switch(type) {
-
-        case "ghost":
-
-            frequency = 500;
-            duration = .07;
-            wave = "square";
-
-            break;
-
-
-        case "pop":
-
-            frequency = 220;
-            duration = .15;
-            wave = "triangle";
-
-            break;
-
-
-        case "comboHit":
-
-            frequency =
-                400 +
-                comboHits * 45;
-
-            duration = .055;
-            wave = "square";
-
-            break;
-
-
-        case "comboStart":
-
-            frequency = 260;
-            duration = .3;
-            wave = "sawtooth";
-
-            break;
-
-
-        case "comboSuccess":
-
-            frequency = 800;
-            duration = .5;
-            wave = "sine";
-
-            break;
-
-
-        case "damage":
-
-            frequency = 100;
-            duration = .22;
-            wave = "sawtooth";
-
-            break;
-
-
-        case "win":
-
-            frequency = 500;
-            duration = .55;
-            wave = "sine";
-
-            break;
-
-
-        case "lose":
-
-            frequency = 90;
-            duration = .55;
-            wave = "sawtooth";
-
-            break;
-    }
-
-    osc.type = wave;
-
-    osc.frequency.setValueAtTime(
-        frequency,
-        now
-    );
-
-    if (
-        type === "pop" ||
-        type === "damage"
-    ) {
-
-        osc.frequency.exponentialRampToValueAtTime(
-            45,
-            now + duration
-        );
-    }
-
-    if (type === "win") {
-
-        osc.frequency.linearRampToValueAtTime(
-            1000,
-            now + duration
-        );
-    }
-
-    gain.gain.setValueAtTime(
-        .001,
-        now
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-        .15,
-        now + .01
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-        .001,
-        now + duration
-    );
-
-    osc.start(now);
-    osc.stop(now + duration + .02);
-}
-
-
-/* ============================================================
-   GAME VARIABLES
+   GAME SETTINGS
 ============================================================ */
 
 const GAME_TIME = 60;
 
 let gameRunning = false;
-
 let elapsed = 0;
-
-let remaining = 60;
-
-let lives = 3;
-
 let lastTime = 0;
 
-let shake = 0;
-
-
-/* ============================================================
-   ORB
-============================================================ */
-
-const orb = {
-
-    x: W / 2,
-    y: H / 2,
-
-    radius: 43,
-
-    pulse: 0
-};
-
-
-/* ============================================================
-   GHOSTS
-============================================================ */
+let lives = 3;
+let coreHits = 0;
 
 let ghosts = [];
+let ghostId = 0;
+
+let activePink = null;
+let pinkHits = 0;
+let pinkTimer = null;
+
+const game = document.getElementById("game");
+const ghostLayer = document.getElementById("ghostLayer");
+
+const timerEl = document.getElementById("timer");
+const livesEl = document.getElementById("lives");
+const damageEl = document.getElementById("damageCounter");
+
+const pinkOverlay = document.getElementById("pinkOverlay");
+const comboNumber = document.getElementById("comboNumber");
+const comboProgress = document.getElementById("comboProgress");
+
+const startScreen = document.getElementById("startScreen");
+const gameOver = document.getElementById("gameOver");
+const clearScreen = document.getElementById("clearScreen");
 
 
-/*
-    speedScale가 시간에 따라 증가합니다.
+/* ============================================================
+   SOUND
+============================================================ */
 
-    초반:
-        약 1배
+let audioCtx = null;
 
-    30초:
-        약 1.6배
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )();
+  }
 
-    60초:
-        약 2.2배
-*/
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+}
 
-function currentSpeedMultiplier() {
+function sound(type) {
 
-    return (
-        1 +
-        (elapsed / GAME_TIME) * 1.2
-    );
+  if (!audioCtx) return;
+
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  const now = audioCtx.currentTime;
+
+  if (type === "click") {
+
+    osc.type = "square";
+    osc.frequency.setValueAtTime(520, now);
+    osc.frequency.exponentialRampToValueAtTime(850, now + .06);
+
+    gain.gain.setValueAtTime(.09, now);
+    gain.gain.exponentialRampToValueAtTime(.001, now + .08);
+
+    osc.start(now);
+    osc.stop(now + .08);
+
+  } else if (type === "pop") {
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(650, now);
+    osc.frequency.exponentialRampToValueAtTime(120, now + .18);
+
+    gain.gain.setValueAtTime(.15, now);
+    gain.gain.exponentialRampToValueAtTime(.001, now + .18);
+
+    osc.start(now);
+    osc.stop(now + .18);
+
+  } else if (type === "damage") {
+
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(150, now);
+    osc.frequency.exponentialRampToValueAtTime(60, now + .3);
+
+    gain.gain.setValueAtTime(.2, now);
+    gain.gain.exponentialRampToValueAtTime(.001, now + .3);
+
+    osc.start(now);
+    osc.stop(now + .3);
+
+  } else if (type === "clear") {
+
+    osc.type = "sine";
+
+    osc.frequency.setValueAtTime(500, now);
+    osc.frequency.setValueAtTime(700, now + .15);
+    osc.frequency.setValueAtTime(900, now + .3);
+
+    gain.gain.setValueAtTime(.12, now);
+    gain.gain.exponentialRampToValueAtTime(.001, now + .7);
+
+    osc.start(now);
+    osc.stop(now + .7);
+
+  } else if (type === "error") {
+
+    osc.type = "square";
+    osc.frequency.setValueAtTime(120, now);
+
+    gain.gain.setValueAtTime(.15, now);
+    gain.gain.exponentialRampToValueAtTime(.001, now + .35);
+
+    osc.start(now);
+    osc.stop(now + .35);
+  }
 }
 
 
-/*
-    생성 빈도도 점점 빨라집니다.
-*/
+/* ============================================================
+   EFFECTS
+============================================================ */
 
-function currentSpawnInterval() {
+function burst(x, y, color="#ffe95c") {
 
-    return Math.max(
-        .22,
-        .95 -
-        elapsed * .012
+  for (let i = 0; i < 12; i++) {
+
+    const p = document.createElement("div");
+
+    p.className = "particle";
+
+    p.style.left = x + "px";
+    p.style.top = y + "px";
+    p.style.background = color;
+
+    p.style.setProperty(
+      "--x",
+      `${(Math.random()-.5)*120}px`
     );
+
+    p.style.setProperty(
+      "--y",
+      `${(Math.random()-.5)*120}px`
+    );
+
+    game.appendChild(p);
+
+    setTimeout(() => p.remove(), 700);
+  }
 }
 
+function clickText(x, y, text="+1") {
+
+  const el = document.createElement("div");
+
+  el.className = "clickBurst";
+  el.textContent = text;
+
+  el.style.left = x + "px";
+  el.style.top = y + "px";
+
+  game.appendChild(el);
+
+  setTimeout(() => el.remove(), 500);
+}
+
+
+/* ============================================================
+   UI
+============================================================ */
+
+function updateLives() {
+
+  livesEl.textContent =
+    "❤️".repeat(Math.max(0, lives)) +
+    "🖤".repeat(3 - lives);
+}
+
+function updateDamage() {
+
+  damageEl.textContent =
+    `구슬 피해 ${coreHits} / 3`;
+}
+
+function updateTimer() {
+
+  const remaining = Math.max(
+    0,
+    GAME_TIME - elapsed
+  );
+
+  const min = Math.floor(remaining / 60);
+  const sec = Math.ceil(remaining % 60);
+
+  timerEl.textContent =
+    `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
+}
+
+
+/* ============================================================
+   GHOST CREATION
+============================================================ */
 
 function createGhost() {
 
-    const side =
-        Math.floor(
-            Math.random() * 4
-        );
+  if (!gameRunning) return;
 
-    let x;
-    let y;
+  const id = ++ghostId;
 
-    const margin = 60;
+  /*
+    시간이 지날수록 분홍 귀신 등장 확률 증가
+  */
+  const pinkChance =
+    Math.min(.30, .10 + elapsed / 180);
 
-    if (side === 0) {
+  const type =
+    Math.random() < pinkChance
+      ? "pink"
+      : "blue";
 
-        x =
-            Math.random() * W;
+  const el = document.createElement("div");
 
-        y =
-            -margin;
-    }
+  el.className =
+    `ghost ${type}`;
 
-    else if (side === 1) {
+  el.innerHTML = `
+    <div class="ghostBody">
+      <div class="eyes">
+        <div class="eye"></div>
+        <div class="eye"></div>
+      </div>
+      <div class="mouth"></div>
+    </div>
+  `;
 
-        x =
-            W + margin;
+  /*
+    화면 가장자리에서 생성
+  */
+  const side =
+    Math.floor(Math.random() * 4);
 
-        y =
-            Math.random() * H;
-    }
+  let x, y;
 
-    else if (side === 2) {
+  if (side === 0) {
+    x = Math.random() * innerWidth;
+    y = -70;
+  }
 
-        x =
-            Math.random() * W;
+  else if (side === 1) {
+    x = innerWidth + 70;
+    y = Math.random() * innerHeight;
+  }
 
-        y =
-            H + margin;
-    }
+  else if (side === 2) {
+    x = Math.random() * innerWidth;
+    y = innerHeight + 70;
+  }
 
-    else {
+  else {
+    x = -70;
+    y = Math.random() * innerHeight;
+  }
 
-        x =
-            -margin;
+  /*
+    중앙 구슬 방향
+  */
+  const coreX = innerWidth / 2;
+  const coreY = innerHeight * .53;
 
-        y =
-            Math.random() * H;
-    }
+  const dx = coreX - x;
+  const dy = coreY - y;
 
+  const distance =
+    Math.sqrt(dx*dx + dy*dy);
 
-    /*
-        핑크 귀신은 조금 희귀하게
-    */
+  /*
+    시간이 지날수록 속도 증가
+  */
+  const difficulty =
+    elapsed / GAME_TIME;
 
-    const pink =
-        Math.random() <
-        Math.min(
-            .12 + elapsed * .002,
-            .25
-        );
+  const speed =
+    38 +
+    difficulty * 65 +
+    Math.random() * 25;
 
-
-    const baseSpeed =
-        38 *
-        currentSpeedMultiplier();
-
-
-    return {
-
-        x,
-        y,
-
-        radius:
-            pink ? 24 : 21,
-
-        pink,
-
-        speed:
-            baseSpeed *
-            (
-                .85 +
-                Math.random() * .3
-            ) *
-            (
-                pink ? .78 : 1
-            ),
-
-        bob:
-            Math.random() *
-            Math.PI *
-            2,
-
-        rot:
-            Math.random() *
-            Math.PI *
-            2,
-
-        dead: false
-    };
-}
-
-
-/* ============================================================
-   PARTICLES
-============================================================ */
-
-let particles = [];
-
-let shockwaves = [];
-
-let floatingTexts = [];
-
-
-function particleBurst(
+  const ghost = {
+    id,
+    type,
     x,
     y,
-    color,
-    amount = 20
-) {
-
-    for (
-        let i = 0;
-        i < amount;
-        i++
-    ) {
-
-        const angle =
-            Math.random() *
-            Math.PI *
-            2;
-
-        const speed =
-            60 +
-            Math.random() *
-            190;
-
-        particles.push({
-
-            x,
-            y,
-
-            vx:
-                Math.cos(angle) *
-                speed,
-
-            vy:
-                Math.sin(angle) *
-                speed,
-
-            size:
-                2 +
-                Math.random() * 5,
-
-            color,
-
-            life:
-                .4 +
-                Math.random() * .5
-        });
-    }
-}
-
-
-function updateParticles(dt) {
-
-    for (
-        let i = particles.length - 1;
-        i >= 0;
-        i--
-    ) {
-
-        const p =
-            particles[i];
-
-        p.life -= dt;
-
-        p.x +=
-            p.vx * dt;
-
-        p.y +=
-            p.vy * dt;
-
-        p.vx *= .97;
-        p.vy *= .97;
-
-        p.vy +=
-            45 * dt;
-
-        if (p.life <= 0) {
-
-            particles.splice(i,1);
-        }
-    }
-}
-
-
-function drawParticles() {
-
-    for (
-        const p of particles
-    ) {
-
-        ctx.globalAlpha =
-            Math.max(
-                0,
-                p.life
-            );
-
-        ctx.fillStyle =
-            p.color;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            p.x,
-            p.y,
-            p.size,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-    }
-
-    ctx.globalAlpha = 1;
-}
-
-
-/* ============================================================
-   SHOCKWAVE
-============================================================ */
-
-function addShockwave(
-    x,
-    y,
-    color
-) {
-
-    shockwaves.push({
-
-        x,
-        y,
-
-        radius: 10,
-
-        life: .35,
-
-        color
-    });
-}
-
-
-function updateShockwaves(dt) {
-
-    for (
-        let i =
-            shockwaves.length - 1;
-        i >= 0;
-        i--
-    ) {
-
-        const s =
-            shockwaves[i];
-
-        s.radius +=
-            250 * dt;
-
-        s.life -= dt;
-
-        if (s.life <= 0) {
-
-            shockwaves.splice(i,1);
-        }
-    }
-}
-
-
-function drawShockwaves() {
-
-    for (
-        const s of shockwaves
-    ) {
-
-        ctx.globalAlpha =
-            s.life / .35;
-
-        ctx.strokeStyle =
-            s.color;
-
-        ctx.lineWidth = 5;
-
-        ctx.beginPath();
-
-        ctx.arc(
-            s.x,
-            s.y,
-            s.radius,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.stroke();
-    }
-
-    ctx.globalAlpha = 1;
-}
-
-
-/* ============================================================
-   TEXT
-============================================================ */
-
-function floatingText(
-    text,
-    x,
-    y,
-    color
-) {
-
-    floatingTexts.push({
-
-        text,
-        x,
-        y,
-
-        color,
-
-        life: .8
-    });
-}
-
-
-function updateTexts(dt) {
-
-    for (
-        let i =
-            floatingTexts.length - 1;
-        i >= 0;
-        i--
-    ) {
-
-        const t =
-            floatingTexts[i];
-
-        t.y -=
-            35 * dt;
-
-        t.life -= dt;
-
-        if (t.life <= 0) {
-
-            floatingTexts.splice(i,1);
-        }
-    }
-}
-
-
-function drawTexts() {
-
-    ctx.textAlign =
-        "center";
-
-    for (
-        const t of floatingTexts
-    ) {
-
-        ctx.globalAlpha =
-            Math.min(
-                1,
-                t.life * 2
-            );
-
-        ctx.font =
-            "900 28px Arial Black";
-
-        ctx.lineWidth = 5;
-
-        ctx.strokeStyle =
-            "rgba(0,0,0,.45)";
-
-        ctx.fillStyle =
-            t.color;
-
-        ctx.strokeText(
-            t.text,
-            t.x,
-            t.y
-        );
-
-        ctx.fillText(
-            t.text,
-            t.x,
-            t.y
-        );
-    }
-
-    ctx.globalAlpha = 1;
-}
-
-
-/* ============================================================
-   BACKGROUND
-============================================================ */
-
-function drawBackground() {
-
-    const gradient =
-        ctx.createLinearGradient(
-            0,
-            0,
-            0,
-            H
-        );
-
-    gradient.addColorStop(
-        0,
-        "#70c64a"
-    );
-
-    gradient.addColorStop(
-        .5,
-        "#96dc59"
-    );
-
-    gradient.addColorStop(
-        1,
-        "#4b9a3c"
-    );
-
-    ctx.fillStyle =
-        gradient;
-
-    ctx.fillRect(
-        0,
-        0,
-        W,
-        H
-    );
-
-
-    /*
-        주변 숲 느낌
-    */
-
-    const edge =
-        ctx.createRadialGradient(
-            W/2,
-            H/2,
-            120,
-            W/2,
-            H/2,
-            800
-        );
-
-    edge.addColorStop(
-        0,
-        "rgba(255,255,150,0)"
-    );
-
-    edge.addColorStop(
-        .7,
-        "rgba(10,70,20,.08)"
-    );
-
-    edge.addColorStop(
-        1,
-        "rgba(5,40,10,.42)"
-    );
-
-    ctx.fillStyle =
-        edge;
-
-    ctx.fillRect(
-        0,
-        0,
-        W,
-        H
-    );
-
-
-    /*
-        작은 꽃 / 풀
-    */
-
-    for (
-        let i=0;
-        i<70;
-        i++
-    ) {
-
-        const x =
-            (i * 173.7) % W;
-
-        const y =
-            (i * 91.2) % H;
-
-        ctx.fillStyle =
-            i % 3 === 0
-            ? "rgba(255,245,190,.6)"
-            : "rgba(50,130,40,.25)";
-
-        ctx.beginPath();
-
-        ctx.arc(
-            x,
-            y,
-            2 + (i%3),
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-    }
-}
-
-
-/* ============================================================
-   ORB
-============================================================ */
-
-function drawOrb() {
-
-    orb.pulse += .05;
-
-    const pulse =
-        Math.sin(
-            orb.pulse
-        ) * 4;
-
-
-    /*
-        마법진
-    */
-
-    ctx.save();
-
-    ctx.strokeStyle =
-        "rgba(255,244,100,.25)";
-
-    ctx.lineWidth = 3;
-
-    ctx.setLineDash([
-        10,
-        10
-    ]);
-
-    ctx.beginPath();
-
-    ctx.arc(
-        orb.x,
-        orb.y,
-        110 + pulse,
-        0,
-        Math.PI*2
-    );
-
-    ctx.stroke();
-
-    ctx.setLineDash([]);
-
-    ctx.restore();
-
-
-    /*
-        빛
-    */
-
-    const glow =
-        ctx.createRadialGradient(
-            orb.x,
-            orb.y,
-            3,
-            orb.x,
-            orb.y,
-            145
-        );
-
-    glow.addColorStop(
-        0,
-        "rgba(255,255,180,.9)"
-    );
-
-    glow.addColorStop(
-        .3,
-        "rgba(255,220,40,.4)"
-    );
-
-    glow.addColorStop(
-        1,
-        "rgba(255,200,0,0)"
-    );
-
-    ctx.fillStyle =
-        glow;
-
-    ctx.beginPath();
-
-    ctx.arc(
-        orb.x,
-        orb.y,
-        145,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    /*
-        구슬
-    */
-
-    const orbGradient =
-        ctx.createRadialGradient(
-            orb.x - 14,
-            orb.y - 17,
-            3,
-            orb.x,
-            orb.y,
-            orb.radius
-        );
-
-    orbGradient.addColorStop(
-        0,
-        "#fffde5"
-    );
-
-    orbGradient.addColorStop(
-        .25,
-        "#fff36d"
-    );
-
-    orbGradient.addColorStop(
-        .7,
-        "#ffc51d"
-    );
-
-    orbGradient.addColorStop(
-        1,
-        "#e89500"
-    );
-
-    ctx.fillStyle =
-        orbGradient;
-
-    ctx.beginPath();
-
-    ctx.arc(
-        orb.x,
-        orb.y,
-        orb.radius + pulse*.15,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-    ctx.lineWidth = 4;
-
-    ctx.strokeStyle =
-        "#fff5a0";
-
-    ctx.stroke();
-
-
-    /*
-        반사광
-    */
-
-    ctx.fillStyle =
-        "rgba(255,255,255,.9)";
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        orb.x - 14,
-        orb.y - 18,
-        11,
-        7,
-        -.6,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-}
-
-
-/* ============================================================
-   FRONT CHARACTER
-============================================================ */
-
-/*
-    업로드 이미지의 좌측 상단
-    정면 캐릭터 영역.
-
-    원본 1536x1536 기준 대략:
-
-        x = 55
-        y = 65
-        width = 450
-        height = 610
-
-    흰 배경은 multiply로 배경에
-    자연스럽게 섞어줍니다.
-*/
-
-function drawGuardian() {
-
-    if (!characterLoaded) {
-
-        /*
-            이미지 로딩 전 임시 캐릭터
-        */
-
-        ctx.fillStyle =
-            "#80df42";
-
-        ctx.beginPath();
-
-        ctx.arc(
-            orb.x - 65,
-            orb.y + 25,
-            30,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fill();
-
-        return;
-    }
-
-
-    const sw = 450;
-    const sh = 610;
-
-    const sx = 55;
-    const sy = 65;
-
-
-    /*
-        중앙 구슬 왼쪽에
-        정면 캐릭터를 배치
-    */
-
-    const dw = 125;
-    const dh = 170;
-
-    const dx =
-        orb.x - 132;
-
-    const dy =
-        orb.y - 38;
-
-
-    ctx.save();
-
-    /*
-        이미지의 흰 배경을
-        숲 배경과 자연스럽게 섞음
-    */
-
-    ctx.globalCompositeOperation =
-        "multiply";
-
-    ctx.drawImage(
-        characterImage,
-
-        sx,
-        sy,
-        sw,
-        sh,
-
-        dx,
-        dy,
-        dw,
-        dh
-    );
-
-    ctx.restore();
-}
-
-
-/* ============================================================
-   GHOST DRAWING
-============================================================ */
-
-function drawBlueGhost(g) {
-
-    ctx.save();
-
-    ctx.shadowColor =
-        "#4bd5ff";
-
-    ctx.shadowBlur = 14;
-
-
-    const grad =
-        ctx.createLinearGradient(
-            -22,
-            -25,
-            22,
-            25
-        );
-
-    grad.addColorStop(
-        0,
-        "#b2efff"
-    );
-
-    grad.addColorStop(
-        .5,
-        "#62c9ed"
-    );
-
-    grad.addColorStop(
-        1,
-        "#358fbd"
-    );
-
-    ctx.fillStyle =
-        grad;
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        -23,
-        14
-    );
-
-    ctx.quadraticCurveTo(
-        -30,
-        -16,
-        0,
-        -25
-    );
-
-    ctx.quadraticCurveTo(
-        30,
-        -16,
-        23,
-        14
-    );
-
-    ctx.lineTo(
-        14,
-        25
-    );
-
-    ctx.lineTo(
-        4,
-        15
-    );
-
-    ctx.lineTo(
-        -5,
-        26
-    );
-
-    ctx.lineTo(
-        -14,
-        15
-    );
-
-    ctx.closePath();
-
-    ctx.fill();
-
-    ctx.shadowBlur = 0;
-
-
-    /*
-        눈
-    */
-
-    ctx.fillStyle =
-        "#153b5b";
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        -7,
-        -4,
-        4,
-        7,
-        -.25,
-        0,
-        Math.PI*2
-    );
-
-    ctx.ellipse(
-        7,
-        -4,
-        4,
-        7,
-        .25,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    /*
-        눈썹
-    */
-
-    ctx.strokeStyle =
-        "#153b5b";
-
-    ctx.lineWidth = 3;
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        -13,
-        -13
-    );
-
-    ctx.lineTo(
-        -4,
-        -10
-    );
-
-    ctx.moveTo(
-        13,
-        -13
-    );
-
-    ctx.lineTo(
-        4,
-        -10
-    );
-
-    ctx.stroke();
-
-
-    /*
-        볼
-    */
-
-    ctx.fillStyle =
-        "rgba(255,120,150,.45)";
-
-    ctx.beginPath();
-
-    ctx.arc(
-        -15,
-        5,
-        4,
-        0,
-        Math.PI*2
-    );
-
-    ctx.arc(
-        15,
-        5,
-        4,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-    ctx.restore();
-}
-
-
-function drawPinkGhost(g) {
-
-    ctx.save();
-
-    ctx.shadowColor =
-        "#ff4e91";
-
-    ctx.shadowBlur = 18;
-
-
-    const grad =
-        ctx.createLinearGradient(
-            -22,
-            -25,
-            22,
-            25
-        );
-
-    grad.addColorStop(
-        0,
-        "#ffd7e4"
-    );
-
-    grad.addColorStop(
-        .5,
-        "#ff90b0"
-    );
-
-    grad.addColorStop(
-        1,
-        "#ed527d"
-    );
-
-    ctx.fillStyle =
-        grad;
-
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        -24,
-        14
-    );
-
-    ctx.quadraticCurveTo(
-        -31,
-        -17,
-        0,
-        -25
-    );
-
-    ctx.quadraticCurveTo(
-        31,
-        -17,
-        24,
-        14
-    );
-
-    ctx.lineTo(
-        14,
-        25
-    );
-
-    ctx.lineTo(
-        4,
-        15
-    );
-
-    ctx.lineTo(
-        -5,
-        26
-    );
-
-    ctx.lineTo(
-        -14,
-        15
-    );
-
-    ctx.closePath();
-
-    ctx.fill();
-
-    ctx.shadowBlur = 0;
-
-
-    /*
-        눈
-    */
-
-    ctx.fillStyle =
-        "#3a1925";
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        -8,
-        -4,
-        5,
-        8,
-        -.35,
-        0,
-        Math.PI*2
-    );
-
-    ctx.ellipse(
-        8,
-        -4,
-        5,
-        8,
-        .35,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    /*
-        화난 눈썹
-    */
-
-    ctx.strokeStyle =
-        "#3a1925";
-
-    ctx.lineWidth = 3;
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-        -14,
-        -14
-    );
-
-    ctx.lineTo(
-        -4,
-        -10
-    );
-
-    ctx.moveTo(
-        14,
-        -14
-    );
-
-    ctx.lineTo(
-        4,
-        -10
-    );
-
-    ctx.stroke();
-
-    ctx.restore();
-}
-
-
-function drawGhost(g) {
-
-    const bob =
-        Math.sin(g.bob) * 3;
-
-    ctx.save();
-
-    ctx.translate(
-        g.x,
-        g.y + bob
-    );
-
-    ctx.rotate(
-        Math.sin(g.rot) * .08
-    );
-
-    if (g.pink) {
-
-        drawPinkGhost(g);
-
+    speed,
+    el,
+    active: true
+  };
+
+  el.style.left = x + "px";
+  el.style.top = y + "px";
+
+  /*
+    클릭 이벤트를 ghost 자체에 직접 연결.
+    이벤트 버블링 문제 방지.
+  */
+  el.addEventListener("pointerdown", function(e) {
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!ghost.active || !gameRunning) return;
+
+    if (ghost.type === "blue") {
+      killBlueGhost(ghost);
     } else {
-
-        drawBlueGhost(g);
+      openPinkBattle(ghost);
     }
+  });
 
-    ctx.restore();
+  ghostLayer.appendChild(el);
+  ghosts.push(ghost);
 }
 
 
 /* ============================================================
-   SPAWNER
+   BLUE GHOST
 ============================================================ */
 
-let spawnTimer = .5;
+function killBlueGhost(ghost) {
 
+  if (!ghost.active) return;
 
-function updateSpawner(dt) {
+  ghost.active = false;
 
-    if (comboActive) return;
+  const x = ghost.x;
+  const y = ghost.y;
 
-    spawnTimer -= dt;
+  ghost.el.classList.add("hit");
 
-    if (
-        spawnTimer <= 0
-    ) {
+  burst(x, y, "#a8eaff");
+  sound("pop");
 
-        /*
-            후반으로 갈수록
-            동시에 여러 마리
-        */
+  setTimeout(() => {
 
-        let amount = 1;
+    ghost.el.remove();
 
-        if (
-            elapsed > 35 &&
-            Math.random() < .28
-        ) {
-            amount = 2;
-        }
+    ghosts = ghosts.filter(
+      g => g.id !== ghost.id
+    );
 
-        if (
-            elapsed > 50 &&
-            Math.random() < .22
-        ) {
-            amount = 3;
-        }
-
-
-        for (
-            let i=0;
-            i<amount;
-            i++
-        ) {
-
-            ghosts.push(
-                createGhost()
-            );
-        }
-
-
-        spawnTimer =
-            currentSpawnInterval() *
-            (
-                .7 +
-                Math.random()*.35
-            );
-    }
+  }, 180);
 }
 
 
 /* ============================================================
-   GHOST MOVEMENT
+   PINK GHOST
 ============================================================ */
 
-function updateGhosts(dt) {
+function openPinkBattle(ghost) {
 
-    /*
-        연타 화면에서는
-        일반 귀신 이동 정지
-    */
+  /*
+    이미 다른 분홍 귀신을 처리 중이면 무시
+  */
+  if (activePink) return;
 
-    if (comboActive) {
-        return;
-    }
+  activePink = ghost;
+  pinkHits = 0;
 
+  /*
+    필드에서 분홍 귀신은 일단 숨긴다.
+    연타하는 동안 이동하지 않음.
+  */
+  ghost.el.style.display = "none";
 
-    for (
-        let i=ghosts.length-1;
-        i>=0;
-        i--
-    ) {
+  pinkOverlay.classList.add("active");
 
-        const g =
-            ghosts[i];
+  updatePinkUI();
 
-        g.bob +=
-            dt * 5;
-
-        g.rot +=
-            dt * 2;
-
-
-        const dx =
-            orb.x - g.x;
-
-        const dy =
-            orb.y - g.y;
-
-        const distance =
-            Math.sqrt(
-                dx*dx +
-                dy*dy
-            );
-
-
-        /*
-            구슬 도착
-        */
-
-        if (
-            distance <
-            orb.radius +
-            g.radius
-        ) {
-
-            damageOrb();
-
-            ghosts.splice(
-                i,
-                1
-            );
-
-            continue;
-        }
-
-
-        /*
-            시간에 따라 speed 자체도
-            계속 증가
-        */
-
-        const speedBoost =
-            currentSpeedMultiplier();
-
-
-        const nx =
-            dx / distance;
-
-        const ny =
-            dy / distance;
-
-
-        g.x +=
-            nx *
-            g.speed *
-            speedBoost *
-            dt;
-
-        g.y +=
-            ny *
-            g.speed *
-            speedBoost *
-            dt;
-    }
-}
-
-
-/* ============================================================
-   ORB DAMAGE
-============================================================ */
-
-function damageOrb() {
-
-    lives--;
-
-    shake = 16;
-
-    redFlash.style.opacity =
-        ".9";
-
-    setTimeout(() => {
-
-        redFlash.style.opacity =
-            "0";
-
-    },120);
-
-
-    particleBurst(
-        orb.x,
-        orb.y,
-        "#fff04d",
-        35
-    );
-
-    addShockwave(
-        orb.x,
-        orb.y,
-        "#ff593c"
-    );
-
-    floatingText(
-        "-1",
-        orb.x,
-        orb.y - 65,
-        "#ff5050"
-    );
-
-    playSound(
-        "damage"
-    );
-
-    updateHearts();
-
-
-    if (
-        lives <= 0
-    ) {
-
-        endGame(false);
-    }
-}
-
-
-function updateHearts() {
-
-    const hearts =
-        heartBox.querySelectorAll(
-            ".heart"
-        );
-
-    hearts.forEach(
-        (heart,index) => {
-
-            if (
-                index < lives
-            ) {
-
-                heart.classList.remove(
-                    "empty"
-                );
-
-            } else {
-
-                heart.classList.add(
-                    "empty"
-                );
-            }
-        }
-    );
-}
-
-
-/* ============================================================
-   PINK COMBO
-============================================================ */
-
-let comboActive = false;
-
-let comboHits = 0;
-
-let comboTime = 0;
-
-const COMBO_REQUIRED = 10;
-
-/*
-    10번을 눌러야 하는 시간.
-
-    3초로 설정.
-*/
-
-const COMBO_LIMIT = 3;
-
-
-/*
-    중요:
-
-    이전 코드에서는 comboOverlay 안쪽의
-    요소가 pointer 이벤트를 막는 구조 때문에
-    실제 클릭 카운트가 안 올라가는 문제가
-    발생할 수 있었습니다.
-
-    이번에는 comboOverlay 자체가
-    모든 pointerdown을 직접 받습니다.
-*/
-
-function startCombo(
-    ghost
-) {
-
-    comboActive = true;
-
-    comboHits = 0;
-
-    comboTime =
-        COMBO_LIMIT;
-
-
-    comboOverlay.style.display =
-        "flex";
-
-
-    comboCounter.textContent =
-        "0 / 10";
-
-    comboBar.style.width =
-        "0%";
-
-
-    /*
-        일반 게임 화면을
-        살짝 어둡게 만들고
-        핑크 연출
-    */
-
-    playSound(
-        "comboStart"
-    );
-
-    shake = 10;
-}
-
-
-/*
-    ★ 실제 연타 처리 ★
-
-    comboOverlay 어디를 클릭해도
-    여기로 들어옵니다.
-*/
-
-function comboClick() {
-
-    if (!comboActive) {
-        return;
-    }
-
-
-    comboHits++;
-
-
-    /*
-        매 클릭마다
-        정확하게 1씩 증가
-    */
-
-    comboCounter.textContent =
-        comboHits +
-        " / " +
-        COMBO_REQUIRED;
-
-
-    comboBar.style.width =
-        (
-            comboHits /
-            COMBO_REQUIRED *
-            100
-        ) +
-        "%";
-
-
-    /*
-        클릭 위치 근처에
-        랜덤 파티클
-    */
-
-    const x =
-        W/2 +
-        (Math.random()-.5) *
-        350;
-
-    const y =
-        H/2 +
-        (Math.random()-.5) *
-        260;
-
-
-    particleBurst(
-        x,
-        y,
-        comboHits % 2
-            ? "#fff16b"
-            : "#ffffff",
-        12
-    );
-
-
-    addShockwave(
-        x,
-        y,
-        "#ff91b5"
-    );
-
-
-    floatingText(
-        "팡!",
-        x,
-        y,
-        "#ffffff"
-    );
-
-
-    /*
-        화면 살짝 흔들림
-    */
-
-    shake = 5;
-
-
-    /*
-        매 클릭 사운드
-    */
-
-    playSound(
-        "comboHit"
-    );
-
-
-    /*
-        10번 성공
-    */
-
-    if (
-        comboHits >=
-        COMBO_REQUIRED
-    ) {
-
-        comboSuccess();
-    }
-}
-
-
-function comboSuccess() {
-
-    comboActive = false;
-
-
-    /*
-        마지막 폭발
-    */
-
-    particleBurst(
-        W/2,
-        H/2,
-        "#ff73a0",
-        60
-    );
-
-    particleBurst(
-        W/2,
-        H/2,
-        "#fff36c",
-        35
-    );
-
-
-    addShockwave(
-        W/2,
-        H/2,
-        "#ffffff"
-    );
-
-
-    comboBar.style.width =
-        "100%";
-
-
-    comboCounter.textContent =
-        "10 / 10";
-
-
-    playSound(
-        "comboSuccess"
-    );
-
-
-    whiteFlash.style.opacity =
-        ".5";
-
-    setTimeout(() => {
-
-        whiteFlash.style.opacity =
-            "0";
-
-    },100);
-
-
-    /*
-        클로즈업 종료
-    */
-
-    setTimeout(() => {
-
-        comboOverlay.style.display =
-            "none";
-
-    },180);
-}
-
-
-/*
-    3초 안에 못 채우면
+  /*
+    약 3초 안에 10번 못 누르면
     생명 1개 감소
-*/
-
-function comboFail() {
-
-    comboActive = false;
-
-    comboOverlay.style.display =
-        "none";
-
-
-    /*
-        ★ 실패하면 생명 -1
-    */
-
-    lives--;
-
-    shake = 18;
-
-
-    redFlash.style.opacity =
-        ".85";
-
-    setTimeout(() => {
-
-        redFlash.style.opacity =
-            "0";
-
-    },160);
-
-
-    updateHearts();
-
-
-    particleBurst(
-        W/2,
-        H/2,
-        "#ff5d86",
-        40
-    );
-
-
-    floatingText(
-        "실패!",
-        W/2,
-        H/2 + 160,
-        "#ff507a"
-    );
-
-
-    playSound(
-        "damage"
-    );
-
-
-    /*
-        목숨이 다 떨어졌다면
-        즉시 게임 오버
-    */
+  */
+  pinkTimer = setTimeout(() => {
 
     if (
-        lives <= 0
+      activePink === ghost &&
+      pinkHits < 10
     ) {
 
+      sound("damage");
+
+      lives--;
+
+      updateLives();
+
+      burst(
+        innerWidth / 2,
+        innerHeight / 2,
+        "#ff5b7d"
+      );
+
+      /*
+        타임아웃이므로 분홍 귀신도 사라짐.
+        같은 귀신이 다시 처리되지 않도록 active=false.
+      */
+      ghost.active = false;
+
+      closePinkBattle();
+
+      if (lives <= 0) {
         endGame(false);
+      }
     }
+
+  }, 3000);
 }
 
 
-/* ============================================================
-   COMBO UPDATE
-============================================================ */
+/*
+  ⭐ 핵심 수정 부분 ⭐
 
-function updateCombo(dt) {
+  분홍 귀신을 클릭할 때마다 반드시
+  pinkHits += 1
 
-    if (!comboActive) {
-        return;
-    }
+  그리고 10이 되는 순간
+  activePink.active = false
+  -> 해당 귀신 삭제
+  -> 모달 닫기
 
+  기존처럼 화면을 닫기만 하고
+  원래 귀신 객체를 남겨두는 문제가 없음.
+*/
+function hitPink() {
 
-    comboTime -= dt;
+  if (!activePink) return;
+  if (!activePink.active) return;
 
+  pinkHits++;
+
+  sound("click");
+
+  comboNumber.textContent = pinkHits;
+
+  comboProgress.style.width =
+    `${pinkHits * 10}%`;
+
+  clickText(
+    innerWidth / 2,
+    innerHeight * .72,
+    "+1"
+  );
+
+  burst(
+    innerWidth / 2 +
+      (Math.random()-.5)*100,
+    innerHeight * .45 +
+      (Math.random()-.5)*80,
+    "#fff16b"
+  );
+
+  /*
+    정확히 10번!
+  */
+  if (pinkHits >= 10) {
+
+    clearTimeout(pinkTimer);
+
+    const defeated = activePink;
 
     /*
-        시간 게이지가
-        자연스럽게 줄어듦
+      ⭐ 가장 중요 ⭐
+      귀신 자체를 비활성화
     */
+    defeated.active = false;
+
+    sound("pop");
+
+    burst(
+      innerWidth / 2,
+      innerHeight / 2,
+      "#ffb6ce"
+    );
 
     /*
-        노란색/분홍색 바가
-        남은 시간에 맞게 감소
+      10연타 성공 연출 후 삭제
     */
-
-    const timePercent =
-        Math.max(
-            0,
-            comboTime /
-            COMBO_LIMIT *
-            100
-        );
-
-
-    /*
-        클릭 진행률과
-        시간 제한을 동시에 보여주기 때문에
-        시간에 따라 최소한의 시각적 긴장감 제공
-    */
-
-
-    if (
-        comboTime <= 0
-    ) {
-
-        comboFail();
-    }
-}
-
-
-/* ============================================================
-   INPUT
-============================================================ */
-
-/*
-    일반 게임 클릭
-*/
-
-canvas.addEventListener(
-    "pointerdown",
-    function(e) {
-
-        if (!gameRunning) {
-            return;
-        }
-
-        if (comboActive) {
-            return;
-        }
-
-        initAudio();
-
-
-        const rect =
-            canvas.getBoundingClientRect();
-
-
-        const x =
-            (
-                e.clientX -
-                rect.left
-            )
-            /
-            rect.width *
-            W;
-
-
-        const y =
-            (
-                e.clientY -
-                rect.top
-            )
-            /
-            rect.height *
-            H;
-
-
-        /*
-            뒤에서부터 검사해서
-            위에 있는 귀신을 우선 클릭
-        */
-
-        for (
-            let i =
-                ghosts.length-1;
-            i>=0;
-            i--
-        ) {
-
-            const g =
-                ghosts[i];
-
-
-            const dx =
-                x - g.x;
-
-            const dy =
-                y - g.y;
-
-
-            const distance =
-                Math.sqrt(
-                    dx*dx +
-                    dy*dy
-                );
-
-
-            /*
-                클릭 판정 범위를 조금 넉넉하게
-            */
-
-            if (
-                distance <
-                g.radius + 20
-            ) {
-
-                if (
-                    g.pink
-                ) {
-
-                    startCombo(g);
-
-                } else {
-
-                    killBlueGhost(g);
-                }
-
-
-                break;
-            }
-        }
-
-    },
-    {
-        passive: false
-    }
-);
-
-
-/*
-    ★ 분홍 귀신 클로즈업 클릭
-
-    comboOverlay 자체에서 이벤트를 받습니다.
-
-    내부에 있는 글자/귀신 때문에
-    클릭이 먹히지 않는 문제가 없도록
-    capture 방식까지 사용합니다.
-*/
-
-comboOverlay.addEventListener(
-    "pointerdown",
-    function(e) {
-
-        e.preventDefault();
-
-        e.stopPropagation();
-
-        if (!comboActive) {
-            return;
-        }
-
-        initAudio();
-
-        comboClick();
-
-    },
-    true
-);
-
-
-/*
-    모바일 터치
-*/
-
-comboOverlay.addEventListener(
-    "touchstart",
-    function(e) {
-
-        e.preventDefault();
-
-    },
-    {
-        passive: false
-    }
-);
-
-
-/* ============================================================
-   BLUE GHOST KILL
-============================================================ */
-
-function killBlueGhost(
-    ghost
-) {
-
-    const index =
-        ghosts.indexOf(
-            ghost
-        );
-
-
-    if (
-        index !== -1
-    ) {
-
-        ghosts.splice(
-            index,
-            1
-        );
-    }
-
-
-    particleBurst(
-        ghost.x,
-        ghost.y,
-        "#70e7ff",
-        25
-    );
-
-    particleBurst(
-        ghost.x,
-        ghost.y,
-        "#ffffff",
-        10
-    );
-
-
-    addShockwave(
-        ghost.x,
-        ghost.y,
-        "#8ceaff"
-    );
-
-
-    floatingText(
-        "팡!",
-        ghost.x,
-        ghost.y - 25,
-        "#ffffff"
-    );
-
-
-    whiteFlash.style.opacity =
-        ".25";
-
     setTimeout(() => {
 
-        whiteFlash.style.opacity =
-            "0";
+      defeated.el.remove();
 
-    },50);
+      ghosts = ghosts.filter(
+        g => g.id !== defeated.id
+      );
 
+      closePinkBattle();
 
-    playSound(
-        "pop"
-    );
+    }, 160);
+
+  } else {
+
+    updatePinkUI();
+  }
+}
+
+function updatePinkUI() {
+
+  comboNumber.textContent = pinkHits;
+
+  comboProgress.style.width =
+    `${pinkHits * 10}%`;
+}
+
+function closePinkBattle() {
+
+  clearTimeout(pinkTimer);
+
+  pinkTimer = null;
+
+  pinkOverlay.classList.remove("active");
+
+  activePink = null;
+  pinkHits = 0;
+
+  comboNumber.textContent = "0";
+  comboProgress.style.width = "0%";
 }
 
 
-/* ============================================================
-   TIMER
-============================================================ */
+/*
+  ⭐ 분홍 연타 영역에 직접 pointerdown 연결
+  ghostLayer와 충돌하지 않게 한다.
+*/
+document.getElementById("pinkOverlay")
+  .addEventListener("pointerdown", function(e) {
 
-function updateTimer(dt) {
-
-    elapsed += dt;
-
-
-    remaining =
-        Math.max(
-            0,
-            GAME_TIME -
-            elapsed
-        );
-
-
-    const seconds =
-        Math.ceil(
-            remaining
-        );
-
-
-    const min =
-        Math.floor(
-            seconds / 60
-        );
-
-
-    const sec =
-        seconds % 60;
-
-
-    const timeString =
-        String(min)
-            .padStart(2,"0")
-        +
-        ":" +
-        String(sec)
-            .padStart(2,"0");
-
-
-    timerEl.textContent =
-        timeString;
-
-
-    progressText.textContent =
-        "남은 시간: " +
-        timeString;
-
-
-    progressEl.style.width =
-        (
-            remaining /
-            GAME_TIME *
-            100
-        ) +
-        "%";
-
+    e.preventDefault();
 
     /*
-        60초 생존 성공
+      아무 곳이나 눌러도 연타가 올라가도록 설정.
+      특히 모바일에서도 pointerdown 사용.
     */
-
-    if (
-        remaining <= 0
-    ) {
-
-        endGame(true);
+    if (activePink) {
+      hitPink();
     }
+  });
+
+
+/* ============================================================
+   CORE DAMAGE
+============================================================ */
+
+function damageCore(ghost) {
+
+  if (!ghost.active) return;
+
+  ghost.active = false;
+
+  coreHits++;
+
+  updateDamage();
+
+  sound("damage");
+
+  burst(
+    innerWidth / 2,
+    innerHeight * .53,
+    "#ff6464"
+  );
+
+  /*
+    구슬 피격 효과
+  */
+  document.getElementById("coreArea")
+    .animate(
+      [
+        { transform:"translate(-50%,-50%) scale(1)" },
+        { transform:"translate(-50%,-50%) scale(1.18)" },
+        { transform:"translate(-50%,-50%) scale(1)" }
+      ],
+      {
+        duration:350
+      }
+    );
+
+  ghost.el.remove();
+
+  ghosts = ghosts.filter(
+    g => g.id !== ghost.id
+  );
+
+  if (coreHits >= 3) {
+    endGame(false);
+  }
 }
 
 
 /* ============================================================
-   END GAME
+   GAME LOOP
 ============================================================ */
 
-function endGame(
-    win
-) {
+function gameLoop(timestamp) {
 
+  if (!gameRunning) return;
+
+  if (!lastTime) {
+    lastTime = timestamp;
+  }
+
+  const dt =
+    Math.min(
+      (timestamp - lastTime) / 1000,
+      .05
+    );
+
+  lastTime = timestamp;
+
+  elapsed += dt;
+
+  updateTimer();
+
+  /*
+    귀신 이동
+  */
+  const coreX = innerWidth / 2;
+  const coreY = innerHeight * .53;
+
+  ghosts.forEach(ghost => {
+
+    if (!ghost.active) return;
+
+    /*
+      분홍 연타 중에는 이동하지 않는다.
+    */
+    if (activePink === ghost) return;
+
+    const dx = coreX - ghost.x;
+    const dy = coreY - ghost.y;
+
+    const distance =
+      Math.sqrt(dx*dx + dy*dy);
+
+    /*
+      시간이 지나면 속도 추가 상승
+    */
+    const speedBonus =
+      1 + elapsed / 75;
+
+    ghost.x +=
+      dx / distance *
+      ghost.speed *
+      speedBonus *
+      dt;
+
+    ghost.y +=
+      dy / distance *
+      ghost.speed *
+      speedBonus *
+      dt;
+
+    ghost.el.style.left =
+      ghost.x + "px";
+
+    ghost.el.style.top =
+      ghost.y + "px";
+
+    /*
+      중앙 구슬에 접근
+    */
+    if (distance < 80) {
+
+      damageCore(ghost);
+    }
+  });
+
+  /*
+    게임 종료
+  */
+  if (elapsed >= GAME_TIME) {
+
+    endGame(true);
+    return;
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+
+/* ============================================================
+   SPAWN SYSTEM
+============================================================ */
+
+let spawnTimer = null;
+
+function scheduleSpawn() {
+
+  if (!gameRunning) return;
+
+  /*
+    초반 1.0초
+    후반 0.35초까지 빨라짐
+  */
+  const progress =
+    elapsed / GAME_TIME;
+
+  const interval =
+    1000 -
+    progress * 620;
+
+  spawnTimer = setTimeout(() => {
+
+    createGhost();
+
+    /*
+      후반에는 한 번에 2마리 등장할 확률 증가
+    */
     if (
-        !gameRunning
+      elapsed > 25 &&
+      Math.random() < elapsed / 130
     ) {
-        return;
+      createGhost();
     }
 
+    scheduleSpawn();
 
-    gameRunning = false;
-
-
-    comboActive = false;
-
-    comboOverlay.style.display =
-        "none";
-
-
-    if (win) {
-
-        endTitle.textContent =
-            "클리어! ✨";
-
-
-        endText.innerHTML =
-            `
-            대단해요!<br>
-            <b>1분 동안 노란 구슬을 지켜냈어요!</b><br>
-            숲의 빛이 안전하게 보호되었습니다.
-            `;
-
-
-        particleBurst(
-            orb.x,
-            orb.y,
-            "#fff36a",
-            100
-        );
-
-
-        playSound(
-            "win"
-        );
-
-    } else {
-
-        endTitle.textContent =
-            "게임 오버! 💥";
-
-
-        endText.innerHTML =
-            `
-            귀신이 구슬을 너무 많이 공격했어요.<br>
-            <b>다시 도전해보세요!</b>
-            `;
-
-
-        playSound(
-            "lose"
-        );
-    }
-
-
-    setTimeout(() => {
-
-        endScreen.style.display =
-            "flex";
-
-    },500);
+  }, interval);
 }
 
 
@@ -3301,302 +1463,78 @@ function endGame(
 
 function startGame() {
 
-    initAudio();
+  initAudio();
 
+  gameRunning = true;
 
-    elapsed = 0;
+  elapsed = 0;
+  lives = 3;
+  coreHits = 0;
 
-    remaining =
-        GAME_TIME;
+  ghosts = [];
 
-    lives = 3;
+  updateLives();
+  updateDamage();
+  updateTimer();
 
+  startScreen.style.display = "none";
 
-    ghosts = [];
+  lastTime = 0;
 
-    particles = [];
+  /*
+    초기 귀신 몇 마리
+  */
+  for (let i = 0; i < 5; i++) {
+    createGhost();
+  }
 
-    shockwaves = [];
+  scheduleSpawn();
 
-    floatingTexts = [];
-
-
-    spawnTimer =
-        .4;
-
-
-    comboActive = false;
-
-    comboHits = 0;
-
-    comboTime = 0;
-
-
-    gameRunning = true;
-
-
-    startScreen.style.display =
-        "none";
-
-    endScreen.style.display =
-        "none";
-
-    comboOverlay.style.display =
-        "none";
-
-
-    updateHearts();
-
-
-    lastTime =
-        performance.now();
+  requestAnimationFrame(gameLoop);
 }
-
-
-/* ============================================================
-   UPDATE
-============================================================ */
-
-function update(dt) {
-
-    updateParticles(dt);
-
-    updateShockwaves(dt);
-
-    updateTexts(dt);
-
-
-    if (
-        !gameRunning
-    ) {
-        return;
-    }
-
-
-    updateTimer(dt);
-
-
-    if (
-        !gameRunning
-    ) {
-        return;
-    }
-
-
-    updateSpawner(dt);
-
-    updateGhosts(dt);
-
-    updateCombo(dt);
-
-
-    shake *= .88;
-
-    if (
-        shake < .2
-    ) {
-        shake = 0;
-    }
-}
-
-
-/* ============================================================
-   DRAW
-============================================================ */
-
-function draw() {
-
-    ctx.clearRect(
-        0,
-        0,
-        W,
-        H
-    );
-
-
-    ctx.save();
-
-
-    if (
-        shake > 0
-    ) {
-
-        ctx.translate(
-            (
-                Math.random()-.5
-            ) * shake,
-
-            (
-                Math.random()-.5
-            ) * shake
-        );
-    }
-
-
-    drawBackground();
-
-
-    /*
-        중앙 구슬 주변 빛 영역
-    */
-
-    const area =
-        ctx.createRadialGradient(
-            orb.x,
-            orb.y,
-            30,
-            orb.x,
-            orb.y,
-            230
-        );
-
-    area.addColorStop(
-        0,
-        "rgba(255,245,100,.18)"
-    );
-
-    area.addColorStop(
-        1,
-        "rgba(255,245,100,0)"
-    );
-
-    ctx.fillStyle =
-        area;
-
-    ctx.beginPath();
-
-    ctx.arc(
-        orb.x,
-        orb.y,
-        230,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fill();
-
-
-    /*
-        구슬
-    */
-
-    drawOrb();
-
-
-    /*
-        정면 수호 캐릭터
-    */
-
-    drawGuardian();
-
-
-    /*
-        귀신
-    */
-
-    for (
-        const ghost of ghosts
-    ) {
-
-        drawGhost(
-            ghost
-        );
-    }
-
-
-    drawShockwaves();
-
-    drawParticles();
-
-    drawTexts();
-
-
-    ctx.restore();
-}
-
-
-/* ============================================================
-   LOOP
-============================================================ */
-
-function loop(now) {
-
-    if (!lastTime) {
-        lastTime = now;
-    }
-
-
-    let dt =
-        (now-lastTime)/1000;
-
-
-    /*
-        탭 전환 등으로 시간이 크게
-        튀는 것을 방지
-    */
-
-    dt =
-        Math.min(
-            dt,
-            .05
-        );
-
-
-    lastTime =
-        now;
-
-
-    update(dt);
-
-    draw();
-
-
-    requestAnimationFrame(
-        loop
-    );
-}
-
-
-requestAnimationFrame(
-    loop
-);
-
-
-/* ============================================================
-   BUTTONS
-============================================================ */
 
 document
-    .getElementById("startBtn")
-    .addEventListener(
-        "click",
-        startGame
-    );
-
-
-document
-    .getElementById("restartBtn")
-    .addEventListener(
-        "click",
-        startGame
-    );
+  .getElementById("startBtn")
+  .addEventListener("click", startGame);
 
 
 /* ============================================================
-   PREVENT MOBILE SCROLL
+   END
 ============================================================ */
 
-document.addEventListener(
-    "touchmove",
-    function(e) {
+function endGame(clear) {
 
-        e.preventDefault();
+  if (!gameRunning) return;
 
-    },
-    {
-        passive:false
-    }
-);
+  gameRunning = false;
+
+  clearTimeout(spawnTimer);
+  clearTimeout(pinkTimer);
+
+  closePinkBattle();
+
+  if (clear) {
+
+    sound("clear");
+
+    clearScreen.classList.add("show");
+
+  } else {
+
+    sound("error");
+
+    gameOver.classList.add("show");
+  }
+}
+
+
+/* ============================================================
+   INITIAL
+============================================================ */
+
+updateLives();
+updateDamage();
+updateTimer();
 
 </script>
 
