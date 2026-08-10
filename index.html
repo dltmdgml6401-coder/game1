@@ -1,2595 +1,748 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>코어를 귀신으로부터 지켜라!</title>
-
-<style>
-* {
-  box-sizing: border-box;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-family: Arial, "Malgun Gothic", sans-serif;
-  background: #183b25;
-}
-
-#game {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  cursor: crosshair;
-
-  background:
-    radial-gradient(
-      circle at 50% 45%,
-      #dcf98c 0%,
-      #a7dd5e 20%,
-      #65b84d 48%,
-      #2b743e 100%
-    );
-}
-
-/* 숲 배경 */
-
-#game::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-
-  background:
-    radial-gradient(circle at 8% 15%, rgba(255,255,255,.22) 0 3px, transparent 4px),
-    radial-gradient(circle at 18% 70%, rgba(255,255,255,.15) 0 4px, transparent 5px),
-    radial-gradient(circle at 85% 22%, rgba(255,255,255,.18) 0 3px, transparent 4px),
-    radial-gradient(circle at 75% 75%, rgba(255,255,255,.13) 0 5px, transparent 6px);
-}
-
-/* 잔디 장식 */
-
-.grass {
-  position: absolute;
-  width: 230px;
-  height: 230px;
-  border-radius: 50%;
-  background: rgba(18,100,43,.22);
-  filter: blur(13px);
-}
-
-.g1 {
-  left: -90px;
-  bottom: -80px;
-}
-
-.g2 {
-  right: -90px;
-  top: -70px;
-}
-
-.g3 {
-  left: 40%;
-  bottom: -130px;
-}
-
-
-/* =========================================================
-   상단 UI
-========================================================= */
-
-#topUI {
-  position: absolute;
-  z-index: 50;
-
-  top: 18px;
-  left: 18px;
-  right: 18px;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-
-  pointer-events: none;
-}
-
-.uiBox {
-  background:
-    linear-gradient(#fff9e5, #ffe8b6);
-
-  border: 3px solid #754c28;
-  border-radius: 17px;
-
-  padding: 9px 18px;
-
-  color: #392817;
-  font-weight: 900;
-
-  box-shadow:
-    0 5px 0 rgba(77,42,18,.35),
-    inset 0 2px rgba(255,255,255,.8);
-}
-
-#timer {
-  font-size: clamp(22px, 3vw, 36px);
-}
-
-#lives {
-  display: flex;
-  gap: 4px;
-
-  font-size: clamp(25px, 3vw, 38px);
-}
-
-
-/* =========================================================
-   중앙 코어
-========================================================= */
-
-#coreArea {
-  position: absolute;
-  z-index: 10;
-
-  left: 50%;
-  top: 53%;
-
-  transform: translate(-50%, -50%);
-
-  width: min(235px, 20vw);
-  height: min(235px, 20vw);
-
-  min-width: 170px;
-  min-height: 170px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 기존보다 작은 빛 */
-
-.coreGlow {
-  position: absolute;
-
-  width: 64%;
-  height: 64%;
-
-  border-radius: 50%;
-
-  background: #ffe14b;
-
-  box-shadow:
-    0 0 22px #fff7a1,
-    0 0 45px #ffd52d,
-    0 0 80px rgba(255,206,30,.75);
-
-  animation: corePulse 1.3s infinite ease-in-out;
-}
-
-@keyframes corePulse {
-  0%,100% {
-    transform: scale(.92);
-    opacity: .72;
-  }
-
-  50% {
-    transform: scale(1.08);
-    opacity: 1;
-  }
-}
-
-.core {
-  position: relative;
-
-  width: 43%;
-  aspect-ratio: 1;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle at 32% 25%,
-      #fff 0 6%,
-      #fff8a4 7%,
-      transparent 17%
-    ),
-    radial-gradient(
-      circle at 42% 40%,
-      #fff48b,
-      #ffd321 55%,
-      #f1a600
-    );
-
-  border: 4px solid #fff6b0;
-
-  box-shadow:
-    inset -8px -8px 15px rgba(255,145,0,.25),
-    0 0 18px #fff7a5,
-    0 0 38px #ffd83d;
-}
-
-.coreRing {
-  position: absolute;
-
-  width: 75%;
-  height: 75%;
-
-  border: 3px solid rgba(255,245,125,.8);
-  border-radius: 50%;
-
-  animation: ring 2s infinite;
-}
-
-@keyframes ring {
-  from {
-    transform: scale(.7);
-    opacity: 1;
-  }
-
-  to {
-    transform: scale(1.7);
-    opacity: 0;
-  }
-}
-
-#damageCounter {
-  position: absolute;
-
-  bottom: -14px;
-  left: 50%;
-
-  transform: translateX(-50%);
-
-  color: #713c1d;
-
-  background: #fff1c9;
-  border: 2px solid #81532c;
-  border-radius: 20px;
-
-  padding: 4px 13px;
-
-  font-size: 13px;
-  font-weight: 900;
-
-  white-space: nowrap;
-}
-
-
-/* =========================================================
-   캐릭터
-========================================================= */
-
-#player {
-  position: absolute;
-  z-index: 20;
-
-  left: 50%;
-  top: 53%;
-
-  transform: translate(-50%, -50%);
-
-  width: min(125px, 11vw);
-  height: min(180px, 15vw);
-
-  min-width: 90px;
-  min-height: 130px;
-
-  pointer-events: none;
-}
-
-.playerSprite {
-  width: 100%;
-  height: 100%;
-
-  background-image: url("character-sheet.png");
-  background-repeat: no-repeat;
-
-  background-size: 420% 420%;
-  background-position: 4% 5%;
-
-  filter:
-    drop-shadow(0 8px 4px rgba(0,0,0,.22));
-}
-
-
-/* =========================================================
-   귀신
-========================================================= */
-
-.ghost {
-  position: absolute;
-
-  z-index: 30;
-
-  width: 64px;
-  height: 70px;
-
-  transform: translate(-50%, -50%);
-
-  cursor: pointer;
-
-  touch-action: manipulation;
-
-  transition: filter .1s;
-}
-
-.ghost:hover {
-  filter:
-    brightness(1.1)
-    drop-shadow(0 0 12px rgba(255,255,255,.6));
-}
-
-
-/* 귀여운 몸 */
-
-.ghostBody {
-  position: relative;
-
-  width: 100%;
-  height: 88%;
-
-  border-radius:
-    48%
-    48%
-    42%
-    42%;
-
-  border: 3px solid rgba(43,75,90,.7);
-
-  box-shadow:
-    inset -7px -8px 0 rgba(0,0,0,.07),
-    inset 7px 5px 0 rgba(255,255,255,.25);
-}
-
-
-/* 귀신 꼬리 */
-
-.ghostBody::after {
-  content: "";
-
-  position: absolute;
-
-  left: 5%;
-  right: 5%;
-  bottom: -14px;
-
-  height: 24px;
-
-  background: inherit;
-
-  clip-path: polygon(
-    0 0,
-    17% 55%,
-    35% 0,
-    51% 55%,
-    70% 0,
-    86% 55%,
-    100% 0,
-    100% 100%,
-    0 100%
-  );
-
-  z-index: -1;
-}
-
-
-/* 파란 귀신 */
-
-.ghost.blue .ghostBody {
-  background:
-    linear-gradient(
-      145deg,
-      #c5f5ff 0%,
-      #8bdcf5 45%,
-      #54bde9 100%
-    );
-}
-
-
-/* 분홍 귀신 */
-
-.ghost.pink .ghostBody {
-  background:
-    linear-gradient(
-      145deg,
-      #ffe0ea 0%,
-      #ffb0c8 45%,
-      #f17da2 100%
-    );
-
-  border-color: #934b64;
-}
-
-
-/* 눈 */
-
-.eyes {
-  position: absolute;
-
-  top: 23px;
-  left: 13px;
-  right: 13px;
-
-  display: flex;
-  justify-content: space-between;
-}
-
-.eye {
-  width: 13px;
-  height: 17px;
-
-  background: #26323b;
-
-  border-radius: 50%;
-
-  position: relative;
-}
-
-.eye::after {
-  content: "";
-
-  position: absolute;
-
-  width: 4px;
-  height: 5px;
-
-  background: white;
-
-  border-radius: 50%;
-
-  left: 3px;
-  top: 3px;
-}
-
-
-/* 볼터치 */
-
-.ghostBody::before {
-  content: "";
-
-  position: absolute;
-
-  left: 7px;
-  right: 7px;
-  top: 42px;
-
-  height: 10px;
-
-  background:
-    radial-gradient(
-      ellipse at 15% 50%,
-      rgba(255,120,150,.55) 0 7px,
-      transparent 8px
-    ),
-    radial-gradient(
-      ellipse at 85% 50%,
-      rgba(255,120,150,.55) 0 7px,
-      transparent 8px
-    );
-}
-
-
-/* 입 */
-
-.mouth {
-  position: absolute;
-
-  left: 50%;
-  top: 44px;
-
-  transform: translateX(-50%);
-
-  width: 12px;
-  height: 7px;
-
-  border-radius: 50%;
-
-  background: #39434b;
-}
-
-.pink .mouth {
-  height: 9px;
-}
-
-
-/* 귀신 손 */
-
-.ghost .ghostBody {
-  overflow: visible;
-}
-
-.ghost .ghostBody > .hand {
-  display: block;
-}
-
-
-/* 타격 */
-
-.hit {
-  animation: ghostHit .18s ease-out;
-}
-
-@keyframes ghostHit {
-
-  0% {
-    transform: translate(-50%,-50%) scale(1);
-  }
-
-  40% {
-    transform:
-      translate(-50%,-50%)
-      scale(1.3)
-      rotate(8deg);
-  }
-
-  100% {
-    transform:
-      translate(-50%,-50%)
-      scale(0);
-    opacity: 0;
-  }
-}
-
-
-/* =========================================================
-   이펙트
-========================================================= */
-
-.particle {
-  position: absolute;
-
-  z-index: 80;
-
-  pointer-events: none;
-
-  width: 9px;
-  height: 9px;
-
-  border-radius: 50%;
-
-  background: #fff36d;
-
-  animation:
-    particle .65s ease-out forwards;
-}
-
-@keyframes particle {
-
-  to {
-    transform:
-      translate(var(--x), var(--y))
-      scale(0);
-
-    opacity: 0;
-  }
-}
-
-.clickBurst {
-  position: absolute;
-
-  z-index: 100;
-
-  pointer-events: none;
-
-  color: #fff;
-
-  font-weight: 1000;
-  font-size: 26px;
-
-  text-shadow:
-    0 3px #8d4059,
-    0 0 10px #ff9ab8;
-
-  animation:
-    clickBurst .45s ease-out forwards;
-}
-
-@keyframes clickBurst {
-
-  0% {
-    transform:
-      translate(-50%,-50%)
-      scale(.5);
-
-    opacity: 1;
-  }
-
-  100% {
-    transform:
-      translate(-50%,-110%)
-      scale(1.3);
-
-    opacity: 0;
-  }
-}
-
-
-/* =========================================================
-   분홍 귀신 연타 화면
-========================================================= */
-
-#pinkOverlay {
-  position: absolute;
-
-  z-index: 200;
-
-  inset: 0;
-
-  display: none;
-
-  align-items: center;
-  justify-content: center;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(255,174,199,.96),
-      rgba(226,93,130,.92)
-    );
-
-  overflow: hidden;
-}
-
-#pinkOverlay.active {
-  display: flex;
-}
-
-.speedLines {
-  position: absolute;
-
-  inset: -50%;
-
-  background:
-    repeating-conic-gradient(
-      from 0deg,
-      rgba(255,255,255,.2) 0deg 3deg,
-      transparent 3deg 10deg
-    );
-
-  animation:
-    spinLines 5s linear infinite;
-}
-
-@keyframes spinLines {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-#pinkBattle {
-  position: relative;
-
-  z-index: 2;
-
-  width: min(650px, 75vw);
-
-  text-align: center;
-}
-
-
-/* 클로즈업 귀신 */
-
-#angryGhost {
-  width: min(270px, 40vw);
-  height: min(270px, 40vw);
-
-  margin: auto;
-
-  position: relative;
-
-  animation:
-    angry .35s infinite alternate;
-}
-
-@keyframes angry {
-
-  from {
-    transform:
-      rotate(-2deg)
-      scale(1);
-  }
-
-  to {
-    transform:
-      rotate(2deg)
-      scale(1.04);
-  }
-}
-
-.bigGhost {
-  width: 100%;
-  height: 100%;
-
-  border-radius:
-    50%
-    50%
-    45%
-    45%;
-
-  background:
-    linear-gradient(
-      #ffd0df,
-      #f0719b
-    );
-
-  border: 8px solid #87394f;
-
-  box-shadow:
-    inset -20px -20px 0 rgba(170,45,90,.1),
-    0 15px 0 rgba(110,37,62,.2);
-
-  position: relative;
-}
-
-.bigEye {
-  position: absolute;
-
-  top: 30%;
-
-  width: 55px;
-  height: 72px;
-
-  background: #16121a;
-
-  border-radius:
-    45%
-    20%
-    50%
-    20%;
-}
-
-.bigEye.left {
-  left: 22%;
-
-  transform: rotate(25deg);
-}
-
-.bigEye.right {
-  right: 22%;
-
-  transform: rotate(-25deg);
-}
-
-.bigMouth {
-  position: absolute;
-
-  width: 80px;
-  height: 70px;
-
-  left: 50%;
-  top: 52%;
-
-  transform: translateX(-50%);
-
-  background: #561c2d;
-
-  border-radius: 50%;
-
-  border: 5px solid #7f2c43;
-}
-
-#comboText {
-  margin-top: 15px;
-
-  font-size: clamp(48px, 7vw, 90px);
-
-  font-weight: 1000;
-
-  color: white;
-
-  -webkit-text-stroke: 4px #592536;
-
-  text-shadow:
-    0 8px #a94162;
-
-  transform: rotate(-4deg);
-}
-
-#comboCount {
-  display: inline-block;
-
-  margin-top: 5px;
-
-  padding: 10px 35px;
-
-  border-radius: 18px;
-
-  background: rgba(30,18,22,.9);
-
-  color: white;
-
-  font-size: clamp(28px,4vw,48px);
-
-  font-weight: 1000;
-}
-
-#comboBar {
-  width: min(500px, 70vw);
-
-  height: 24px;
-
-  margin: 18px auto 0;
-
-  background: #4b2633;
-
-  border-radius: 30px;
-
-  overflow: hidden;
-
-  border: 3px solid white;
-}
-
-#comboProgress {
-  width: 0%;
-  height: 100%;
-
-  background:
-    linear-gradient(
-      90deg,
-      #ffe36b,
-      #ff8cae
-    );
-
-  transition: width .08s linear;
-}
-
-#comboHint {
-  color: white;
-
-  font-size: 18px;
-
-  font-weight: 900;
-
-  margin-top: 10px;
-}
-
-
-/* =========================================================
-   시작 / 성공 / 실패 화면
-========================================================= */
-
-.screen {
-  position: absolute;
-
-  z-index: 500;
-
-  inset: 0;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(73,141,62,.55),
-      rgba(17,55,31,.88)
-    );
-
-  backdrop-filter: blur(5px);
-}
-
-.panel {
-  width: min(570px, 88vw);
-
-  background:
-    linear-gradient(
-      #fff9e2,
-      #ffe7b4
-    );
-
-  border: 5px solid #714621;
-
-  border-radius: 30px;
-
-  padding: 38px;
-
-  text-align: center;
-
-  box-shadow:
-    0 15px 40px rgba(0,0,0,.35),
-    inset 0 2px white;
-}
-
-.panel h1 {
-  margin: 0 0 20px;
-
-  font-size:
-    clamp(31px,5vw,58px);
-
-  line-height: 1.15;
-
-  color: #392618;
-
-  text-shadow:
-    0 3px rgba(255,255,255,.8);
-}
-
-.panel p {
-  font-size: 18px;
-
-  line-height: 1.8;
-
-  font-weight: 700;
-
-  color: #5b4029;
-
-  margin-bottom: 28px;
-}
-
-button {
-  border: 0;
-
-  border-radius: 18px;
-
-  padding: 15px 42px;
-
-  font-size: 23px;
-
-  font-weight: 1000;
-
-  color: white;
-
-  background:
-    linear-gradient(
-      #8ee75d,
-      #48ad48
-    );
-
-  border: 4px solid #2e7132;
-
-  box-shadow:
-    0 6px 0 #2d6730;
-
-  cursor: pointer;
-}
-
-button:hover {
-  filter: brightness(1.08);
-}
-
-button:active {
-  transform: translateY(5px);
-
-  box-shadow:
-    0 1px 0 #2d6730;
-}
-
-
-/* 처음에는 성공/실패 숨김 */
-
-#gameOver,
-#clearScreen {
-  display: none;
-}
-
-#gameOver.show,
-#clearScreen.show {
-  display: flex;
-}
-
-
-/* 모바일 */
-
-@media(max-width:700px) {
-
-  #coreArea {
-    width: 210px;
-    height: 210px;
-  }
-
-  .ghost {
-    width: 52px;
-    height: 58px;
-  }
-
-  .panel {
-    padding: 28px 20px;
-  }
-
-  .panel p {
-    font-size: 15px;
-  }
-
-  #comboHint {
-    font-size: 15px;
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>구슬 지키기 게임</title>
+    <style>
+        :root {
+            --bg-color: #a8d8ea; /* 연한 하늘색 배경 */
+            --grass-color: #8fbc8f; /* 잔디색 */
+            --ui-color: #fff;
+            --font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #333;
+            overflow: hidden;
+            font-family: var(--font-family);
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* 16:9 비율 유지 컨테이너 */
+        #game-container {
+            width: 100vw;
+            height: calc(100vw * 9 / 16);
+            max-width: 1280px;
+            max-height: 720px;
+            background-color: var(--grass-color);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            border: 4px solid #fff;
+            border-radius: 10px;
+        }
+
+        /* 캔버스 */
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: crosshair;
+        }
+
+        /* UI 요소 공통 스타일 */
+        .ui-element {
+            position: absolute;
+            color: var(--ui-color);
+            text-shadow: 2px 2px 0 #000;
+            pointer-events: none;
+        }
+
+        /* 상단 UI (타이머, 목숨) */
+        #top-ui {
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #timer {
+            display: flex;
+            align-items: center;
+        }
+        #timer-icon {
+            margin-right: 5px;
+            font-size: 30px;
+        }
+
+        #lives {
+            display: flex;
+            font-size: 30px;
+        }
+        .heart {
+            color: #ff4757;
+            margin-left: 5px;
+        }
+        .heart.lost {
+            color: #555;
+        }
+
+        /* 화면 중앙 연타 UI (보스전) */
+        #mash-ui {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 4px solid #ff4757;
+            border-radius: 20px;
+            padding: 20px 40px;
+            text-align: center;
+            display: none; /* 평소에는 숨김 */
+            z-index: 10;
+            pointer-events: auto; /* 클릭 가능 */
+            cursor: pointer;
+        }
+
+        #mash-text {
+            font-size: 60px;
+            color: #ff4757;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        #mash-count {
+            font-size: 30px;
+            color: #fff;
+        }
+
+        /* 오버레이 (게임 시작, 종료) */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            color: #fff;
+            text-align: center;
+        }
+
+        .overlay h1 {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .overlay p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            color: #ccc;
+        }
+
+        .overlay button {
+            padding: 15px 40px;
+            font-size: 24px;
+            background-color: #ffda79;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .overlay button:hover {
+            transform: scale(1.05);
+        }
+
+        .overlay button:active {
+            transform: scale(0.95);
+        }
+
+        /* 캐릭터 & 구슬 SVG 소스 (CSS로 로드) */
+        #character-sprite, #marble-sprite, #ghost-blue-sprite, #ghost-pink-sprite {
+            display: none;
+        }
+
+    </style>
 </head>
-
-
 <body>
 
-<div id="game">
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
 
-  <div class="grass g1"></div>
-  <div class="grass g2"></div>
-  <div class="grass g3"></div>
-
-
-  <!-- =====================================================
-       게임 UI
-  ====================================================== -->
-
-  <div id="topUI">
-
-    <div class="uiBox">
-      ⏱️ <span id="timer">01:00</span>
-    </div>
-
-    <div class="uiBox" id="lives">
-      ❤️ ❤️ ❤️
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       중앙 코어
-  ====================================================== -->
-
-  <div id="coreArea">
-
-    <div class="coreGlow"></div>
-
-    <div class="coreRing"></div>
-
-    <div class="core"></div>
-
-    <div id="damageCounter">
-      코어 피해 0 / 3
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       플레이어 캐릭터
-  ====================================================== -->
-
-  <div id="player">
-
-    <div class="playerSprite"></div>
-
-  </div>
-
-
-  <!-- 귀신 -->
-  <div id="ghostLayer"></div>
-
-
-  <!-- =====================================================
-       분홍 귀신 연타 화면
-  ====================================================== -->
-
-  <div id="pinkOverlay">
-
-    <div class="speedLines"></div>
-
-    <div id="pinkBattle">
-
-      <div id="angryGhost">
-
-        <div class="bigGhost">
-
-          <div class="bigEye left"></div>
-          <div class="bigEye right"></div>
-
-          <div class="bigMouth"></div>
-
+        <!-- 상단 UI -->
+        <div id="top-ui" class="ui-element">
+            <div id="timer"><span id="timer-icon">⏱️</span><span id="time-display">01:00</span></div>
+            <div id="lives">
+                <span class="heart">♥️</span><span class="heart">♥️</span><span class="heart">♥️</span>
+            </div>
         </div>
 
-      </div>
+        <!-- 연타 UI (보스전) -->
+        <div id="mash-ui" onclick="game.handleMashClick()">
+            <div id="mash-text">연타!</div>
+            <div id="mash-count">0 / 10</div>
+        </div>
 
+        <!-- 게임 시작 화면 -->
+        <div id="start-screen" class="overlay">
+            <h1>구슬을 지켜라! 🟢</h1>
+            <p>60초 동안 몰려오는 귀신들을 클릭해서 없애세요.<br>분홍 귀신은 연타해서 처치해야 합니다.</p>
+            <button onclick="game.start()">게임 시작</button>
+        </div>
 
-      <div id="comboText">
-        연타!
-      </div>
+        <!-- 게임 오버 화면 -->
+        <div id="gameover-screen" class="overlay" style="display: none;">
+            <h1 style="color: #ff4757;">게임 오버!</h1>
+            <p id="gameover-reason">귀신이 구슬에 3번 닿았습니다.</p>
+            <button onclick="game.reset()">다시 시도</button>
+        </div>
 
-
-      <div id="comboCount">
-
-        <span id="comboNumber">
-          0
-        </span>
-
-        / 10
-
-      </div>
-
-
-      <div id="comboBar">
-
-        <div id="comboProgress"></div>
-
-      </div>
-
-
-      <div id="comboHint">
-        빠르게 클릭해서 귀신을 물리치세요!
-      </div>
-
+        <!-- 클리어 화면 -->
+        <div id="clear-screen" class="overlay" style="display: none;">
+            <h1 style="color: #4cd137;">클리어! 🎉</h1>
+            <p>1분 동안 구슬을 무사히 지켜냈습니다!</p>
+            <button onclick="game.reset()">다시 하기</button>
+        </div>
     </div>
 
-  </div>
-
-
-  <!-- =====================================================
-       시작 화면
-  ====================================================== -->
-
-  <div class="screen" id="startScreen">
-
-    <div class="panel">
-
-      <h1>
-        코어를 귀신으로부터 지켜라!
-      </h1>
-
-      <p>
-        중앙의 빛나는 코어를 귀신으로부터 지켜주세요.<br><br>
-
-        귀신을 클릭하면 물리칠 수 있습니다.<br>
-        파란 귀신은 한 번 클릭하면 사라지고,<br>
-        분홍 귀신은 나타난 후 빠르게 10번 클릭해야 합니다.<br><br>
-
-        귀신이 코어에 3번 닿기 전에<br>
-        <strong>1분 동안 코어를 지켜내세요!</strong>
-      </p>
-
-      <button id="startBtn">
-        게임 시작
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       실패
-  ====================================================== -->
-
-  <div class="screen" id="gameOver">
-
-    <div class="panel">
-
-      <h1>
-        코어를 귀신에게 빼앗겼다..
-      </h1>
-
-      <p>
-        귀신들이 코어를 파괴하고 말았어요.<br>
-        다시 도전해서 코어를 지켜주세요!
-      </p>
-
-      <button onclick="location.reload()">
-        다시하기
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       성공
-  ====================================================== -->
-
-  <div class="screen" id="clearScreen">
-
-    <div class="panel">
-
-      <h1>
-        코어를 귀신으로부터 지켜냈다!
-      </h1>
-
-      <p>
-        1분 동안 귀신들을 막아내고<br>
-        소중한 코어를 지켜냈어요! ✨
-      </p>
-
-      <button onclick="location.reload()">
-        다시하기
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<script>
-
-/* ============================================================
-   기본 설정
-============================================================ */
-
-const GAME_TIME = 60;
-
-let gameRunning = false;
-
-let elapsed = 0;
-let lastTime = 0;
-
-let lives = 3;
-let coreHits = 0;
-
-let ghosts = [];
-let ghostId = 0;
-
-let activePink = null;
-
-let pinkHits = 0;
-let pinkTimer = null;
-
-let spawnTimer = null;
-
-
-/* DOM */
-
-const game =
-  document.getElementById("game");
-
-const ghostLayer =
-  document.getElementById("ghostLayer");
-
-const timerEl =
-  document.getElementById("timer");
-
-const livesEl =
-  document.getElementById("lives");
-
-const damageEl =
-  document.getElementById("damageCounter");
-
-const pinkOverlay =
-  document.getElementById("pinkOverlay");
-
-const comboNumber =
-  document.getElementById("comboNumber");
-
-const comboProgress =
-  document.getElementById("comboProgress");
-
-const startScreen =
-  document.getElementById("startScreen");
-
-const gameOver =
-  document.getElementById("gameOver");
-
-const clearScreen =
-  document.getElementById("clearScreen");
-
-
-/* ============================================================
-   오디오
-============================================================ */
-
-let audioCtx = null;
-
-let musicTimer = null;
-let musicPlaying = false;
-
-
-/*
-  브라우저 정책상 음악은
-  게임 시작 버튼을 누른 순간부터 재생.
-*/
-
-function initAudio() {
-
-  if (!audioCtx) {
-
-    audioCtx =
-      new (
-        window.AudioContext ||
-        window.webkitAudioContext
-      )();
-
-  }
-
-  if (audioCtx.state === "suspended") {
-    audioCtx.resume();
-  }
-}
-
-
-/* 효과음 */
-
-function sound(type) {
-
-  if (!audioCtx) return;
-
-  const osc =
-    audioCtx.createOscillator();
-
-  const gain =
-    audioCtx.createGain();
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  const now =
-    audioCtx.currentTime;
-
-
-  if (type === "click") {
-
-    osc.type = "square";
-
-    osc.frequency.setValueAtTime(
-      520,
-      now
-    );
-
-    osc.frequency.exponentialRampToValueAtTime(
-      850,
-      now + .06
-    );
-
-    gain.gain.setValueAtTime(
-      .08,
-      now
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-      .001,
-      now + .08
-    );
-
-    osc.start(now);
-    osc.stop(now + .08);
-
-  }
-
-
-  else if (type === "pop") {
-
-    osc.type = "sine";
-
-    osc.frequency.setValueAtTime(
-      650,
-      now
-    );
-
-    osc.frequency.exponentialRampToValueAtTime(
-      120,
-      now + .18
-    );
-
-    gain.gain.setValueAtTime(
-      .15,
-      now
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-      .001,
-      now + .18
-    );
-
-    osc.start(now);
-    osc.stop(now + .18);
-
-  }
-
-
-  else if (type === "damage") {
-
-    osc.type = "sawtooth";
-
-    osc.frequency.setValueAtTime(
-      150,
-      now
-    );
-
-    osc.frequency.exponentialRampToValueAtTime(
-      60,
-      now + .3
-    );
-
-    gain.gain.setValueAtTime(
-      .18,
-      now
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-      .001,
-      now + .3
-    );
-
-    osc.start(now);
-    osc.stop(now + .3);
-
-  }
-
-
-  else if (type === "clear") {
-
-    osc.type = "sine";
-
-    osc.frequency.setValueAtTime(
-      500,
-      now
-    );
-
-    osc.frequency.setValueAtTime(
-      700,
-      now + .15
-    );
-
-    osc.frequency.setValueAtTime(
-      900,
-      now + .3
-    );
-
-    gain.gain.setValueAtTime(
-      .12,
-      now
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-      .001,
-      now + .7
-    );
-
-    osc.start(now);
-    osc.stop(now + .7);
-
-  }
-
-
-  else if (type === "error") {
-
-    osc.type = "square";
-
-    osc.frequency.setValueAtTime(
-      120,
-      now
-    );
-
-    gain.gain.setValueAtTime(
-      .15,
-      now
-    );
-
-    gain.gain.exponentialRampToValueAtTime(
-      .001,
-      now + .35
-    );
-
-    osc.start(now);
-    osc.stop(now + .35);
-  }
-}
-
-
-/* ============================================================
-   배경음악
-============================================================ */
-
-/*
-  별도의 mp3 파일 없이 Web Audio로 만든
-  잔잔한 판타지풍 반복 BGM.
-
-  게임 시작 버튼을 누르면 재생되고
-  게임이 끝나면 멈춘다.
-*/
-
-function playMusic() {
-
-  if (!audioCtx || musicPlaying) {
-    return;
-  }
-
-  musicPlaying = true;
-
-  const melody = [
-    261.63,
-    329.63,
-    392.00,
-    329.63,
-    293.66,
-    349.23,
-    440.00,
-    349.23
-  ];
-
-  let index = 0;
-
-  function note() {
-
-    if (!musicPlaying) return;
-
-    const osc =
-      audioCtx.createOscillator();
-
-    const gain =
-      audioCtx.createGain();
-
-    osc.type = "sine";
-
-    osc.frequency.value =
-      melody[index % melody.length];
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    const now =
-      audioCtx.currentTime;
-
-    gain.gain.setValueAtTime(
-      0,
-      now
-    );
-
-    gain.gain.linearRampToValueAtTime(
-      .035,
-      now + .08
-    );
-
-    gain.gain.linearRampToValueAtTime(
-      0,
-      now + 1.0
-    );
-
-    osc.start(now);
-    osc.stop(now + 1.05);
-
-    index++;
-
-    musicTimer =
-      setTimeout(note, 850);
-  }
-
-  note();
-}
-
-
-function stopMusic() {
-
-  musicPlaying = false;
-
-  if (musicTimer) {
-
-    clearTimeout(musicTimer);
-
-    musicTimer = null;
-  }
-}
-
-
-/* ============================================================
-   이펙트
-============================================================ */
-
-function burst(x, y, color="#ffe95c") {
-
-  for (let i = 0; i < 12; i++) {
-
-    const p =
-      document.createElement("div");
-
-    p.className =
-      "particle";
-
-    p.style.left =
-      x + "px";
-
-    p.style.top =
-      y + "px";
-
-    p.style.background =
-      color;
-
-    p.style.setProperty(
-      "--x",
-      `${(Math.random()-.5)*120}px`
-    );
-
-    p.style.setProperty(
-      "--y",
-      `${(Math.random()-.5)*120}px`
-    );
-
-    game.appendChild(p);
-
-    setTimeout(
-      () => p.remove(),
-      700
-    );
-  }
-}
-
-
-function clickText(x, y, text="+1") {
-
-  const el =
-    document.createElement("div");
-
-  el.className =
-    "clickBurst";
-
-  el.textContent =
-    text;
-
-  el.style.left =
-    x + "px";
-
-  el.style.top =
-    y + "px";
-
-  game.appendChild(el);
-
-  setTimeout(
-    () => el.remove(),
-    500
-  );
-}
-
-
-/* ============================================================
-   UI
-============================================================ */
-
-function updateLives() {
-
-  livesEl.textContent =
-    "❤️".repeat(Math.max(0,lives)) +
-    "🖤".repeat(3-lives);
-}
-
-
-function updateDamage() {
-
-  damageEl.textContent =
-    `코어 피해 ${coreHits} / 3`;
-}
-
-
-function updateTimer() {
-
-  const remaining =
-    Math.max(
-      0,
-      GAME_TIME - elapsed
-    );
-
-  const min =
-    Math.floor(
-      remaining / 60
-    );
-
-  const sec =
-    Math.ceil(
-      remaining % 60
-    );
-
-  timerEl.textContent =
-    `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
-}
-
-
-/* ============================================================
-   귀신 생성
-============================================================ */
-
-function createGhost() {
-
-  if (!gameRunning) return;
-
-  const id =
-    ++ghostId;
-
-
-  /*
-    시간이 지날수록
-    분홍 귀신 확률 증가
-  */
-
-  const pinkChance =
-    Math.min(
-      .30,
-      .10 + elapsed / 180
-    );
-
-  const type =
-    Math.random() < pinkChance
-      ? "pink"
-      : "blue";
-
-
-  const el =
-    document.createElement("div");
-
-  el.className =
-    `ghost ${type}`;
-
-
-  el.innerHTML = `
-    <div class="ghostBody">
-
-      <div class="eyes">
-
-        <div class="eye"></div>
-        <div class="eye"></div>
-
-      </div>
-
-      <div class="mouth"></div>
-
-    </div>
-  `;
-
-
-  /*
-    사방에서 등장
-  */
-
-  const side =
-    Math.floor(
-      Math.random() * 4
-    );
-
-  let x;
-  let y;
-
-
-  if (side === 0) {
-
-    x =
-      Math.random() *
-      innerWidth;
-
-    y = -70;
-
-  }
-
-
-  else if (side === 1) {
-
-    x =
-      innerWidth + 70;
-
-    y =
-      Math.random() *
-      innerHeight;
-
-  }
-
-
-  else if (side === 2) {
-
-    x =
-      Math.random() *
-      innerWidth;
-
-    y =
-      innerHeight + 70;
-
-  }
-
-
-  else {
-
-    x = -70;
-
-    y =
-      Math.random() *
-      innerHeight;
-  }
-
-
-  const coreX =
-    innerWidth / 2;
-
-  const coreY =
-    innerHeight * .53;
-
-
-  const dx =
-    coreX - x;
-
-  const dy =
-    coreY - y;
-
-
-  const distance =
-    Math.sqrt(
-      dx*dx + dy*dy
-    );
-
-
-  /*
-    시간에 따라 속도 증가
-  */
-
-  const difficulty =
-    elapsed / GAME_TIME;
-
-  const speed =
-    38 +
-    difficulty * 65 +
-    Math.random() * 25;
-
-
-  const ghost = {
-
-    id,
-    type,
-
-    x,
-    y,
-
-    speed,
-
-    el,
-
-    active: true
-  };
-
-
-  el.style.left =
-    x + "px";
-
-  el.style.top =
-    y + "px";
-
-
-  /*
-    클릭
-  */
-
-  el.addEventListener(
-    "pointerdown",
-    function(e) {
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (
-        !ghost.active ||
-        !gameRunning
-      ) {
-        return;
-      }
-
-
-      if (
-        ghost.type === "blue"
-      ) {
-
-        killBlueGhost(ghost);
-
-      }
-
-      else {
-
-        openPinkBattle(ghost);
-
-      }
-
-    }
-  );
-
-
-  ghostLayer.appendChild(el);
-
-  ghosts.push(ghost);
-}
-
-
-/* ============================================================
-   파란 귀신 제거
-============================================================ */
-
-function killBlueGhost(ghost) {
-
-  if (!ghost.active) {
-    return;
-  }
-
-  ghost.active = false;
-
-  const x =
-    ghost.x;
-
-  const y =
-    ghost.y;
-
-  ghost.el.classList.add("hit");
-
-  burst(
-    x,
-    y,
-    "#a8eaff"
-  );
-
-  sound("pop");
-
-
-  setTimeout(() => {
-
-    ghost.el.remove();
-
-    ghosts =
-      ghosts.filter(
-        g => g.id !== ghost.id
-      );
-
-  }, 180);
-}
-
-
-/* ============================================================
-   분홍 귀신
-============================================================ */
-
-function openPinkBattle(ghost) {
-
-  /*
-    이미 다른 분홍 귀신을
-    처리 중이면 무시
-  */
-
-  if (activePink) {
-    return;
-  }
-
-
-  activePink =
-    ghost;
-
-  pinkHits = 0;
-
-
-  /*
-    필드의 원래 귀신 숨김
-  */
-
-  ghost.el.style.display =
-    "none";
-
-
-  pinkOverlay.classList.add(
-    "active"
-  );
-
-
-  updatePinkUI();
-
-
-  /*
-    3초 안에 10번
-  */
-
-  pinkTimer =
-    setTimeout(() => {
-
-      if (
-        activePink === ghost &&
-        pinkHits < 10
-      ) {
-
-        sound("damage");
-
-        lives--;
-
-        updateLives();
-
-        burst(
-          innerWidth / 2,
-          innerHeight / 2,
-          "#ff5b7d"
-        );
-
-
-        /*
-          시간 초과한 귀신 제거
-        */
-
-        ghost.active = false;
-
-        closePinkBattle();
-
-
-        if (lives <= 0) {
-
-          endGame(false);
-
+    <!-- SVG 스프라이트 정의 -->
+    <svg id="character-sprite" width="100" height="100" viewBox="0 0 100 100">
+        <!-- 제공해주신 외계인 캐릭터와 유사하게 직접 그림 -->
+        <ellipse cx="50" cy="55" rx="35" ry="30" fill="#a4e1a4" stroke="#000" stroke-width="2"/>
+        <path d="M50 25 C 50 10, 40 5, 30 10 C 20 15, 30 25, 50 25 Z" fill="#a4e1a4" stroke="#000" stroke-width="2"/>
+        <path d="M50 25 C 50 10, 60 5, 70 10 C 80 15, 70 25, 50 25 Z" fill="#a4e1a4" stroke="#000" stroke-width="2"/>
+        <ellipse cx="40" cy="50" rx="6" ry="10" fill="#000"/>
+        <ellipse cx="38" cy="48" rx="2" ry="4" fill="#fff"/>
+        <ellipse cx="60" cy="50" rx="6" ry="10" fill="#000"/>
+        <ellipse cx="58" cy="48" rx="2" ry="4" fill="#fff"/>
+        <ellipse cx="35" cy="65" rx="5" ry="2" fill="#ffb6c1" opacity="0.6"/>
+        <ellipse cx="65" cy="65" rx="5" ry="2" fill="#ffb6c1" opacity="0.6"/>
+        <rect x="45" y="68" width="10" height="2" fill="#000" rx="1"/>
+        <ellipse cx="50" cy="90" rx="15" ry="10" fill="#a4e1a4" stroke="#000" stroke-width="1.5"/>
+        <ellipse cx="50" cy="90" rx="6" ry="4" fill="#fff" opacity="0.7"/>
+    </svg>
+
+    <svg id="marble-sprite" width="60" height="60" viewBox="0 0 60 60">
+        <!-- 빛나는 노란 구슬 -->
+        <defs>
+            <radialGradient id="marble-grad" cx="40%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#fff"/>
+                <stop offset="50%" stop-color="#ffda79"/>
+                <stop offset="100%" stop-color="#ccae62"/>
+            </radialGradient>
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
+                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+        </defs>
+        <circle cx="30" cy="30" r="25" fill="url(#marble-grad)" filter="url(#glow)"/>
+    </svg>
+
+    <svg id="ghost-blue-sprite" width="40" height="40" viewBox="0 0 40 40">
+        <!-- 파란 귀신 -->
+        <path d="M20 5 C 10 5, 5 15, 5 25 L 5 35 L 10 32 L 15 35 L 20 32 L 25 35 L 30 32 L 35 35 L 35 25 C 35 15, 30 5, 20 5 Z" fill="#a8d8ea" stroke="#000" stroke-width="1.5"/>
+        <circle cx="15" cy="18" r="3" fill="#000"/>
+        <circle cx="25" cy="18" r="3" fill="#000"/>
+        <rect x="18" y="25" width="4" height="2" fill="#000" rx="1"/>
+    </svg>
+
+    <svg id="ghost-pink-sprite" width="50" height="50" viewBox="0 0 50 50">
+        <!-- 분홍 귀신 (보스) -->
+        <defs>
+            <filter id="angry-glow">
+                <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+        </defs>
+        <path d="M25 5 C 12.5 5, 5 17.5, 5 30 L 5 42 L 11 38 L 17 42 L 25 38 L 33 42 L 39 38 L 45 42 L 45 30 C 45 17.5, 37.5 5, 25 5 Z" fill="#ffb6c1" stroke="#000" stroke-width="2" filter="url(#angry-glow)"/>
+        <path d="M12 15 L 18 21" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+        <path d="M18 15 L 12 21" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+        <path d="M32 15 L 38 21" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+        <path d="M38 15 L 32 21" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="25" cy="28" rx="5" ry="3" fill="#000"/>
+    </svg>
+
+    <script>
+        /* --- 오디오 시스템 (Web Audio API 사용) --- */
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        // 소리 생성기 함수
+        function createSound(freq, type, wave, duration, vol) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            if (type === 'slide') osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + duration);
+            osc.type = wave;
+            gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
         }
 
-      }
-
-    }, 3000);
-}
-
-
-/*
-  분홍 귀신 연타
-*/
-
-function hitPink() {
-
-  if (!activePink) {
-    return;
-  }
-
-  if (!activePink.active) {
-    return;
-  }
-
-
-  pinkHits++;
-
-
-  sound("click");
-
-
-  comboNumber.textContent =
-    pinkHits;
-
-
-  comboProgress.style.width =
-    `${pinkHits * 10}%`;
-
-
-  clickText(
-    innerWidth / 2,
-    innerHeight * .72,
-    "+1"
-  );
-
-
-  burst(
-    innerWidth / 2 +
-      (Math.random()-.5)*100,
-
-    innerHeight * .45 +
-      (Math.random()-.5)*80,
-
-    "#fff16b"
-  );
-
-
-  /*
-    ⭐ 10번 달성
-  */
-
-  if (pinkHits >= 10) {
-
-    clearTimeout(
-      pinkTimer
-    );
-
-
-    const defeated =
-      activePink;
-
-
-    /*
-      가장 중요한 부분.
-
-      이 귀신 자체를 완전히
-      비활성화한다.
-    */
-
-    defeated.active = false;
-
-
-    sound("pop");
-
-
-    burst(
-      innerWidth / 2,
-      innerHeight / 2,
-      "#ffb6ce"
-    );
-
-
-    /*
-      실제 DOM에서도 제거
-    */
-
-    setTimeout(() => {
-
-      defeated.el.remove();
-
-
-      ghosts =
-        ghosts.filter(
-          g =>
-            g.id !== defeated.id
-        );
-
-
-      closePinkBattle();
-
-    }, 160);
-
-  }
-
-  else {
-
-    updatePinkUI();
-
-  }
-}
-
-
-function updatePinkUI() {
-
-  comboNumber.textContent =
-    pinkHits;
-
-  comboProgress.style.width =
-    `${pinkHits * 10}%`;
-}
-
-
-function closePinkBattle() {
-
-  clearTimeout(
-    pinkTimer
-  );
-
-  pinkTimer = null;
-
-
-  pinkOverlay.classList.remove(
-    "active"
-  );
-
-
-  activePink = null;
-
-  pinkHits = 0;
-
-
-  comboNumber.textContent =
-    "0";
-
-  comboProgress.style.width =
-    "0%";
-}
-
-
-/*
-  분홍 귀신 화면은
-  화면 아무 곳이나 클릭하면 연타
-*/
-
-pinkOverlay.addEventListener(
-  "pointerdown",
-  function(e) {
-
-    e.preventDefault();
-
-    if (activePink) {
-      hitPink();
-    }
-
-  }
-);
-
-
-/* ============================================================
-   코어 피해
-============================================================ */
-
-function damageCore(ghost) {
-
-  if (!ghost.active) {
-    return;
-  }
-
-
-  ghost.active = false;
-
-  coreHits++;
-
-
-  updateDamage();
-
-
-  sound("damage");
-
-
-  burst(
-    innerWidth / 2,
-    innerHeight * .53,
-    "#ff6464"
-  );
-
-
-  /*
-    코어 흔들림
-  */
-
-  document
-    .getElementById("coreArea")
-    .animate(
-
-      [
-        {
-          transform:
-            "translate(-50%,-50%) scale(1)"
-        },
-
-        {
-          transform:
-            "translate(-50%,-50%) scale(1.18)"
-        },
-
-        {
-          transform:
-            "translate(-50%,-50%) scale(1)"
+        const sounds = {
+            click: () => createSound(600, 'fix', 'sine', 0.1, 0.3),
+            explosion: () => createSound(100, 'fix', 'sawtooth', 0.2, 0.5),
+            mash: () => createSound(800, 'fix', 'triangle', 0.05, 0.2),
+            damage: () => createSound(150, 'fix', 'square', 0.3, 0.4),
+            bossAppear: () => createSound(2000, 'slide', 'sawtooth', 0.5, 0.3),
+            win: () => {
+                createSound(500, 'fix', 'sine', 0.2, 0.3);
+                setTimeout(() => createSound(700, 'fix', 'sine', 0.2, 0.3), 150);
+                setTimeout(() => createSound(900, 'fix', 'sine', 0.4, 0.3), 300);
+            },
+            lose: () => createSound(100, 'slide', 'square', 0.8, 0.4)
+        };
+
+        // 간단한 배경음악 (BGM)
+        let bgmOsc = null;
+        let bgmGain = null;
+        function playBgm() {
+            if (bgmOsc) return;
+            bgmOsc = audioCtx.createOscillator();
+            bgmGain = audioCtx.createGain();
+            bgmOsc.type = 'triangle';
+            bgmOsc.frequency.setValueAtTime(130.81, audioCtx.currentTime); // C3
+            // 간단한 멜로디 루프
+            const notes = [130.81, 146.83, 164.81, 196.00];
+            let noteIdx = 0;
+            const loop = () => {
+                if (!bgmOsc) return;
+                bgmOsc.frequency.setValueAtTime(notes[noteIdx], audioCtx.currentTime);
+                noteIdx = (noteIdx + 1) % notes.length;
+                setTimeout(loop, 400);
+            };
+            bgmGain.gain.setValueAtTime(0.05, audioCtx.currentTime); // 아주 작게
+            bgmOsc.connect(bgmGain);
+            bgmGain.connect(audioCtx.destination);
+            bgmOsc.start();
+            loop();
+        }
+        function stopBgm() {
+            if (bgmOsc) {
+                bgmOsc.stop();
+                bgmOsc = null;
+            }
         }
 
-      ],
 
-      {
-        duration: 350
-      }
-
-    );
-
-
-  ghost.el.remove();
-
-
-  ghosts =
-    ghosts.filter(
-      g =>
-        g.id !== ghost.id
-    );
-
-
-  if (coreHits >= 3) {
-
-    endGame(false);
-
-  }
-}
-
-
-/* ============================================================
-   게임 루프
-============================================================ */
-
-function gameLoop(timestamp) {
-
-  if (!gameRunning) {
-    return;
-  }
-
-
-  if (!lastTime) {
-    lastTime =
-      timestamp;
-  }
-
-
-  const dt =
-    Math.min(
-      (timestamp - lastTime) / 1000,
-      .05
-    );
-
-
-  lastTime =
-    timestamp;
-
-
-  elapsed += dt;
-
-
-  updateTimer();
-
-
-  const coreX =
-    innerWidth / 2;
-
-  const coreY =
-    innerHeight * .53;
-
-
-  ghosts.forEach(
-    ghost => {
-
-      if (!ghost.active) {
-        return;
-      }
-
-
-      /*
-        분홍 귀신 연타 중에는
-        움직이지 않음
-      */
-
-      if (
-        activePink === ghost
-      ) {
-        return;
-      }
-
-
-      const dx =
-        coreX - ghost.x;
-
-      const dy =
-        coreY - ghost.y;
-
-
-      const distance =
-        Math.sqrt(
-          dx*dx + dy*dy
-        );
-
-
-      /*
-        시간이 갈수록 속도 증가
-      */
-
-      const speedBonus =
-        1 + elapsed / 75;
-
-
-      ghost.x +=
-        dx / distance *
-        ghost.speed *
-        speedBonus *
-        dt;
-
-
-      ghost.y +=
-        dy / distance *
-        ghost.speed *
-        speedBonus *
-        dt;
-
-
-      ghost.el.style.left =
-        ghost.x + "px";
-
-      ghost.el.style.top =
-        ghost.y + "px";
-
-
-      /*
-        코어 도착
-      */
-
-      if (distance < 72) {
-
-        damageCore(
-          ghost
-        );
-
-      }
-
-    }
-  );
-
-
-  /*
-    1분 생존 성공
-  */
-
-  if (
-    elapsed >= GAME_TIME
-  ) {
-
-    endGame(true);
-
-    return;
-  }
-
-
-  requestAnimationFrame(
-    gameLoop
-  );
-}
-
-
-/* ============================================================
-   귀신 생성 속도
-============================================================ */
-
-function scheduleSpawn() {
-
-  if (!gameRunning) {
-    return;
-  }
-
-
-  const progress =
-    elapsed / GAME_TIME;
-
-
-  /*
-    1초
-    ↓
-    0.38초
-  */
-
-  const interval =
-    1000 -
-    progress * 620;
-
-
-  spawnTimer =
-    setTimeout(() => {
-
-      createGhost();
-
-
-      /*
-        후반부에는
-        한 번에 2마리도 등장
-      */
-
-      if (
-        elapsed > 25 &&
-        Math.random() <
-          elapsed / 130
-      ) {
-
-        createGhost();
-
-      }
-
-
-      scheduleSpawn();
-
-    }, interval);
-}
-
-
-/* ============================================================
-   게임 시작
-============================================================ */
-
-function startGame() {
-
-  initAudio();
-
-  /*
-    배경음악 시작
-  */
-
-  playMusic();
-
-
-  gameRunning = true;
-
-
-  elapsed = 0;
-
-  lives = 3;
-
-  coreHits = 0;
-
-
-  ghosts = [];
-
-
-  updateLives();
-  updateDamage();
-  updateTimer();
-
-
-  startScreen.style.display =
-    "none";
-
-
-  lastTime = 0;
-
-
-  /*
-    처음부터 너무 심심하지 않게
-    귀신 5마리
-  */
-
-  for (
-    let i = 0;
-    i < 5;
-    i++
-  ) {
-
-    createGhost();
-
-  }
-
-
-  scheduleSpawn();
-
-
-  requestAnimationFrame(
-    gameLoop
-  );
-}
-
-
-document
-  .getElementById("startBtn")
-  .addEventListener(
-    "click",
-    startGame
-  );
-
-
-/* ============================================================
-   게임 종료
-============================================================ */
-
-function endGame(clear) {
-
-  if (!gameRunning) {
-    return;
-  }
-
-
-  gameRunning = false;
-
-
-  clearTimeout(
-    spawnTimer
-  );
-
-  clearTimeout(
-    pinkTimer
-  );
-
-
-  stopMusic();
-
-
-  closePinkBattle();
-
-
-  if (clear) {
-
-    sound("clear");
-
-    clearScreen.classList.add(
-      "show"
-    );
-
-  }
-
-  else {
-
-    sound("error");
-
-    gameOver.classList.add(
-      "show"
-    );
-
-  }
-}
-
-
-/* ============================================================
-   초기 UI
-============================================================ */
-
-updateLives();
-
-updateDamage();
-
-updateTimer();
-
-</script>
-
+        /* --- 유틸리티 --- */
+        const toDataUrl = (svgId) => {
+            const svg = document.getElementById(svgId);
+            const xml = new XMLSerializer().serializeToString(svg);
+            const svg64 = btoa(xml);
+            return 'data:image/svg+xml;base64,' + svg64;
+        };
+
+        const randomRange = (min, max) => Math.random() * (max - min) + min;
+
+        /* --- 게임 오브젝트 클래스 --- */
+
+        // 파티클 (귀신 터지는 효과)
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.size = randomRange(2, 5);
+                this.speedX = randomRange(-3, 3);
+                this.speedY = randomRange(-3, 3);
+                this.color = color;
+                this.life = 30; // 프레임 단위 수명
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.size *= 0.95; // 점차 작아짐
+                this.life--;
+            }
+            draw(ctx) {
+                ctx.globalAlpha = this.life / 30; // 점차 투명해짐
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        // 귀신 (적)
+        class Ghost {
+            constructor(width, height, type = 'blue') {
+                this.type = type;
+                this.sprite = new Image();
+                
+                if (type === 'blue') {
+                    this.sprite.src = game.assets.ghostBlue;
+                    this.size = 30;
+                    this.speed = randomRange(0.5, 1.2);
+                    this.hp = 1;
+                } else { // pink (boss)
+                    this.sprite.src = game.assets.ghostPink;
+                    this.size = 50;
+                    this.speed = 0.4; // 아주 천천히 접근
+                    this.hp = 10;
+                }
+
+                // 화면 밖 사방에서 스폰
+                const edge = Math.floor(Math.random() * 4); // 0:상, 1:우, 2:하, 3:좌
+                const offset = 50;
+                if (edge === 0) { this.x = Math.random() * width; this.y = -offset; }
+                else if (edge === 1) { this.x = width + offset; this.y = Math.random() * height; }
+                else if (edge === 2) { this.x = Math.random() * width; this.y = height + offset; }
+                else { this.x = -offset; this.y = Math.random() * height; }
+
+                this.dead = false;
+            }
+
+            update(targetX, targetY) {
+                if (this.dead) return;
+                // 중앙 구슬을 향해 이동
+                const angle = Math.atan2(targetY - this.y, targetX - this.x);
+                this.x += Math.cos(angle) * this.speed;
+                this.y += Math.sin(angle) * this.speed;
+            }
+
+            draw(ctx) {
+                if (this.dead) return;
+                // 둥실거리는 움직임 추가 (Sine wave)
+                const floatOffset = Math.sin(Date.now() * 0.005 + this.x) * 2;
+                ctx.drawImage(this.sprite, this.x - this.size/2, this.y - this.size/2 + floatOffset, this.size, this.size);
+            }
+
+            isHit(mx, my) {
+                // 클릭 충돌 감지 (원형)
+                const dist = Math.hypot(mx - this.x, my - this.y);
+                return dist < this.size / 2;
+            }
+        }
+
+        /* --- 주요 게임 로직 --- */
+        class Game {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                // 16:9 내부 해상도 고정
+                this.internalW = 1280;
+                this.internalH = 720;
+                this.canvas.width = this.internalW;
+                this.canvas.height = this.internalH;
+
+                // 애셋 로딩
+                this.assets = {
+                    character: toDataUrl('character-sprite'),
+                    marble: toDataUrl('marble-sprite'),
+                    ghostBlue: toDataUrl('ghost-blue-sprite'),
+                    ghostPink: toDataUrl('ghost-pink-sprite')
+                };
+                this.charImg = new Image(); this.charImg.src = this.assets.character;
+                this.marbleImg = new Image(); this.marbleImg.src = this.assets.marble;
+
+                // UI 요소
+                this.ui = {
+                    container: document.getElementById('game-container'),
+                    timeDisplay: document.getElementById('time-display'),
+                    lives: document.getElementById('lives').getElementsByClassName('heart'),
+                    mash: document.getElementById('mash-ui'),
+                    mashCount: document.getElementById('mash-count'),
+                    start: document.getElementById('start-screen'),
+                    gameover: document.getElementById('gameover-screen'),
+                    clear: document.getElementById('clear-screen')
+                };
+
+                // 초기 상태
+                this.reset();
+
+                // 이벤트 리스너 (마우스 클릭)
+                this.canvas.addEventListener('mousedown', (e) => this.handleClick(e));
+                
+                // 루프 시작
+                this.loop();
+            }
+
+            reset() {
+                this.isRunning = false;
+                this.isBossPhase = false;
+                this.lives = 3;
+                this.gameTime = 60; // 1분
+                this.timeLeft = this.gameTime;
+                this.startTime = 0;
+                
+                this.ghosts = [];
+                this.particles = [];
+                
+                this.spawnRate = 2000; // 초기 스폰 간격 (ms)
+                this.lastSpawnTime = 0;
+                this.bossActive = false;
+                this.currentBoss = null;
+
+                this.shakeAmount = 0; // 화면 흔들림 효과
+
+                // UI 초기화
+                this.updateUi();
+                this.ui.mash.style.display = 'none';
+                this.ui.start.style.display = 'flex';
+                this.ui.gameover.style.display = 'none';
+                this.ui.clear.style.display = 'none';
+                
+                stopBgm();
+            }
+
+            start() {
+                this.isRunning = true;
+                this.startTime = Date.now();
+                this.lastSpawnTime = Date.now();
+                this.ui.start.style.display = 'none';
+                playBgm();
+                audioCtx.resume();
+            }
+
+            gameOver() {
+                this.isRunning = false;
+                this.ui.gameover.style.display = 'flex';
+                sounds.lose();
+                stopBgm();
+            }
+
+            gameClear() {
+                this.isRunning = false;
+                this.ui.clear.style.display = 'flex';
+                sounds.win();
+                stopBgm();
+            }
+
+            updateUi() {
+                // 타이머 업데이트
+                const min = Math.floor(this.timeLeft / 60).toString().padStart(2, '0');
+                const sec = Math.floor(this.timeLeft % 60).toString().padStart(2, '0');
+                this.ui.timeDisplay.innerText = `${min}:${sec}`;
+
+                // 목숨(하트) 업데이트
+                for (let i = 0; i < 3; i++) {
+                    if (i < this.lives) this.ui.lives[i].classList.remove('lost');
+                    else this.ui.lives[i].classList.add('lost');
+                }
+            }
+
+            // 실제 캔버스 좌표를 내부 16:9 좌표로 변환
+            getMousePos(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = this.internalW / rect.width;
+                const scaleY = this.internalH / rect.height;
+                return {
+                    x: (e.clientX - rect.left) * scaleX,
+                    y: (e.clientY - rect.top) * scaleY
+                };
+            }
+
+            handleClick(e) {
+                if (!this.isRunning || this.isBossPhase) return;
+                sounds.click();
+                const pos = this.getMousePos(e);
+                
+                // 역순으로 검사 (가장 위에 있는 귀신부터)
+                for (let i = this.ghosts.length - 1; i >= 0; i--) {
+                    const ghost = this.ghosts[i];
+                    if (!ghost.dead && ghost.isHit(pos.x, pos.y)) {
+                        if (ghost.type === 'blue') {
+                            this.killGhost(ghost, i);
+                        } else {
+                            // 분홍 귀신 클릭 시 보스 페이즈 전환
+                            this.startBossPhase(ghost);
+                        }
+                        break; // 한 번 클릭에 한 마리만
+                    }
+                }
+            }
+
+            killGhost(ghost, index) {
+                ghost.dead = true;
+                this.ghosts.splice(index, 1);
+                sounds.explosion();
+                // 파티클 효과 생성
+                const color = ghost.type === 'blue' ? '#a8d8ea' : '#ffb6c1';
+                for (let i = 0; i < 8; i++) {
+                    this.particles.push(new Particle(ghost.x, ghost.y, color));
+                }
+            }
+
+            startBossPhase(ghost) {
+                this.isBossPhase = true;
+                this.currentBoss = ghost;
+                this.currentBoss.hp = 10;
+                
+                // UI 업데이트
+                this.ui.mash.style.display = 'block';
+                this.ui.mashCount.innerText = `0 / 10`;
+                
+                // 사운드 & 화면 효과
+                sounds.bossAppear();
+                this.shakeAmount = 15;
+            }
+
+            handleMashClick() {
+                if (!this.isRunning || !this.isBossPhase) return;
+                sounds.mash();
+                this.currentBoss.hp--;
+                const hits = 10 - this.currentBoss.hp;
+                this.ui.mashCount.innerText = `${hits} / 10`;
+                
+                // 타격 효과 (화면 살짝 흔들림)
+                this.shakeAmount = 5;
+
+                if (this.currentBoss.hp <= 0) {
+                    this.endBossPhase(true);
+                }
+            }
+
+            endBossPhase(success) {
+                this.isBossPhase = false;
+                this.ui.mash.style.display = 'none';
+                
+                if (success) {
+                    // 보스 처치
+                    const idx = this.ghosts.indexOf(this.currentBoss);
+                    this.killGhost(this.currentBoss, idx);
+                }
+                this.currentBoss = null;
+            }
+
+            // 게임 메인 루프
+            loop() {
+                this.update();
+                this.draw();
+                requestAnimationFrame(() => this.loop());
+            }
+
+            update() {
+                if (!this.isRunning) return;
+
+                // 타이머 계산
+                const now = Date.now();
+                const elapsed = (now - this.startTime) / 1000;
+                this.timeLeft = this.gameTime - elapsed;
+
+                // 난이도 상승 (시간이 갈수록 스폰속도 빨라짐)
+                // 60초->2초간격, 0초->0.3초간격까지
+                this.spawnRate = 2000 - (elapsed / 60) * 1700; 
+
+                if (this.timeLeft <= 0) {
+                    this.timeLeft = 0;
+                    this.updateUi();
+                    this.gameClear();
+                    return;
+                }
+                this.updateUi();
+
+                // 일반 페이즈일 때만 귀신 스폰 및 이동
+                if (!this.isBossPhase) {
+                    // 귀신 스폰
+                    if (now - this.lastSpawnTime > this.spawnRate) {
+                        // 10% 확률로 분홍 귀신(보스) 스폰
+                        const type = Math.random() < 0.1 ? 'pink' : 'blue';
+                        this.ghosts.push(new Ghost(this.internalW, this.internalH, type));
+                        this.lastSpawnTime = now;
+                    }
+
+                    // 귀신 업데이트 및 구슬 충돌 체크
+                    const cx = this.internalW / 2;
+                    const cy = this.internalH / 2;
+                    for (let i = this.ghosts.length - 1; i >= 0; i--) {
+                        const ghost = this.ghosts[i];
+                        ghost.update(cx, cy);
+
+                        // 구슬(중앙) 도달 체크
+                        const dist = Math.hypot(ghost.x - cx, ghost.y - cy);
+                        if (dist < 40) { // 구슬 반경 근처
+                            this.lives--;
+                            sounds.damage();
+                            this.shakeAmount = 20; // 강력한 흔들림
+                            this.ghosts.splice(i, 1); // 귀신 사라짐
+                            
+                            if (this.lives <= 0) {
+                                this.updateUi();
+                                this.gameOver();
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                // 파티클 업데이트
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    this.particles[i].update();
+                    if (this.particles[i].life <= 0) this.particles.splice(i, 1);
+                }
+
+                // 화면 흔들림 감소
+                if (this.shakeAmount > 0) this.shakeAmount *= 0.9;
+            }
+
+            draw() {
+                this.ctx.save();
+                
+                // 화면 흔들림 적용
+                if (this.shakeAmount > 0.5) {
+                    this.ctx.translate(randomRange(-this.shakeAmount, this.shakeAmount), randomRange(-this.shakeAmount, this.shakeAmount));
+                }
+
+                // 배경 그리기
+                this.ctx.fillStyle = '#8fbc8f'; // 기본 잔디색
+                this.ctx.fillRect(0, 0, this.internalW, this.internalH);
+                
+                // 간단한 풀밭 패턴 그리기
+                this.ctx.fillStyle = 'rgba(0,0,0,0.05)';
+                for(let i=0; i<50; i++) {
+                    const px = (i * 797) % this.internalW;
+                    const py = (i * 967) % this.internalH;
+                    this.ctx.fillRect(px, py, 10, 10);
+                }
+
+                const cx = this.internalW / 2;
+                const cy = this.internalH / 2;
+
+                // 캐릭터 & 구슬 그리기
+                this.ctx.drawImage(this.charImg, cx - 50, cy - 65, 100, 100);
+                // 구슬 빛나는 연출 (박동)
+                const pulse = Math.sin(Date.now() * 0.01) * 5;
+                this.ctx.drawImage(this.marbleImg, cx - 30 - pulse/2, cy - 10 - pulse/2, 60 + pulse, 60 + pulse);
+
+                // 귀신 그리기
+                this.ghosts.forEach(ghost => ghost.draw(this.ctx));
+
+                // 파티클 그리기
+                this.particles.forEach(p => p.draw(this.ctx));
+
+                // 보스 페이즈 오버레이 (분홍빛)
+                if (this.isBossPhase) {
+                    this.ctx.fillStyle = 'rgba(255, 182, 193, 0.3)';
+                    this.ctx.fillRect(0, 0, this.internalW, this.internalH);
+                    
+                    // 중앙에 거대 보스 그리기
+                    if (this.currentBoss) {
+                        const bSize = 300;
+                        this.ctx.drawImage(this.currentBoss.sprite, cx - bSize/2, cy - bSize/2 - 50, bSize, bSize);
+                    }
+                }
+
+                this.ctx.restore();
+            }
+        }
+
+        // 게임 인스턴스 생성
+        const game = new Game();
+
+    </script>
 </body>
 </html>
