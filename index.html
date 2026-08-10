@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>구슬을 지켜라!</title>
+<title>코어를 귀신으로부터 지켜라!</title>
 
 <style>
 * {
@@ -18,7 +18,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   font-family: Arial, "Malgun Gothic", sans-serif;
-  background: #173c22;
+  background: #183b25;
 }
 
 #game {
@@ -27,59 +27,90 @@ html, body {
   height: 100vh;
   overflow: hidden;
   cursor: crosshair;
+
   background:
-    radial-gradient(circle at 50% 45%, #d6f77c 0%, #9fd957 20%, #55a83f 48%, #28713c 100%);
+    radial-gradient(
+      circle at 50% 45%,
+      #dcf98c 0%,
+      #a7dd5e 20%,
+      #65b84d 48%,
+      #2b743e 100%
+    );
 }
 
-/* 숲 느낌 */
+/* 숲 배경 */
+
 #game::before {
   content: "";
   position: absolute;
   inset: 0;
+  pointer-events: none;
+
   background:
-    radial-gradient(circle at 8% 15%, rgba(255,255,255,.2) 0 3px, transparent 4px),
+    radial-gradient(circle at 8% 15%, rgba(255,255,255,.22) 0 3px, transparent 4px),
     radial-gradient(circle at 18% 70%, rgba(255,255,255,.15) 0 4px, transparent 5px),
     radial-gradient(circle at 85% 22%, rgba(255,255,255,.18) 0 3px, transparent 4px),
     radial-gradient(circle at 75% 75%, rgba(255,255,255,.13) 0 5px, transparent 6px);
-  opacity: .7;
-  pointer-events: none;
 }
 
-/* 잔디 */
+/* 잔디 장식 */
+
 .grass {
   position: absolute;
-  width: 220px;
-  height: 220px;
+  width: 230px;
+  height: 230px;
   border-radius: 50%;
-  background: rgba(20,100,45,.22);
-  filter: blur(12px);
+  background: rgba(18,100,43,.22);
+  filter: blur(13px);
 }
 
-.g1 { left:-80px; bottom:-70px; }
-.g2 { right:-80px; top:-60px; }
-.g3 { left:40%; bottom:-120px; }
+.g1 {
+  left: -90px;
+  bottom: -80px;
+}
 
-/* ---------------- UI ---------------- */
+.g2 {
+  right: -90px;
+  top: -70px;
+}
+
+.g3 {
+  left: 40%;
+  bottom: -130px;
+}
+
+
+/* =========================================================
+   상단 UI
+========================================================= */
 
 #topUI {
   position: absolute;
   z-index: 50;
+
   top: 18px;
   left: 18px;
   right: 18px;
+
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+
   pointer-events: none;
 }
 
 .uiBox {
-  background: linear-gradient(#fff8df, #ffe9bd);
+  background:
+    linear-gradient(#fff9e5, #ffe8b6);
+
   border: 3px solid #754c28;
   border-radius: 17px;
+
   padding: 9px 18px;
+
   color: #392817;
   font-weight: 900;
+
   box-shadow:
     0 5px 0 rgba(77,42,18,.35),
     inset 0 2px rgba(255,255,255,.8);
@@ -91,302 +122,517 @@ html, body {
 
 #lives {
   display: flex;
-  gap: 5px;
+  gap: 4px;
+
   font-size: clamp(25px, 3vw, 38px);
 }
 
-/* 안내 */
-#instructions {
-  position: absolute;
-  z-index: 50;
-  left: 18px;
-  top: 95px;
-  width: min(210px, 22vw);
-  min-width: 160px;
-}
 
-.help {
-  background: rgba(26,91,42,.88);
-  border: 2px solid rgba(255,255,255,.2);
-  color: white;
-  padding: 10px 13px;
-  border-radius: 10px;
-  margin-bottom: 6px;
-  font-size: clamp(11px, 1.2vw, 16px);
-  font-weight: 800;
-  box-shadow: 0 4px 10px rgba(0,0,0,.2);
-}
-
-.help.pink {
-  background: rgba(126,54,72,.92);
-}
-
-/* ---------------- CORE ---------------- */
+/* =========================================================
+   중앙 코어
+========================================================= */
 
 #coreArea {
   position: absolute;
   z-index: 10;
+
   left: 50%;
   top: 53%;
+
   transform: translate(-50%, -50%);
-  width: min(300px, 25vw);
-  height: min(300px, 25vw);
-  min-width: 210px;
-  min-height: 210px;
+
+  width: min(235px, 20vw);
+  height: min(235px, 20vw);
+
+  min-width: 170px;
+  min-height: 170px;
+
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
+
+/* 기존보다 작은 빛 */
 
 .coreGlow {
   position: absolute;
-  width: 75%;
-  height: 75%;
+
+  width: 64%;
+  height: 64%;
+
   border-radius: 50%;
+
   background: #ffe14b;
+
   box-shadow:
-    0 0 25px #fff7a1,
-    0 0 55px #ffd52d,
-    0 0 100px rgba(255,206,30,.8);
+    0 0 22px #fff7a1,
+    0 0 45px #ffd52d,
+    0 0 80px rgba(255,206,30,.75);
+
   animation: corePulse 1.3s infinite ease-in-out;
 }
 
 @keyframes corePulse {
-  0%,100% { transform: scale(.92); opacity: .75; }
-  50% { transform: scale(1.08); opacity: 1; }
+  0%,100% {
+    transform: scale(.92);
+    opacity: .72;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
 }
 
 .core {
   position: relative;
-  width: 48%;
+
+  width: 43%;
   aspect-ratio: 1;
+
   border-radius: 50%;
+
   background:
-    radial-gradient(circle at 32% 25%, #fff 0 6%, #fff8a4 7%, transparent 17%),
-    radial-gradient(circle at 42% 40%, #fff48b, #ffd321 55%, #f1a600);
-  border: 5px solid #fff6b0;
+    radial-gradient(
+      circle at 32% 25%,
+      #fff 0 6%,
+      #fff8a4 7%,
+      transparent 17%
+    ),
+    radial-gradient(
+      circle at 42% 40%,
+      #fff48b,
+      #ffd321 55%,
+      #f1a600
+    );
+
+  border: 4px solid #fff6b0;
+
   box-shadow:
-    inset -10px -10px 18px rgba(255,145,0,.25),
-    0 0 20px #fff7a5,
-    0 0 45px #ffd83d;
+    inset -8px -8px 15px rgba(255,145,0,.25),
+    0 0 18px #fff7a5,
+    0 0 38px #ffd83d;
 }
 
 .coreRing {
   position: absolute;
-  width: 100%;
-  height: 100%;
+
+  width: 75%;
+  height: 75%;
+
   border: 3px solid rgba(255,245,125,.8);
   border-radius: 50%;
+
   animation: ring 2s infinite;
 }
 
 @keyframes ring {
-  from { transform: scale(.7); opacity: 1; }
-  to { transform: scale(1.7); opacity: 0; }
+  from {
+    transform: scale(.7);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(1.7);
+    opacity: 0;
+  }
 }
 
 #damageCounter {
   position: absolute;
-  bottom: -20px;
+
+  bottom: -14px;
   left: 50%;
+
   transform: translateX(-50%);
+
   color: #713c1d;
+
   background: #fff1c9;
   border: 2px solid #81532c;
   border-radius: 20px;
-  padding: 5px 14px;
+
+  padding: 4px 13px;
+
+  font-size: 13px;
   font-weight: 900;
+
   white-space: nowrap;
 }
 
-/* ---------------- PLAYER ---------------- */
 
-/*
-  character-sheet.png
-  = 사용자가 올린 1536x1536 캐릭터 시트
+/* =========================================================
+   캐릭터
+========================================================= */
 
-  아래 .playerSprite는 시트 왼쪽 위의 정면 캐릭터를
-  확대해서 보여주는 방식.
-*/
 #player {
   position: absolute;
   z-index: 20;
+
   left: 50%;
   top: 53%;
+
   transform: translate(-50%, -50%);
+
   width: min(125px, 11vw);
   height: min(180px, 15vw);
+
   min-width: 90px;
   min-height: 130px;
+
   pointer-events: none;
 }
 
 .playerSprite {
   width: 100%;
   height: 100%;
+
   background-image: url("character-sheet.png");
   background-repeat: no-repeat;
 
-  /*
-    원본 시트에서 왼쪽 위 정면 캐릭터 영역.
-    시트 크기가 1536x1536일 때 기준.
-  */
   background-size: 420% 420%;
   background-position: 4% 5%;
 
-  filter: drop-shadow(0 8px 4px rgba(0,0,0,.22));
+  filter:
+    drop-shadow(0 8px 4px rgba(0,0,0,.22));
 }
 
-/* ---------------- GHOST ---------------- */
+
+/* =========================================================
+   귀신
+========================================================= */
 
 .ghost {
   position: absolute;
+
   z-index: 30;
-  width: 65px;
-  height: 65px;
+
+  width: 64px;
+  height: 70px;
+
   transform: translate(-50%, -50%);
+
   cursor: pointer;
+
   touch-action: manipulation;
+
   transition: filter .1s;
 }
 
 .ghost:hover {
-  filter: brightness(1.15) drop-shadow(0 0 10px rgba(255,255,255,.5));
+  filter:
+    brightness(1.1)
+    drop-shadow(0 0 12px rgba(255,255,255,.6));
 }
 
+
+/* 귀여운 몸 */
+
 .ghostBody {
-  width: 100%;
-  height: 100%;
-  border-radius: 48% 48% 42% 42%;
   position: relative;
-  border: 4px solid rgba(35,79,90,.8);
-  box-shadow: inset -8px -8px 0 rgba(0,0,0,.08);
+
+  width: 100%;
+  height: 88%;
+
+  border-radius:
+    48%
+    48%
+    42%
+    42%;
+
+  border: 3px solid rgba(43,75,90,.7);
+
+  box-shadow:
+    inset -7px -8px 0 rgba(0,0,0,.07),
+    inset 7px 5px 0 rgba(255,255,255,.25);
 }
+
+
+/* 귀신 꼬리 */
 
 .ghostBody::after {
   content: "";
+
   position: absolute;
-  left: 10%;
-  right: 10%;
-  bottom: -10px;
-  height: 25px;
+
+  left: 5%;
+  right: 5%;
+  bottom: -14px;
+
+  height: 24px;
+
   background: inherit;
+
   clip-path: polygon(
-    0 0, 20% 55%, 40% 0,
-    60% 55%, 80% 0, 100% 55%,
-    100% 100%, 0 100%
+    0 0,
+    17% 55%,
+    35% 0,
+    51% 55%,
+    70% 0,
+    86% 55%,
+    100% 0,
+    100% 100%,
+    0 100%
   );
+
   z-index: -1;
 }
 
+
+/* 파란 귀신 */
+
 .ghost.blue .ghostBody {
-  background: linear-gradient(145deg, #aeeeff, #54bde9);
+  background:
+    linear-gradient(
+      145deg,
+      #c5f5ff 0%,
+      #8bdcf5 45%,
+      #54bde9 100%
+    );
 }
 
+
+/* 분홍 귀신 */
+
 .ghost.pink .ghostBody {
-  background: linear-gradient(145deg, #ffd0df, #f47fa5);
-  border-color: #91475e;
+  background:
+    linear-gradient(
+      145deg,
+      #ffe0ea 0%,
+      #ffb0c8 45%,
+      #f17da2 100%
+    );
+
+  border-color: #934b64;
 }
+
+
+/* 눈 */
 
 .eyes {
   position: absolute;
-  top: 22px;
+
+  top: 23px;
   left: 13px;
   right: 13px;
+
   display: flex;
   justify-content: space-between;
 }
 
 .eye {
   width: 13px;
-  height: 19px;
-  background: #142d39;
+  height: 17px;
+
+  background: #26323b;
+
   border-radius: 50%;
+
+  position: relative;
 }
+
+.eye::after {
+  content: "";
+
+  position: absolute;
+
+  width: 4px;
+  height: 5px;
+
+  background: white;
+
+  border-radius: 50%;
+
+  left: 3px;
+  top: 3px;
+}
+
+
+/* 볼터치 */
+
+.ghostBody::before {
+  content: "";
+
+  position: absolute;
+
+  left: 7px;
+  right: 7px;
+  top: 42px;
+
+  height: 10px;
+
+  background:
+    radial-gradient(
+      ellipse at 15% 50%,
+      rgba(255,120,150,.55) 0 7px,
+      transparent 8px
+    ),
+    radial-gradient(
+      ellipse at 85% 50%,
+      rgba(255,120,150,.55) 0 7px,
+      transparent 8px
+    );
+}
+
+
+/* 입 */
 
 .mouth {
   position: absolute;
+
   left: 50%;
-  top: 43px;
+  top: 44px;
+
   transform: translateX(-50%);
-  width: 13px;
+
+  width: 12px;
   height: 7px;
+
   border-radius: 50%;
-  background: #263842;
+
+  background: #39434b;
 }
 
 .pink .mouth {
-  height: 12px;
+  height: 9px;
 }
 
-/* 맞았을 때 */
+
+/* 귀신 손 */
+
+.ghost .ghostBody {
+  overflow: visible;
+}
+
+.ghost .ghostBody > .hand {
+  display: block;
+}
+
+
+/* 타격 */
+
 .hit {
   animation: ghostHit .18s ease-out;
 }
 
 @keyframes ghostHit {
-  0% { transform: translate(-50%,-50%) scale(1); }
-  40% { transform: translate(-50%,-50%) scale(1.3) rotate(8deg); }
-  100% { transform: translate(-50%,-50%) scale(0); opacity: 0; }
+
+  0% {
+    transform: translate(-50%,-50%) scale(1);
+  }
+
+  40% {
+    transform:
+      translate(-50%,-50%)
+      scale(1.3)
+      rotate(8deg);
+  }
+
+  100% {
+    transform:
+      translate(-50%,-50%)
+      scale(0);
+    opacity: 0;
+  }
 }
 
-/* ---------------- EFFECTS ---------------- */
+
+/* =========================================================
+   이펙트
+========================================================= */
 
 .particle {
   position: absolute;
+
   z-index: 80;
+
   pointer-events: none;
-  width: 10px;
-  height: 10px;
+
+  width: 9px;
+  height: 9px;
+
   border-radius: 50%;
+
   background: #fff36d;
-  animation: particle .65s ease-out forwards;
+
+  animation:
+    particle .65s ease-out forwards;
 }
 
 @keyframes particle {
+
   to {
     transform:
       translate(var(--x), var(--y))
       scale(0);
+
     opacity: 0;
   }
 }
 
 .clickBurst {
   position: absolute;
+
   z-index: 100;
+
   pointer-events: none;
+
   color: #fff;
+
   font-weight: 1000;
   font-size: 26px;
+
   text-shadow:
     0 3px #8d4059,
     0 0 10px #ff9ab8;
-  animation: clickBurst .45s ease-out forwards;
+
+  animation:
+    clickBurst .45s ease-out forwards;
 }
 
 @keyframes clickBurst {
+
   0% {
-    transform: translate(-50%,-50%) scale(.5);
+    transform:
+      translate(-50%,-50%)
+      scale(.5);
+
     opacity: 1;
   }
+
   100% {
-    transform: translate(-50%,-110%) scale(1.3);
+    transform:
+      translate(-50%,-110%)
+      scale(1.3);
+
     opacity: 0;
   }
 }
 
-/* ---------------- PINK MODAL ---------------- */
+
+/* =========================================================
+   분홍 귀신 연타 화면
+========================================================= */
 
 #pinkOverlay {
   position: absolute;
+
   z-index: 200;
+
   inset: 0;
+
   display: none;
+
   align-items: center;
   justify-content: center;
+
   background:
-    radial-gradient(circle, rgba(255,174,199,.95), rgba(226,93,130,.9));
+    radial-gradient(
+      circle,
+      rgba(255,174,199,.96),
+      rgba(226,93,130,.92)
+    );
+
   overflow: hidden;
 }
 
@@ -396,180 +642,328 @@ html, body {
 
 .speedLines {
   position: absolute;
+
   inset: -50%;
-  background: repeating-conic-gradient(
-    from 0deg,
-    rgba(255,255,255,.2) 0deg 3deg,
-    transparent 3deg 10deg
-  );
-  animation: spinLines 5s linear infinite;
+
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      rgba(255,255,255,.2) 0deg 3deg,
+      transparent 3deg 10deg
+    );
+
+  animation:
+    spinLines 5s linear infinite;
 }
 
 @keyframes spinLines {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 #pinkBattle {
   position: relative;
+
   z-index: 2;
+
   width: min(650px, 75vw);
+
   text-align: center;
 }
+
+
+/* 클로즈업 귀신 */
 
 #angryGhost {
   width: min(270px, 40vw);
   height: min(270px, 40vw);
+
   margin: auto;
+
   position: relative;
-  animation: angry .35s infinite alternate;
+
+  animation:
+    angry .35s infinite alternate;
 }
 
 @keyframes angry {
-  from { transform: rotate(-2deg) scale(1); }
-  to { transform: rotate(2deg) scale(1.04); }
+
+  from {
+    transform:
+      rotate(-2deg)
+      scale(1);
+  }
+
+  to {
+    transform:
+      rotate(2deg)
+      scale(1.04);
+  }
 }
 
 .bigGhost {
   width: 100%;
   height: 100%;
-  border-radius: 50% 50% 45% 45%;
-  background: linear-gradient(#ffd0df,#f0719b);
+
+  border-radius:
+    50%
+    50%
+    45%
+    45%;
+
+  background:
+    linear-gradient(
+      #ffd0df,
+      #f0719b
+    );
+
   border: 8px solid #87394f;
+
   box-shadow:
     inset -20px -20px 0 rgba(170,45,90,.1),
     0 15px 0 rgba(110,37,62,.2);
+
   position: relative;
 }
 
 .bigEye {
   position: absolute;
+
   top: 30%;
+
   width: 55px;
   height: 72px;
+
   background: #16121a;
-  border-radius: 45% 20% 50% 20%;
+
+  border-radius:
+    45%
+    20%
+    50%
+    20%;
 }
 
 .bigEye.left {
   left: 22%;
+
   transform: rotate(25deg);
 }
 
 .bigEye.right {
   right: 22%;
+
   transform: rotate(-25deg);
 }
 
 .bigMouth {
   position: absolute;
+
   width: 80px;
   height: 70px;
+
   left: 50%;
   top: 52%;
+
   transform: translateX(-50%);
+
   background: #561c2d;
-  border-radius: 50% 50% 45% 45%;
+
+  border-radius: 50%;
+
   border: 5px solid #7f2c43;
 }
 
 #comboText {
   margin-top: 15px;
+
   font-size: clamp(48px, 7vw, 90px);
+
   font-weight: 1000;
-  color: #fff;
+
+  color: white;
+
   -webkit-text-stroke: 4px #592536;
-  text-shadow: 0 8px #a94162;
+
+  text-shadow:
+    0 8px #a94162;
+
   transform: rotate(-4deg);
 }
 
 #comboCount {
   display: inline-block;
+
   margin-top: 5px;
+
   padding: 10px 35px;
+
   border-radius: 18px;
+
   background: rgba(30,18,22,.9);
+
   color: white;
+
   font-size: clamp(28px,4vw,48px);
+
   font-weight: 1000;
 }
 
 #comboBar {
   width: min(500px, 70vw);
+
   height: 24px;
+
   margin: 18px auto 0;
+
   background: #4b2633;
+
   border-radius: 30px;
+
   overflow: hidden;
+
   border: 3px solid white;
 }
 
 #comboProgress {
   width: 0%;
   height: 100%;
-  background: linear-gradient(90deg,#ffe36b,#ff8cae);
+
+  background:
+    linear-gradient(
+      90deg,
+      #ffe36b,
+      #ff8cae
+    );
+
   transition: width .08s linear;
 }
 
 #comboHint {
   color: white;
+
   font-size: 18px;
+
   font-weight: 900;
+
   margin-top: 10px;
 }
 
-/* ---------------- START / END ---------------- */
+
+/* =========================================================
+   시작 / 성공 / 실패 화면
+========================================================= */
 
 .screen {
   position: absolute;
+
   z-index: 500;
+
   inset: 0;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
-  background: rgba(20,60,30,.7);
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(73,141,62,.55),
+      rgba(17,55,31,.88)
+    );
+
   backdrop-filter: blur(5px);
 }
 
 .panel {
-  width: min(550px, 88vw);
-  background: linear-gradient(#fff8dc,#ffe7b4);
+  width: min(570px, 88vw);
+
+  background:
+    linear-gradient(
+      #fff9e2,
+      #ffe7b4
+    );
+
   border: 5px solid #714621;
+
   border-radius: 30px;
-  padding: 35px;
+
+  padding: 38px;
+
   text-align: center;
-  box-shadow: 0 15px 40px rgba(0,0,0,.3);
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,.35),
+    inset 0 2px white;
 }
 
 .panel h1 {
-  margin: 0 0 15px;
-  font-size: clamp(32px,5vw,58px);
+  margin: 0 0 20px;
+
+  font-size:
+    clamp(31px,5vw,58px);
+
+  line-height: 1.15;
+
   color: #392618;
+
+  text-shadow:
+    0 3px rgba(255,255,255,.8);
 }
 
 .panel p {
   font-size: 18px;
-  line-height: 1.7;
+
+  line-height: 1.8;
+
   font-weight: 700;
+
   color: #5b4029;
+
+  margin-bottom: 28px;
 }
 
 button {
   border: 0;
+
   border-radius: 18px;
-  padding: 15px 40px;
+
+  padding: 15px 42px;
+
   font-size: 23px;
+
   font-weight: 1000;
+
   color: white;
-  background: linear-gradient(#8ee75d,#48ad48);
+
+  background:
+    linear-gradient(
+      #8ee75d,
+      #48ad48
+    );
+
   border: 4px solid #2e7132;
-  box-shadow: 0 6px 0 #2d6730;
+
+  box-shadow:
+    0 6px 0 #2d6730;
+
   cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.08);
 }
 
 button:active {
   transform: translateY(5px);
-  box-shadow: 0 1px 0 #2d6730;
+
+  box-shadow:
+    0 1px 0 #2d6730;
 }
+
+
+/* 처음에는 성공/실패 숨김 */
 
 #gameOver,
 #clearScreen {
@@ -581,31 +975,36 @@ button:active {
   display: flex;
 }
 
-/* 모바일 */
-@media(max-width:700px) {
-  #instructions {
-    top: 80px;
-    left: 8px;
-    min-width: 125px;
-    width: 145px;
-  }
 
-  .help {
-    padding: 6px 8px;
-  }
+/* 모바일 */
+
+@media(max-width:700px) {
 
   #coreArea {
-    width: 250px;
-    height: 250px;
+    width: 210px;
+    height: 210px;
   }
 
   .ghost {
     width: 52px;
-    height: 52px;
+    height: 58px;
+  }
+
+  .panel {
+    padding: 28px 20px;
+  }
+
+  .panel p {
+    font-size: 15px;
+  }
+
+  #comboHint {
+    font-size: 15px;
   }
 }
 </style>
 </head>
+
 
 <body>
 
@@ -615,8 +1014,13 @@ button:active {
   <div class="grass g2"></div>
   <div class="grass g3"></div>
 
-  <!-- UI -->
+
+  <!-- =====================================================
+       게임 UI
+  ====================================================== -->
+
   <div id="topUI">
+
     <div class="uiBox">
       ⏱️ <span id="timer">01:00</span>
     </div>
@@ -624,30 +1028,48 @@ button:active {
     <div class="uiBox" id="lives">
       ❤️ ❤️ ❤️
     </div>
+
   </div>
 
-  <div id="instructions">
-    <div class="help">🔵 파란 귀신<br>한 번 클릭!</div>
-    <div class="help pink">🩷 분홍 귀신<br>연타 10번!</div>
-  </div>
 
-  <!-- 중앙 구슬 -->
+  <!-- =====================================================
+       중앙 코어
+  ====================================================== -->
+
   <div id="coreArea">
+
     <div class="coreGlow"></div>
+
     <div class="coreRing"></div>
+
     <div class="core"></div>
-    <div id="damageCounter">구슬 피해 0 / 3</div>
+
+    <div id="damageCounter">
+      코어 피해 0 / 3
+    </div>
+
   </div>
 
-  <!-- 캐릭터 -->
+
+  <!-- =====================================================
+       플레이어 캐릭터
+  ====================================================== -->
+
   <div id="player">
+
     <div class="playerSprite"></div>
+
   </div>
 
-  <!-- 귀신들이 들어오는 곳 -->
+
+  <!-- 귀신 -->
   <div id="ghostLayer"></div>
 
-  <!-- 분홍 귀신 연타 -->
+
+  <!-- =====================================================
+       분홍 귀신 연타 화면
+  ====================================================== -->
+
   <div id="pinkOverlay">
 
     <div class="speedLines"></div>
@@ -655,77 +1077,147 @@ button:active {
     <div id="pinkBattle">
 
       <div id="angryGhost">
+
         <div class="bigGhost">
+
           <div class="bigEye left"></div>
           <div class="bigEye right"></div>
+
           <div class="bigMouth"></div>
+
         </div>
+
       </div>
 
-      <div id="comboText">연타!</div>
+
+      <div id="comboText">
+        연타!
+      </div>
+
 
       <div id="comboCount">
-        <span id="comboNumber">0</span> / 10
+
+        <span id="comboNumber">
+          0
+        </span>
+
+        / 10
+
       </div>
+
 
       <div id="comboBar">
+
         <div id="comboProgress"></div>
+
       </div>
+
 
       <div id="comboHint">
-        빠르게 10번 클릭하세요!
+        빠르게 클릭해서 귀신을 물리치세요!
       </div>
 
     </div>
+
   </div>
 
-  <!-- 시작 -->
+
+  <!-- =====================================================
+       시작 화면
+  ====================================================== -->
+
   <div class="screen" id="startScreen">
+
     <div class="panel">
-      <h1>🌱 구슬을 지켜라!</h1>
+
+      <h1>
+        코어를 귀신으로부터 지켜라!
+      </h1>
 
       <p>
-        노란 빛나는 구슬을 1분 동안 지켜주세요!<br>
-        🔵 파란 귀신 → 한 번 클릭<br>
-        🩷 분홍 귀신 → 클릭 후 10연타
+        중앙의 빛나는 코어를 귀신으로부터 지켜주세요.<br><br>
+
+        귀신을 클릭하면 물리칠 수 있습니다.<br>
+        파란 귀신은 한 번 클릭하면 사라지고,<br>
+        분홍 귀신은 나타난 후 빠르게 10번 클릭해야 합니다.<br><br>
+
+        귀신이 코어에 3번 닿기 전에<br>
+        <strong>1분 동안 코어를 지켜내세요!</strong>
       </p>
 
-      <button id="startBtn">게임 시작!</button>
+      <button id="startBtn">
+        게임 시작
+      </button>
+
     </div>
+
   </div>
 
-  <!-- 게임오버 -->
+
+  <!-- =====================================================
+       실패
+  ====================================================== -->
+
   <div class="screen" id="gameOver">
+
     <div class="panel">
-      <h1>💥 게임 오버!</h1>
+
+      <h1>
+        코어를 귀신에게 빼앗겼다..
+      </h1>
+
       <p>
-        귀신이 구슬에 너무 많이 닿았어요!
+        귀신들이 코어를 파괴하고 말았어요.<br>
+        다시 도전해서 코어를 지켜주세요!
       </p>
-      <button onclick="location.reload()">다시 하기</button>
+
+      <button onclick="location.reload()">
+        다시하기
+      </button>
+
     </div>
+
   </div>
 
-  <!-- 클리어 -->
+
+  <!-- =====================================================
+       성공
+  ====================================================== -->
+
   <div class="screen" id="clearScreen">
+
     <div class="panel">
-      <h1>✨ 클리어!</h1>
+
+      <h1>
+        코어를 귀신으로부터 지켜냈다!
+      </h1>
+
       <p>
-        1분 동안 노란 구슬을 지켜냈어요!
+        1분 동안 귀신들을 막아내고<br>
+        소중한 코어를 지켜냈어요! ✨
       </p>
-      <button onclick="location.reload()">다시 하기</button>
+
+      <button onclick="location.reload()">
+        다시하기
+      </button>
+
     </div>
+
   </div>
 
 </div>
 
+
 <script>
+
 /* ============================================================
-   GAME SETTINGS
+   기본 설정
 ============================================================ */
 
 const GAME_TIME = 60;
 
 let gameRunning = false;
+
 let elapsed = 0;
 let lastTime = 0;
 
@@ -736,37 +1228,74 @@ let ghosts = [];
 let ghostId = 0;
 
 let activePink = null;
+
 let pinkHits = 0;
 let pinkTimer = null;
 
-const game = document.getElementById("game");
-const ghostLayer = document.getElementById("ghostLayer");
+let spawnTimer = null;
 
-const timerEl = document.getElementById("timer");
-const livesEl = document.getElementById("lives");
-const damageEl = document.getElementById("damageCounter");
 
-const pinkOverlay = document.getElementById("pinkOverlay");
-const comboNumber = document.getElementById("comboNumber");
-const comboProgress = document.getElementById("comboProgress");
+/* DOM */
 
-const startScreen = document.getElementById("startScreen");
-const gameOver = document.getElementById("gameOver");
-const clearScreen = document.getElementById("clearScreen");
+const game =
+  document.getElementById("game");
+
+const ghostLayer =
+  document.getElementById("ghostLayer");
+
+const timerEl =
+  document.getElementById("timer");
+
+const livesEl =
+  document.getElementById("lives");
+
+const damageEl =
+  document.getElementById("damageCounter");
+
+const pinkOverlay =
+  document.getElementById("pinkOverlay");
+
+const comboNumber =
+  document.getElementById("comboNumber");
+
+const comboProgress =
+  document.getElementById("comboProgress");
+
+const startScreen =
+  document.getElementById("startScreen");
+
+const gameOver =
+  document.getElementById("gameOver");
+
+const clearScreen =
+  document.getElementById("clearScreen");
 
 
 /* ============================================================
-   SOUND
+   오디오
 ============================================================ */
 
 let audioCtx = null;
 
+let musicTimer = null;
+let musicPlaying = false;
+
+
+/*
+  브라우저 정책상 음악은
+  게임 시작 버튼을 누른 순간부터 재생.
+*/
+
 function initAudio() {
+
   if (!audioCtx) {
-    audioCtx = new (
-      window.AudioContext ||
-      window.webkitAudioContext
-    )();
+
+    audioCtx =
+      new (
+        window.AudioContext ||
+        window.webkitAudioContext
+      )();
+
   }
 
   if (audioCtx.state === "suspended") {
@@ -774,75 +1303,169 @@ function initAudio() {
   }
 }
 
+
+/* 효과음 */
+
 function sound(type) {
 
   if (!audioCtx) return;
 
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
+  const osc =
+    audioCtx.createOscillator();
+
+  const gain =
+    audioCtx.createGain();
 
   osc.connect(gain);
   gain.connect(audioCtx.destination);
 
-  const now = audioCtx.currentTime;
+  const now =
+    audioCtx.currentTime;
+
 
   if (type === "click") {
 
     osc.type = "square";
-    osc.frequency.setValueAtTime(520, now);
-    osc.frequency.exponentialRampToValueAtTime(850, now + .06);
 
-    gain.gain.setValueAtTime(.09, now);
-    gain.gain.exponentialRampToValueAtTime(.001, now + .08);
+    osc.frequency.setValueAtTime(
+      520,
+      now
+    );
+
+    osc.frequency.exponentialRampToValueAtTime(
+      850,
+      now + .06
+    );
+
+    gain.gain.setValueAtTime(
+      .08,
+      now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      .001,
+      now + .08
+    );
 
     osc.start(now);
     osc.stop(now + .08);
 
-  } else if (type === "pop") {
+  }
+
+
+  else if (type === "pop") {
 
     osc.type = "sine";
-    osc.frequency.setValueAtTime(650, now);
-    osc.frequency.exponentialRampToValueAtTime(120, now + .18);
 
-    gain.gain.setValueAtTime(.15, now);
-    gain.gain.exponentialRampToValueAtTime(.001, now + .18);
+    osc.frequency.setValueAtTime(
+      650,
+      now
+    );
+
+    osc.frequency.exponentialRampToValueAtTime(
+      120,
+      now + .18
+    );
+
+    gain.gain.setValueAtTime(
+      .15,
+      now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      .001,
+      now + .18
+    );
 
     osc.start(now);
     osc.stop(now + .18);
 
-  } else if (type === "damage") {
+  }
+
+
+  else if (type === "damage") {
 
     osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(150, now);
-    osc.frequency.exponentialRampToValueAtTime(60, now + .3);
 
-    gain.gain.setValueAtTime(.2, now);
-    gain.gain.exponentialRampToValueAtTime(.001, now + .3);
+    osc.frequency.setValueAtTime(
+      150,
+      now
+    );
+
+    osc.frequency.exponentialRampToValueAtTime(
+      60,
+      now + .3
+    );
+
+    gain.gain.setValueAtTime(
+      .18,
+      now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      .001,
+      now + .3
+    );
 
     osc.start(now);
     osc.stop(now + .3);
 
-  } else if (type === "clear") {
+  }
+
+
+  else if (type === "clear") {
 
     osc.type = "sine";
 
-    osc.frequency.setValueAtTime(500, now);
-    osc.frequency.setValueAtTime(700, now + .15);
-    osc.frequency.setValueAtTime(900, now + .3);
+    osc.frequency.setValueAtTime(
+      500,
+      now
+    );
 
-    gain.gain.setValueAtTime(.12, now);
-    gain.gain.exponentialRampToValueAtTime(.001, now + .7);
+    osc.frequency.setValueAtTime(
+      700,
+      now + .15
+    );
+
+    osc.frequency.setValueAtTime(
+      900,
+      now + .3
+    );
+
+    gain.gain.setValueAtTime(
+      .12,
+      now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      .001,
+      now + .7
+    );
 
     osc.start(now);
     osc.stop(now + .7);
 
-  } else if (type === "error") {
+  }
+
+
+  else if (type === "error") {
 
     osc.type = "square";
-    osc.frequency.setValueAtTime(120, now);
 
-    gain.gain.setValueAtTime(.15, now);
-    gain.gain.exponentialRampToValueAtTime(.001, now + .35);
+    osc.frequency.setValueAtTime(
+      120,
+      now
+    );
+
+    gain.gain.setValueAtTime(
+      .15,
+      now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      .001,
+      now + .35
+    );
 
     osc.start(now);
     osc.stop(now + .35);
@@ -851,20 +1474,122 @@ function sound(type) {
 
 
 /* ============================================================
-   EFFECTS
+   배경음악
+============================================================ */
+
+/*
+  별도의 mp3 파일 없이 Web Audio로 만든
+  잔잔한 판타지풍 반복 BGM.
+
+  게임 시작 버튼을 누르면 재생되고
+  게임이 끝나면 멈춘다.
+*/
+
+function playMusic() {
+
+  if (!audioCtx || musicPlaying) {
+    return;
+  }
+
+  musicPlaying = true;
+
+  const melody = [
+    261.63,
+    329.63,
+    392.00,
+    329.63,
+    293.66,
+    349.23,
+    440.00,
+    349.23
+  ];
+
+  let index = 0;
+
+  function note() {
+
+    if (!musicPlaying) return;
+
+    const osc =
+      audioCtx.createOscillator();
+
+    const gain =
+      audioCtx.createGain();
+
+    osc.type = "sine";
+
+    osc.frequency.value =
+      melody[index % melody.length];
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now =
+      audioCtx.currentTime;
+
+    gain.gain.setValueAtTime(
+      0,
+      now
+    );
+
+    gain.gain.linearRampToValueAtTime(
+      .035,
+      now + .08
+    );
+
+    gain.gain.linearRampToValueAtTime(
+      0,
+      now + 1.0
+    );
+
+    osc.start(now);
+    osc.stop(now + 1.05);
+
+    index++;
+
+    musicTimer =
+      setTimeout(note, 850);
+  }
+
+  note();
+}
+
+
+function stopMusic() {
+
+  musicPlaying = false;
+
+  if (musicTimer) {
+
+    clearTimeout(musicTimer);
+
+    musicTimer = null;
+  }
+}
+
+
+/* ============================================================
+   이펙트
 ============================================================ */
 
 function burst(x, y, color="#ffe95c") {
 
   for (let i = 0; i < 12; i++) {
 
-    const p = document.createElement("div");
+    const p =
+      document.createElement("div");
 
-    p.className = "particle";
+    p.className =
+      "particle";
 
-    p.style.left = x + "px";
-    p.style.top = y + "px";
-    p.style.background = color;
+    p.style.left =
+      x + "px";
+
+    p.style.top =
+      y + "px";
+
+    p.style.background =
+      color;
 
     p.style.setProperty(
       "--x",
@@ -878,23 +1603,37 @@ function burst(x, y, color="#ffe95c") {
 
     game.appendChild(p);
 
-    setTimeout(() => p.remove(), 700);
+    setTimeout(
+      () => p.remove(),
+      700
+    );
   }
 }
 
+
 function clickText(x, y, text="+1") {
 
-  const el = document.createElement("div");
+  const el =
+    document.createElement("div");
 
-  el.className = "clickBurst";
-  el.textContent = text;
+  el.className =
+    "clickBurst";
 
-  el.style.left = x + "px";
-  el.style.top = y + "px";
+  el.textContent =
+    text;
+
+  el.style.left =
+    x + "px";
+
+  el.style.top =
+    y + "px";
 
   game.appendChild(el);
 
-  setTimeout(() => el.remove(), 500);
+  setTimeout(
+    () => el.remove(),
+    500
+  );
 }
 
 
@@ -905,25 +1644,35 @@ function clickText(x, y, text="+1") {
 function updateLives() {
 
   livesEl.textContent =
-    "❤️".repeat(Math.max(0, lives)) +
-    "🖤".repeat(3 - lives);
+    "❤️".repeat(Math.max(0,lives)) +
+    "🖤".repeat(3-lives);
 }
+
 
 function updateDamage() {
 
   damageEl.textContent =
-    `구슬 피해 ${coreHits} / 3`;
+    `코어 피해 ${coreHits} / 3`;
 }
+
 
 function updateTimer() {
 
-  const remaining = Math.max(
-    0,
-    GAME_TIME - elapsed
-  );
+  const remaining =
+    Math.max(
+      0,
+      GAME_TIME - elapsed
+    );
 
-  const min = Math.floor(remaining / 60);
-  const sec = Math.ceil(remaining % 60);
+  const min =
+    Math.floor(
+      remaining / 60
+    );
+
+  const sec =
+    Math.ceil(
+      remaining % 60
+    );
 
   timerEl.textContent =
     `${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`;
@@ -931,84 +1680,139 @@ function updateTimer() {
 
 
 /* ============================================================
-   GHOST CREATION
+   귀신 생성
 ============================================================ */
 
 function createGhost() {
 
   if (!gameRunning) return;
 
-  const id = ++ghostId;
+  const id =
+    ++ghostId;
+
 
   /*
-    시간이 지날수록 분홍 귀신 등장 확률 증가
+    시간이 지날수록
+    분홍 귀신 확률 증가
   */
+
   const pinkChance =
-    Math.min(.30, .10 + elapsed / 180);
+    Math.min(
+      .30,
+      .10 + elapsed / 180
+    );
 
   const type =
     Math.random() < pinkChance
       ? "pink"
       : "blue";
 
-  const el = document.createElement("div");
+
+  const el =
+    document.createElement("div");
 
   el.className =
     `ghost ${type}`;
 
+
   el.innerHTML = `
     <div class="ghostBody">
+
       <div class="eyes">
+
         <div class="eye"></div>
         <div class="eye"></div>
+
       </div>
+
       <div class="mouth"></div>
+
     </div>
   `;
 
-  /*
-    화면 가장자리에서 생성
-  */
-  const side =
-    Math.floor(Math.random() * 4);
 
-  let x, y;
+  /*
+    사방에서 등장
+  */
+
+  const side =
+    Math.floor(
+      Math.random() * 4
+    );
+
+  let x;
+  let y;
+
 
   if (side === 0) {
-    x = Math.random() * innerWidth;
+
+    x =
+      Math.random() *
+      innerWidth;
+
     y = -70;
+
   }
+
 
   else if (side === 1) {
-    x = innerWidth + 70;
-    y = Math.random() * innerHeight;
+
+    x =
+      innerWidth + 70;
+
+    y =
+      Math.random() *
+      innerHeight;
+
   }
+
 
   else if (side === 2) {
-    x = Math.random() * innerWidth;
-    y = innerHeight + 70;
+
+    x =
+      Math.random() *
+      innerWidth;
+
+    y =
+      innerHeight + 70;
+
   }
+
 
   else {
+
     x = -70;
-    y = Math.random() * innerHeight;
+
+    y =
+      Math.random() *
+      innerHeight;
   }
 
-  /*
-    중앙 구슬 방향
-  */
-  const coreX = innerWidth / 2;
-  const coreY = innerHeight * .53;
 
-  const dx = coreX - x;
-  const dy = coreY - y;
+  const coreX =
+    innerWidth / 2;
+
+  const coreY =
+    innerHeight * .53;
+
+
+  const dx =
+    coreX - x;
+
+  const dy =
+    coreY - y;
+
 
   const distance =
-    Math.sqrt(dx*dx + dy*dy);
+    Math.sqrt(
+      dx*dx + dy*dy
+    );
+
 
   /*
-    시간이 지날수록 속도 증가
+    시간에 따라 속도 증가
   */
+
   const difficulty =
     elapsed / GAME_TIME;
 
@@ -1017,163 +1821,227 @@ function createGhost() {
     difficulty * 65 +
     Math.random() * 25;
 
+
   const ghost = {
+
     id,
     type,
+
     x,
     y,
+
     speed,
+
     el,
+
     active: true
   };
 
-  el.style.left = x + "px";
-  el.style.top = y + "px";
+
+  el.style.left =
+    x + "px";
+
+  el.style.top =
+    y + "px";
+
 
   /*
-    클릭 이벤트를 ghost 자체에 직접 연결.
-    이벤트 버블링 문제 방지.
+    클릭
   */
-  el.addEventListener("pointerdown", function(e) {
 
-    e.preventDefault();
-    e.stopPropagation();
+  el.addEventListener(
+    "pointerdown",
+    function(e) {
 
-    if (!ghost.active || !gameRunning) return;
+      e.preventDefault();
+      e.stopPropagation();
 
-    if (ghost.type === "blue") {
-      killBlueGhost(ghost);
-    } else {
-      openPinkBattle(ghost);
+      if (
+        !ghost.active ||
+        !gameRunning
+      ) {
+        return;
+      }
+
+
+      if (
+        ghost.type === "blue"
+      ) {
+
+        killBlueGhost(ghost);
+
+      }
+
+      else {
+
+        openPinkBattle(ghost);
+
+      }
+
     }
-  });
+  );
+
 
   ghostLayer.appendChild(el);
+
   ghosts.push(ghost);
 }
 
 
 /* ============================================================
-   BLUE GHOST
+   파란 귀신 제거
 ============================================================ */
 
 function killBlueGhost(ghost) {
 
-  if (!ghost.active) return;
+  if (!ghost.active) {
+    return;
+  }
 
   ghost.active = false;
 
-  const x = ghost.x;
-  const y = ghost.y;
+  const x =
+    ghost.x;
+
+  const y =
+    ghost.y;
 
   ghost.el.classList.add("hit");
 
-  burst(x, y, "#a8eaff");
+  burst(
+    x,
+    y,
+    "#a8eaff"
+  );
+
   sound("pop");
+
 
   setTimeout(() => {
 
     ghost.el.remove();
 
-    ghosts = ghosts.filter(
-      g => g.id !== ghost.id
-    );
+    ghosts =
+      ghosts.filter(
+        g => g.id !== ghost.id
+      );
 
   }, 180);
 }
 
 
 /* ============================================================
-   PINK GHOST
+   분홍 귀신
 ============================================================ */
 
 function openPinkBattle(ghost) {
 
   /*
-    이미 다른 분홍 귀신을 처리 중이면 무시
+    이미 다른 분홍 귀신을
+    처리 중이면 무시
   */
-  if (activePink) return;
 
-  activePink = ghost;
+  if (activePink) {
+    return;
+  }
+
+
+  activePink =
+    ghost;
+
   pinkHits = 0;
 
-  /*
-    필드에서 분홍 귀신은 일단 숨긴다.
-    연타하는 동안 이동하지 않음.
-  */
-  ghost.el.style.display = "none";
 
-  pinkOverlay.classList.add("active");
+  /*
+    필드의 원래 귀신 숨김
+  */
+
+  ghost.el.style.display =
+    "none";
+
+
+  pinkOverlay.classList.add(
+    "active"
+  );
+
 
   updatePinkUI();
 
+
   /*
-    약 3초 안에 10번 못 누르면
-    생명 1개 감소
+    3초 안에 10번
   */
-  pinkTimer = setTimeout(() => {
 
-    if (
-      activePink === ghost &&
-      pinkHits < 10
-    ) {
+  pinkTimer =
+    setTimeout(() => {
 
-      sound("damage");
+      if (
+        activePink === ghost &&
+        pinkHits < 10
+      ) {
 
-      lives--;
+        sound("damage");
 
-      updateLives();
+        lives--;
 
-      burst(
-        innerWidth / 2,
-        innerHeight / 2,
-        "#ff5b7d"
-      );
+        updateLives();
 
-      /*
-        타임아웃이므로 분홍 귀신도 사라짐.
-        같은 귀신이 다시 처리되지 않도록 active=false.
-      */
-      ghost.active = false;
+        burst(
+          innerWidth / 2,
+          innerHeight / 2,
+          "#ff5b7d"
+        );
 
-      closePinkBattle();
 
-      if (lives <= 0) {
-        endGame(false);
+        /*
+          시간 초과한 귀신 제거
+        */
+
+        ghost.active = false;
+
+        closePinkBattle();
+
+
+        if (lives <= 0) {
+
+          endGame(false);
+
+        }
+
       }
-    }
 
-  }, 3000);
+    }, 3000);
 }
 
 
 /*
-  ⭐ 핵심 수정 부분 ⭐
-
-  분홍 귀신을 클릭할 때마다 반드시
-  pinkHits += 1
-
-  그리고 10이 되는 순간
-  activePink.active = false
-  -> 해당 귀신 삭제
-  -> 모달 닫기
-
-  기존처럼 화면을 닫기만 하고
-  원래 귀신 객체를 남겨두는 문제가 없음.
+  분홍 귀신 연타
 */
+
 function hitPink() {
 
-  if (!activePink) return;
-  if (!activePink.active) return;
+  if (!activePink) {
+    return;
+  }
+
+  if (!activePink.active) {
+    return;
+  }
+
 
   pinkHits++;
 
+
   sound("click");
 
-  comboNumber.textContent = pinkHits;
+
+  comboNumber.textContent =
+    pinkHits;
+
 
   comboProgress.style.width =
     `${pinkHits * 10}%`;
+
 
   clickText(
     innerWidth / 2,
@@ -1181,30 +2049,45 @@ function hitPink() {
     "+1"
   );
 
+
   burst(
     innerWidth / 2 +
       (Math.random()-.5)*100,
+
     innerHeight * .45 +
       (Math.random()-.5)*80,
+
     "#fff16b"
   );
 
+
   /*
-    정확히 10번!
+    ⭐ 10번 달성
   */
+
   if (pinkHits >= 10) {
 
-    clearTimeout(pinkTimer);
+    clearTimeout(
+      pinkTimer
+    );
 
-    const defeated = activePink;
+
+    const defeated =
+      activePink;
+
 
     /*
-      ⭐ 가장 중요 ⭐
-      귀신 자체를 비활성화
+      가장 중요한 부분.
+
+      이 귀신 자체를 완전히
+      비활성화한다.
     */
+
     defeated.active = false;
 
+
     sound("pop");
+
 
     burst(
       innerWidth / 2,
@@ -1212,85 +2095,114 @@ function hitPink() {
       "#ffb6ce"
     );
 
+
     /*
-      10연타 성공 연출 후 삭제
+      실제 DOM에서도 제거
     */
+
     setTimeout(() => {
 
       defeated.el.remove();
 
-      ghosts = ghosts.filter(
-        g => g.id !== defeated.id
-      );
+
+      ghosts =
+        ghosts.filter(
+          g =>
+            g.id !== defeated.id
+        );
+
 
       closePinkBattle();
 
     }, 160);
 
-  } else {
+  }
+
+  else {
 
     updatePinkUI();
+
   }
 }
 
+
 function updatePinkUI() {
 
-  comboNumber.textContent = pinkHits;
+  comboNumber.textContent =
+    pinkHits;
 
   comboProgress.style.width =
     `${pinkHits * 10}%`;
 }
 
+
 function closePinkBattle() {
 
-  clearTimeout(pinkTimer);
+  clearTimeout(
+    pinkTimer
+  );
 
   pinkTimer = null;
 
-  pinkOverlay.classList.remove("active");
+
+  pinkOverlay.classList.remove(
+    "active"
+  );
+
 
   activePink = null;
+
   pinkHits = 0;
 
-  comboNumber.textContent = "0";
-  comboProgress.style.width = "0%";
+
+  comboNumber.textContent =
+    "0";
+
+  comboProgress.style.width =
+    "0%";
 }
 
 
 /*
-  ⭐ 분홍 연타 영역에 직접 pointerdown 연결
-  ghostLayer와 충돌하지 않게 한다.
+  분홍 귀신 화면은
+  화면 아무 곳이나 클릭하면 연타
 */
-document.getElementById("pinkOverlay")
-  .addEventListener("pointerdown", function(e) {
+
+pinkOverlay.addEventListener(
+  "pointerdown",
+  function(e) {
 
     e.preventDefault();
 
-    /*
-      아무 곳이나 눌러도 연타가 올라가도록 설정.
-      특히 모바일에서도 pointerdown 사용.
-    */
     if (activePink) {
       hitPink();
     }
-  });
+
+  }
+);
 
 
 /* ============================================================
-   CORE DAMAGE
+   코어 피해
 ============================================================ */
 
 function damageCore(ghost) {
 
-  if (!ghost.active) return;
+  if (!ghost.active) {
+    return;
+  }
+
 
   ghost.active = false;
 
   coreHits++;
 
+
   updateDamage();
 
+
   sound("damage");
+
 
   burst(
     innerWidth / 2,
@@ -1298,44 +2210,74 @@ function damageCore(ghost) {
     "#ff6464"
   );
 
+
   /*
-    구슬 피격 효과
+    코어 흔들림
   */
-  document.getElementById("coreArea")
+
+  document
+    .getElementById("coreArea")
     .animate(
+
       [
-        { transform:"translate(-50%,-50%) scale(1)" },
-        { transform:"translate(-50%,-50%) scale(1.18)" },
-        { transform:"translate(-50%,-50%) scale(1)" }
+        {
+          transform:
+            "translate(-50%,-50%) scale(1)"
+        },
+
+        {
+          transform:
+            "translate(-50%,-50%) scale(1.18)"
+        },
+
+        {
+          transform:
+            "translate(-50%,-50%) scale(1)"
+        }
+
       ],
+
       {
-        duration:350
+        duration: 350
       }
+
     );
+
 
   ghost.el.remove();
 
-  ghosts = ghosts.filter(
-    g => g.id !== ghost.id
-  );
+
+  ghosts =
+    ghosts.filter(
+      g =>
+        g.id !== ghost.id
+    );
+
 
   if (coreHits >= 3) {
+
     endGame(false);
+
   }
 }
 
 
 /* ============================================================
-   GAME LOOP
+   게임 루프
 ============================================================ */
 
 function gameLoop(timestamp) {
 
-  if (!gameRunning) return;
+  if (!gameRunning) {
+    return;
+  }
+
 
   if (!lastTime) {
-    lastTime = timestamp;
+    lastTime =
+      timestamp;
   }
+
 
   const dt =
     Math.min(
@@ -1343,197 +2285,308 @@ function gameLoop(timestamp) {
       .05
     );
 
-  lastTime = timestamp;
+
+  lastTime =
+    timestamp;
+
 
   elapsed += dt;
 
+
   updateTimer();
 
-  /*
-    귀신 이동
-  */
-  const coreX = innerWidth / 2;
-  const coreY = innerHeight * .53;
 
-  ghosts.forEach(ghost => {
+  const coreX =
+    innerWidth / 2;
 
-    if (!ghost.active) return;
+  const coreY =
+    innerHeight * .53;
 
-    /*
-      분홍 연타 중에는 이동하지 않는다.
-    */
-    if (activePink === ghost) return;
 
-    const dx = coreX - ghost.x;
-    const dy = coreY - ghost.y;
+  ghosts.forEach(
+    ghost => {
 
-    const distance =
-      Math.sqrt(dx*dx + dy*dy);
+      if (!ghost.active) {
+        return;
+      }
 
-    /*
-      시간이 지나면 속도 추가 상승
-    */
-    const speedBonus =
-      1 + elapsed / 75;
 
-    ghost.x +=
-      dx / distance *
-      ghost.speed *
-      speedBonus *
-      dt;
+      /*
+        분홍 귀신 연타 중에는
+        움직이지 않음
+      */
 
-    ghost.y +=
-      dy / distance *
-      ghost.speed *
-      speedBonus *
-      dt;
+      if (
+        activePink === ghost
+      ) {
+        return;
+      }
 
-    ghost.el.style.left =
-      ghost.x + "px";
 
-    ghost.el.style.top =
-      ghost.y + "px";
+      const dx =
+        coreX - ghost.x;
 
-    /*
-      중앙 구슬에 접근
-    */
-    if (distance < 80) {
+      const dy =
+        coreY - ghost.y;
 
-      damageCore(ghost);
+
+      const distance =
+        Math.sqrt(
+          dx*dx + dy*dy
+        );
+
+
+      /*
+        시간이 갈수록 속도 증가
+      */
+
+      const speedBonus =
+        1 + elapsed / 75;
+
+
+      ghost.x +=
+        dx / distance *
+        ghost.speed *
+        speedBonus *
+        dt;
+
+
+      ghost.y +=
+        dy / distance *
+        ghost.speed *
+        speedBonus *
+        dt;
+
+
+      ghost.el.style.left =
+        ghost.x + "px";
+
+      ghost.el.style.top =
+        ghost.y + "px";
+
+
+      /*
+        코어 도착
+      */
+
+      if (distance < 72) {
+
+        damageCore(
+          ghost
+        );
+
+      }
+
     }
-  });
+  );
+
 
   /*
-    게임 종료
+    1분 생존 성공
   */
-  if (elapsed >= GAME_TIME) {
+
+  if (
+    elapsed >= GAME_TIME
+  ) {
 
     endGame(true);
+
     return;
   }
 
-  requestAnimationFrame(gameLoop);
+
+  requestAnimationFrame(
+    gameLoop
+  );
 }
 
 
 /* ============================================================
-   SPAWN SYSTEM
+   귀신 생성 속도
 ============================================================ */
-
-let spawnTimer = null;
 
 function scheduleSpawn() {
 
-  if (!gameRunning) return;
+  if (!gameRunning) {
+    return;
+  }
 
-  /*
-    초반 1.0초
-    후반 0.35초까지 빨라짐
-  */
+
   const progress =
     elapsed / GAME_TIME;
+
+
+  /*
+    1초
+    ↓
+    0.38초
+  */
 
   const interval =
     1000 -
     progress * 620;
 
-  spawnTimer = setTimeout(() => {
 
-    createGhost();
+  spawnTimer =
+    setTimeout(() => {
 
-    /*
-      후반에는 한 번에 2마리 등장할 확률 증가
-    */
-    if (
-      elapsed > 25 &&
-      Math.random() < elapsed / 130
-    ) {
       createGhost();
-    }
 
-    scheduleSpawn();
 
-  }, interval);
+      /*
+        후반부에는
+        한 번에 2마리도 등장
+      */
+
+      if (
+        elapsed > 25 &&
+        Math.random() <
+          elapsed / 130
+      ) {
+
+        createGhost();
+
+      }
+
+
+      scheduleSpawn();
+
+    }, interval);
 }
 
 
 /* ============================================================
-   START
+   게임 시작
 ============================================================ */
 
 function startGame() {
 
   initAudio();
 
+  /*
+    배경음악 시작
+  */
+
+  playMusic();
+
+
   gameRunning = true;
 
+
   elapsed = 0;
+
   lives = 3;
+
   coreHits = 0;
 
+
   ghosts = [];
+
 
   updateLives();
   updateDamage();
   updateTimer();
 
-  startScreen.style.display = "none";
+
+  startScreen.style.display =
+    "none";
+
 
   lastTime = 0;
 
+
   /*
-    초기 귀신 몇 마리
+    처음부터 너무 심심하지 않게
+    귀신 5마리
   */
-  for (let i = 0; i < 5; i++) {
+
+  for (
+    let i = 0;
+    i < 5;
+    i++
+  ) {
+
     createGhost();
+
   }
+
 
   scheduleSpawn();
 
-  requestAnimationFrame(gameLoop);
+
+  requestAnimationFrame(
+    gameLoop
+  );
 }
+
 
 document
   .getElementById("startBtn")
-  .addEventListener("click", startGame);
+  .addEventListener(
+    "click",
+    startGame
+  );
 
 
 /* ============================================================
-   END
+   게임 종료
 ============================================================ */
 
 function endGame(clear) {
 
-  if (!gameRunning) return;
+  if (!gameRunning) {
+    return;
+  }
+
 
   gameRunning = false;
 
-  clearTimeout(spawnTimer);
-  clearTimeout(pinkTimer);
+
+  clearTimeout(
+    spawnTimer
+  );
+
+  clearTimeout(
+    pinkTimer
+  );
+
+
+  stopMusic();
+
 
   closePinkBattle();
+
 
   if (clear) {
 
     sound("clear");
 
-    clearScreen.classList.add("show");
+    clearScreen.classList.add(
+      "show"
+    );
 
-  } else {
+  }
+
+  else {
 
     sound("error");
 
-    gameOver.classList.add("show");
+    gameOver.classList.add(
+      "show"
+    );
+
   }
 }
 
 
 /* ============================================================
-   INITIAL
+   초기 UI
 ============================================================ */
 
 updateLives();
+
 updateDamage();
+
 updateTimer();
 
 </script>
