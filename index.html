@@ -1,744 +1,1023 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>구슬 지키기 게임</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>코어를 지켜라!</title>
+<style>
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#0c1b18;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif
+}
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center
+}
+#game{
+  position:relative;
+  width:min(100vw,177.777vh);
+  height:min(56.25vw,100vh);
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 50%,#d8f99b 0,#a9e66e 20%,#5fa94d 52%,#1d5339 100%);
+  cursor:crosshair
+}
+#game:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 20% 15%,rgba(255,255,255,.2) 0 2px,transparent 3px),
+    radial-gradient(circle at 80% 30%,rgba(255,255,255,.18) 0 2px,transparent 3px),
+    radial-gradient(circle at 35% 80%,rgba(255,255,255,.14) 0 2px,transparent 3px);
+  background-size:130px 110px,170px 140px,190px 150px;
+  opacity:.7;
+  pointer-events:none
+}
 
-        :root {
-            --bg-color: #a8d8ea; 
-            --grass-color: #92d050; /* 조금 더 밝고 귀여운 잔디색 */
-            --ui-bg: #fff8e7; /* 크림색 UI 배경 */
-            --ui-border: #d7ccc8;
-            --text-color: #5d4037; /* 부드러운 갈색 텍스트 */
-            --font-family: 'Jua', 'Comic Sans MS', '맑은 고딕', sans-serif;
-        }
+button{
+  font:inherit;
+  border:0;
+  cursor:pointer
+}
 
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f1f2f6; /* 바깥 배경도 부드럽게 */
-            overflow: hidden;
-            font-family: var(--font-family);
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
+#startScreen,#endScreen{
+  position:absolute;
+  inset:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(10,35,25,.72);
+  backdrop-filter:blur(5px)
+}
 
-        /* 16:9 비율 유지 컨테이너 */
-        #game-container {
-            width: 100vw;
-            height: calc(100vw * 9 / 16);
-            max-width: 1280px;
-            max-height: 720px;
-            background-color: var(--grass-color);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-            border: 8px solid #fff;
-            border-radius: 24px;
-        }
+.panel{
+  width:min(520px,88%);
+  padding:38px 32px;
+  border-radius:28px;
+  background:rgba(255,248,220,.96);
+  box-shadow:0 18px 60px rgba(0,0,0,.35);
+  text-align:center;
+  border:4px solid #fff
+}
 
-        /* 캔버스 */
-        canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            cursor: pointer;
-        }
+.panel h1{
+  margin:0 0 12px;
+  color:#273c20;
+  font-size:clamp(30px,5vw,46px);
+  line-height:1.15
+}
 
-        /* 상단 UI (타이머, 목숨) */
-        #top-ui {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            pointer-events: none;
-        }
+.panel p{
+  margin:10px 0;
+  color:#536047;
+  font-weight:700;
+  font-size:17px;
+  line-height:1.6
+}
 
-        .cute-badge {
-            background-color: var(--ui-bg);
-            border: 4px solid var(--ui-border);
-            border-radius: 30px;
-            padding: 10px 25px;
-            color: var(--text-color);
-            font-size: 26px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
-        }
+.startBtn{
+  margin-top:22px;
+  padding:14px 34px;
+  border-radius:999px;
+  color:white;
+  background:#66b83f;
+  font-size:22px;
+  font-weight:900;
+  box-shadow:0 6px 0 #438328;
+  transition:.12s
+}
+.startBtn:active{
+  transform:translateY(5px);
+  box-shadow:0 1px 0 #438328
+}
 
-        #timer-icon {
-            margin-right: 8px;
-            font-size: 28px;
-        }
+#hud{
+  position:absolute;
+  inset:0;
+  z-index:20;
+  pointer-events:none
+}
 
-        .heart {
-            color: #ff6b81;
-            margin-left: 6px;
-            text-shadow: 1px 1px 0 #d93d59;
-        }
-        .heart.lost {
-            color: #dfe4ea;
-            text-shadow: none;
-        }
+.hudBox{
+  position:absolute;
+  top:18px;
+  padding:10px 18px;
+  border-radius:18px;
+  background:rgba(255,248,220,.94);
+  color:#342c1c;
+  font-weight:900;
+  box-shadow:0 5px 15px rgba(0,0,0,.2)
+}
 
-        /* 화면 중앙 연타 UI (보스전) */
-        #mash-ui {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #ff6b81;
-            border: 6px solid #fff;
-            border-radius: 40px;
-            padding: 30px 60px;
-            text-align: center;
-            display: none; 
-            z-index: 10;
-            pointer-events: auto; 
-            cursor: pointer;
-            box-shadow: 0 10px 0 #d93d59, 0 15px 20px rgba(0,0,0,0.3);
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+#timerBox{left:18px}
+#lifeBox{right:18px}
 
-        @keyframes popIn {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
+#timer{
+  font-size:27px
+}
 
-        #mash-text {
-            font-size: 70px;
-            color: #fff;
-            margin-bottom: 5px;
-            text-shadow: 3px 3px 0 #d93d59;
-            letter-spacing: 2px;
-        }
+#lives{
+  color:#ef5966;
+  font-size:27px;
+  letter-spacing:4px
+}
 
-        #mash-count {
-            background-color: #2f3542;
-            color: #fff;
-            font-size: 35px;
-            padding: 5px 20px;
-            border-radius: 20px;
-            display: inline-block;
-        }
+#core{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:145px;
+  height:145px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 35% 28%,#fff 0 7%,transparent 8%),
+    radial-gradient(circle at 55% 45%,#fff9a0 0,#ffd83c 45%,#f7ad12 75%,#e88a00 100%);
+  border:7px solid #fff5a3;
+  box-shadow:
+    0 0 20px #fff6a0,
+    0 0 45px #ffd62f,
+    0 0 90px rgba(255,207,32,.7);
+  z-index:5
+}
 
-        /* 오버레이 팝업 (게임 시작, 종료) */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-        }
+#core:before{
+  content:"";
+  position:absolute;
+  inset:-30px;
+  border:3px solid rgba(255,239,100,.7);
+  border-radius:50%;
+  animation:pulse 1.5s infinite
+}
 
-        .popup-box {
-            background-color: var(--ui-bg);
-            border: 6px solid var(--ui-border);
-            border-radius: 30px;
-            padding: 50px;
-            text-align: center;
-            box-shadow: 0 10px 0 rgba(0,0,0,0.1);
-            max-width: 600px;
-        }
+#core:after{
+  content:"";
+  position:absolute;
+  inset:-55px;
+  border:2px solid rgba(255,238,85,.35);
+  border-radius:50%;
+  animation:pulse 2.2s infinite reverse
+}
 
-        .popup-box h1 {
-            font-size: 55px;
-            color: var(--text-color);
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
+@keyframes pulse{
+  0%,100%{transform:scale(.92);opacity:.4}
+  50%{transform:scale(1.08);opacity:1}
+}
 
-        .popup-box p {
-            font-size: 24px;
-            color: #747d8c;
-            line-height: 1.5;
-            margin-bottom: 40px;
-        }
+#hero{
+  position:absolute;
+  left:50%;
+  top:calc(50% + 95px);
+  transform:translate(-50%,-50%);
+  width:115px;
+  z-index:8;
+  pointer-events:none;
+  filter:drop-shadow(0 7px 7px rgba(0,0,0,.25))
+}
 
-        .cute-button {
-            padding: 15px 50px;
-            font-size: 30px;
-            font-family: var(--font-family);
-            background-color: #a4e1a4;
-            color: #fff;
-            border: 4px solid #fff;
-            border-radius: 40px;
-            cursor: pointer;
-            box-shadow: 0 6px 0 #7cb37c, 0 10px 15px rgba(0,0,0,0.1);
-            transition: all 0.1s;
-        }
+.ghost{
+  position:absolute;
+  width:82px;
+  height:82px;
+  object-fit:contain;
+  z-index:10;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-drag:none;
+  filter:drop-shadow(0 7px 8px rgba(0,0,0,.25));
+  transition:transform .08s
+}
 
-        .cute-button:hover {
-            transform: translateY(2px);
-            box-shadow: 0 4px 0 #7cb37c, 0 8px 10px rgba(0,0,0,0.1);
-        }
+.ghost:hover{
+  transform:scale(1.08)
+}
 
-        .cute-button:active {
-            transform: translateY(6px);
-            box-shadow: 0 0 0 #7cb37c;
-        }
+.ghost.hit{
+  animation:ghostHit .18s
+}
 
-        /* 캐릭터 & 구슬 SVG 소스 (CSS로 로드) */
-        #character-sprite, #marble-sprite, #ghost-blue-sprite, #ghost-pink-sprite {
-            display: none;
-        }
+@keyframes ghostHit{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.25) rotate(-5deg)}
+  100%{transform:scale(0);opacity:0}
+}
 
-    </style>
+#effects{
+  position:absolute;
+  inset:0;
+  z-index:30;
+  pointer-events:none
+}
+
+.spark{
+  position:absolute;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#fff;
+  animation:spark .55s forwards
+}
+
+@keyframes spark{
+  from{
+    transform:translate(0,0) scale(1);
+    opacity:1
+  }
+  to{
+    transform:translate(var(--x),var(--y)) scale(0);
+    opacity:0
+  }
+}
+
+#message{
+  position:absolute;
+  left:50%;
+  bottom:28px;
+  transform:translateX(-50%);
+  z-index:25;
+  padding:12px 24px;
+  border-radius:999px;
+  background:rgba(20,25,18,.8);
+  color:white;
+  font-size:18px;
+  font-weight:900;
+  pointer-events:none
+}
+
+#comboScreen{
+  position:absolute;
+  inset:0;
+  z-index:80;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(245,145,170,.88)
+}
+
+#comboScreen.show{
+  display:flex
+}
+
+.comboPanel{
+  width:min(620px,82%);
+  text-align:center;
+  animation:comboIn .18s ease-out
+}
+
+@keyframes comboIn{
+  from{transform:scale(.7);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+#comboGhost{
+  width:min(390px,70vw);
+  max-height:55vh;
+  object-fit:contain;
+  filter:drop-shadow(0 15px 15px rgba(0,0,0,.2))
+}
+
+.comboTitle{
+  margin:-8px 0 2px;
+  font-size:clamp(45px,8vw,85px);
+  font-weight:1000;
+  color:#ff675f;
+  -webkit-text-stroke:4px white;
+  text-shadow:5px 6px 0 #452421;
+  transform:rotate(-4deg)
+}
+
+#comboCount{
+  display:inline-block;
+  min-width:150px;
+  padding:9px 24px;
+  border-radius:14px;
+  background:#1f1a1a;
+  color:white;
+  font-size:30px;
+  font-weight:1000
+}
+
+#endScreen{
+  display:none
+}
+
+#endTitle{
+  font-size:45px
+}
+
+#endText{
+  font-size:20px;
+  margin:10px 0 20px
+}
+
+#flash{
+  position:absolute;
+  inset:0;
+  z-index:70;
+  background:#fff;
+  opacity:0;
+  pointer-events:none
+}
+
+#flash.show{
+  animation:flash .25s
+}
+
+@keyframes flash{
+  0%{opacity:.8}
+  100%{opacity:0}
+}
+
+@media(max-width:600px){
+  #core{
+    width:105px;
+    height:105px
+  }
+
+  #hero{
+    width:88px;
+    top:calc(50% + 72px)
+  }
+
+  .ghost{
+    width:62px;
+    height:62px
+  }
+
+  .hudBox{
+    top:10px;
+    padding:7px 12px
+  }
+
+  #timer{
+    font-size:20px
+  }
+
+  #lives{
+    font-size:20px
+  }
+
+  #message{
+    bottom:12px;
+    font-size:14px;
+    padding:9px 15px
+  }
+}
+</style>
 </head>
+
 <body>
 
-    <div id="game-container">
-        <canvas id="gameCanvas"></canvas>
+<div id="game">
 
-        <!-- 상단 UI -->
-        <div id="top-ui">
-            <div id="timer" class="cute-badge">
-                <span id="timer-icon">⏱️</span><span id="time-display">01:00</span>
-            </div>
-            <div id="lives" class="cute-badge">
-                <span class="heart">❤️</span><span class="heart">❤️</span><span class="heart">❤️</span>
-            </div>
-        </div>
+  <div id="startScreen">
+    <div class="panel">
+      <h1>🌟 코어를 지켜라!</h1>
+      <p>
+        사방에서 몰려오는 귀신을 클릭해서 제거하세요!<br>
+        🩵 파란 귀신은 한 번 클릭하면 제거됩니다.<br>
+        🩷 분홍 귀신은 클릭 후 <b>연타!</b>해야 합니다.
+      </p>
+      <p>귀신이 코어에 3번 닿기 전에<br><b>1분을 버티면 클리어!</b></p>
+      <button class="startBtn" id="startBtn">게임 시작</button>
+    </div>
+  </div>
 
-        <!-- 연타 UI (보스전) -->
-        <div id="mash-ui" onclick="window.game.handleMashClick()">
-            <div id="mash-text">연타!</div>
-            <div id="mash-count">0 / 10</div>
-        </div>
-
-        <!-- 게임 시작 화면 -->
-        <div id="start-screen" class="overlay">
-            <div class="popup-box">
-                <h1>구슬을 지켜라! 🟢</h1>
-                <p>60초 동안 몰려오는 귀신들을<br>클릭해서 없애주세요!<br>분홍 귀신은 10번 연타해야 해요!</p>
-                <button class="cute-button" onclick="window.game.start()">게임 시작</button>
-            </div>
-        </div>
-
-        <!-- 게임 오버 화면 -->
-        <div id="gameover-screen" class="overlay" style="display: none;">
-            <div class="popup-box">
-                <h1 style="color: #ff6b81;">게임 오버 💦</h1>
-                <p id="gameover-reason">귀신이 구슬에 3번 닿았어요!</p>
-                <button class="cute-button" onclick="window.game.reset()">다시 시도</button>
-            </div>
-        </div>
-
-        <!-- 클리어 화면 -->
-        <div id="clear-screen" class="overlay" style="display: none;">
-            <div class="popup-box">
-                <h1 style="color: #ff9f43;">클리어! 🎉</h1>
-                <p>1분 동안 구슬을 무사히 지켜냈어요!<br>정말 대단해요!</p>
-                <button class="cute-button" onclick="window.game.reset()">다시 하기</button>
-            </div>
-        </div>
+  <div id="hud">
+    <div class="hudBox" id="timerBox">
+      ⏱️ <span id="timer">01:00</span>
     </div>
 
-    <!-- SVG 스프라이트 정의 (이전과 동일하게 유지) -->
-    <svg id="character-sprite" width="100" height="100" viewBox="0 0 100 100">
-        <ellipse cx="50" cy="55" rx="35" ry="30" fill="#a4e1a4" stroke="#5d4037" stroke-width="3"/>
-        <path d="M50 25 C 50 10, 40 5, 30 10 C 20 15, 30 25, 50 25 Z" fill="#a4e1a4" stroke="#5d4037" stroke-width="3"/>
-        <path d="M50 25 C 50 10, 60 5, 70 10 C 80 15, 70 25, 50 25 Z" fill="#a4e1a4" stroke="#5d4037" stroke-width="3"/>
-        <ellipse cx="40" cy="50" rx="8" ry="12" fill="#2d3436"/>
-        <ellipse cx="38" cy="46" rx="3" ry="5" fill="#fff"/>
-        <ellipse cx="60" cy="50" rx="8" ry="12" fill="#2d3436"/>
-        <ellipse cx="58" cy="46" rx="3" ry="5" fill="#fff"/>
-        <ellipse cx="33" cy="65" rx="6" ry="3" fill="#ffb8b8" opacity="0.8"/>
-        <ellipse cx="67" cy="65" rx="6" ry="3" fill="#ffb8b8" opacity="0.8"/>
-        <rect x="46" y="68" width="8" height="3" fill="#2d3436" rx="1.5"/>
-        <ellipse cx="50" cy="90" rx="15" ry="10" fill="#a4e1a4" stroke="#5d4037" stroke-width="2"/>
-        <ellipse cx="50" cy="90" rx="7" ry="5" fill="#fcf3ca" opacity="0.9"/>
-    </svg>
+    <div class="hudBox" id="lifeBox">
+      <span id="lives">♥ ♥ ♥</span>
+    </div>
+  </div>
 
-    <svg id="marble-sprite" width="60" height="60" viewBox="0 0 60 60">
-        <defs>
-            <radialGradient id="marble-grad" cx="40%" cy="40%" r="60%">
-                <stop offset="0%" stop-color="#fff"/>
-                <stop offset="50%" stop-color="#feca57"/>
-                <stop offset="100%" stop-color="#ff9f43"/>
-            </radialGradient>
-            <filter id="glow">
-                <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
-                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-        </defs>
-        <circle cx="30" cy="30" r="25" fill="url(#marble-grad)" filter="url(#glow)"/>
-    </svg>
+  <div id="core"></div>
 
-    <svg id="ghost-blue-sprite" width="45" height="45" viewBox="0 0 45 45">
-        <path d="M22.5 5 C 10 5, 5 17, 5 28 L 5 40 L 10 36 L 15 40 L 22.5 36 L 30 40 L 35 36 L 40 40 L 40 28 C 40 17, 35 5, 22.5 5 Z" fill="#c7ecee" stroke="#2d3436" stroke-width="2.5" stroke-linejoin="round"/>
-        <circle cx="16" cy="22" r="3.5" fill="#2d3436"/>
-        <circle cx="29" cy="22" r="3.5" fill="#2d3436"/>
-        <path d="M20 28 Q 22.5 30 25 28" fill="none" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-        <ellipse cx="12" cy="28" rx="3" ry="1.5" fill="#ffb8b8" opacity="0.6"/>
-        <ellipse cx="33" cy="28" rx="3" ry="1.5" fill="#ffb8b8" opacity="0.6"/>
-    </svg>
+  <img id="hero" alt="수호 캐릭터">
 
-    <svg id="ghost-pink-sprite" width="55" height="55" viewBox="0 0 55 55">
-        <defs>
-            <filter id="angry-glow">
-                <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-        </defs>
-        <path d="M27.5 5 C 12 5, 5 18, 5 32 L 5 48 L 12 43 L 19 48 L 27.5 43 L 36 48 L 43 43 L 50 48 L 50 32 C 50 18, 43 5, 27.5 5 Z" fill="#ff9ff3" stroke="#2d3436" stroke-width="3" stroke-linejoin="round" filter="url(#angry-glow)"/>
-        <path d="M14 18 L 22 24" stroke="#2d3436" stroke-width="3" stroke-linecap="round"/>
-        <path d="M22 18 L 14 24" stroke="#2d3436" stroke-width="3" stroke-linecap="round"/>
-        <path d="M33 18 L 41 24" stroke="#2d3436" stroke-width="3" stroke-linecap="round"/>
-        <path d="M41 18 L 33 24" stroke="#2d3436" stroke-width="3" stroke-linecap="round"/>
-        <path d="M23 33 Q 27.5 28 32 33 L 30 38 L 25 38 Z" fill="#2d3436"/>
-    </svg>
+  <div id="effects"></div>
 
-    <script>
-        // 오디오 시스템
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        let audioCtx;
+  <div id="message">
+    👻 귀신을 클릭해서 코어를 지켜주세요!
+  </div>
 
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new AudioContext();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-        }
+  <div id="flash"></div>
 
-        function createSound(freq, type, wave, duration, vol) {
-            if (!audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            if (type === 'slide') osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + duration);
-            osc.type = wave;
-            gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
-        }
+  <div id="comboScreen">
+    <div class="comboPanel">
+      <div class="comboTitle">연타!</div>
+      <img id="comboGhost" alt="분홍 귀신">
+      <br>
+      <div id="comboCount">0 / 10</div>
+    </div>
+  </div>
 
-        const sounds = {
-            click: () => createSound(700, 'fix', 'sine', 0.1, 0.2),
-            explosion: () => createSound(150, 'fix', 'sawtooth', 0.2, 0.4),
-            mash: () => createSound(900, 'fix', 'triangle', 0.05, 0.2),
-            damage: () => createSound(120, 'fix', 'square', 0.4, 0.4),
-            bossAppear: () => createSound(1500, 'slide', 'sawtooth', 0.5, 0.3),
-            win: () => {
-                createSound(523.25, 'fix', 'sine', 0.2, 0.3); // C5
-                setTimeout(() => createSound(659.25, 'fix', 'sine', 0.2, 0.3), 150); // E5
-                setTimeout(() => createSound(783.99, 'fix', 'sine', 0.4, 0.3), 300); // G5
-            },
-            lose: () => createSound(100, 'slide', 'square', 1.0, 0.4)
-        };
+  <div id="endScreen">
+    <div class="panel">
+      <h1 id="endTitle"></h1>
+      <p id="endText"></p>
+      <button class="startBtn" id="restartBtn">다시 하기</button>
+    </div>
+  </div>
 
-        let bgmOsc = null;
-        let bgmGain = null;
-        function playBgm() {
-            if (!audioCtx || bgmOsc) return;
-            bgmOsc = audioCtx.createOscillator();
-            bgmGain = audioCtx.createGain();
-            bgmOsc.type = 'triangle';
-            bgmOsc.frequency.setValueAtTime(130.81, audioCtx.currentTime);
-            const notes = [130.81, 146.83, 164.81, 196.00];
-            let noteIdx = 0;
-            const loop = () => {
-                if (!bgmOsc || !audioCtx) return;
-                bgmOsc.frequency.setValueAtTime(notes[noteIdx], audioCtx.currentTime);
-                noteIdx = (noteIdx + 1) % notes.length;
-                setTimeout(loop, 400);
-            };
-            bgmGain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-            bgmOsc.connect(bgmGain);
-            bgmGain.connect(audioCtx.destination);
-            bgmOsc.start();
-            loop();
-        }
-        function stopBgm() {
-            if (bgmOsc) {
-                bgmOsc.stop();
-                bgmOsc = null;
-            }
-        }
+</div>
 
-        const toDataUrl = (svgId) => {
-            const svg = document.getElementById(svgId);
-            const xml = new XMLSerializer().serializeToString(svg);
-            const svg64 = btoa(xml);
-            return 'data:image/svg+xml;base64,' + svg64;
-        };
-        const randomRange = (min, max) => Math.random() * (max - min) + min;
+<script>
+/* =========================
+   이미지
+========================= */
 
-        class Particle {
-            constructor(x, y, color) {
-                this.x = x; this.y = y;
-                this.size = randomRange(3, 8);
-                this.speedX = randomRange(-4, 4);
-                this.speedY = randomRange(-4, 4);
-                this.color = color;
-                this.life = 30;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY;
-                this.size *= 0.93;
-                this.life--;
-            }
-            draw(ctx) {
-                ctx.globalAlpha = this.life / 30;
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalAlpha = 1;
-            }
-        }
+const HERO_IMG =
+'data:image/webp;base64,REPLACE_HERO_IMAGE';
 
-        class Ghost {
-            constructor(width, height, type = 'blue') {
-                this.type = type;
-                this.sprite = new Image();
-                if (type === 'blue') {
-                    this.sprite.src = window.game.assets.ghostBlue;
-                    this.size = 40;
-                    this.speed = randomRange(0.6, 1.4);
-                    this.hp = 1;
-                } else {
-                    this.sprite.src = window.game.assets.ghostPink;
-                    this.size = 65;
-                    this.speed = 0.5;
-                    this.hp = 10;
-                }
-                const edge = Math.floor(Math.random() * 4);
-                const offset = 60;
-                if (edge === 0) { this.x = Math.random() * width; this.y = -offset; }
-                else if (edge === 1) { this.x = width + offset; this.y = Math.random() * height; }
-                else if (edge === 2) { this.x = Math.random() * width; this.y = height + offset; }
-                else { this.x = -offset; this.y = Math.random() * height; }
-                this.dead = false;
-            }
-            update(targetX, targetY) {
-                if (this.dead) return;
-                const angle = Math.atan2(targetY - this.y, targetX - this.x);
-                this.x += Math.cos(angle) * this.speed;
-                this.y += Math.sin(angle) * this.speed;
-            }
-            draw(ctx) {
-                if (this.dead) return;
-                const floatOffset = Math.sin(Date.now() * 0.005 + this.x) * 3;
-                ctx.drawImage(this.sprite, this.x - this.size/2, this.y - this.size/2 + floatOffset, this.size, this.size);
-            }
-            isHit(mx, my) {
-                const dist = Math.hypot(mx - this.x, my - this.y);
-                return dist < this.size / 1.5; // 터치 판정 조금 더 넓게
-            }
-        }
+const PINK_GHOST =
+'data:image/webp;base64,REPLACE_PINK_IMAGE';
 
-        class Game {
-            constructor() {
-                this.canvas = document.getElementById('gameCanvas');
-                this.ctx = this.canvas.getContext('2d');
-                this.internalW = 1280;
-                this.internalH = 720;
-                this.canvas.width = this.internalW;
-                this.canvas.height = this.internalH;
+const BLUE_GHOST =
+'data:image/webp;base64,REPLACE_BLUE_IMAGE';
 
-                this.assets = {
-                    character: toDataUrl('character-sprite'),
-                    marble: toDataUrl('marble-sprite'),
-                    ghostBlue: toDataUrl('ghost-blue-sprite'),
-                    ghostPink: toDataUrl('ghost-pink-sprite')
-                };
-                this.charImg = new Image(); this.charImg.src = this.assets.character;
-                this.marbleImg = new Image(); this.marbleImg.src = this.assets.marble;
 
-                this.ui = {
-                    timeDisplay: document.getElementById('time-display'),
-                    lives: document.getElementById('lives').getElementsByClassName('heart'),
-                    mash: document.getElementById('mash-ui'),
-                    mashCount: document.getElementById('mash-count'),
-                    start: document.getElementById('start-screen'),
-                    gameover: document.getElementById('gameover-screen'),
-                    clear: document.getElementById('clear-screen')
-                };
+/* =========================
+   DOM
+========================= */
 
-                this.canvas.addEventListener('mousedown', (e) => this.handleClick(e));
-                
-                // 모바일 터치 지원 추가
-                this.canvas.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    for(let i=0; i<e.changedTouches.length; i++) {
-                        this.handleClick(e.changedTouches[i]);
-                    }
-                }, {passive: false});
+const game=document.getElementById("game");
+const startScreen=document.getElementById("startScreen");
+const endScreen=document.getElementById("endScreen");
+const startBtn=document.getElementById("startBtn");
+const restartBtn=document.getElementById("restartBtn");
+const timerEl=document.getElementById("timer");
+const livesEl=document.getElementById("lives");
+const hero=document.getElementById("hero");
+const effects=document.getElementById("effects");
+const comboScreen=document.getElementById("comboScreen");
+const comboGhost=document.getElementById("comboGhost");
+const comboCount=document.getElementById("comboCount");
+const flash=document.getElementById("flash");
+const endTitle=document.getElementById("endTitle");
+const endText=document.getElementById("endText");
 
-                this.reset();
-                requestAnimationFrame(() => this.loop());
-            }
 
-            reset() {
-                this.isRunning = false;
-                this.isBossPhase = false;
-                this.lives = 3;
-                this.gameTime = 60;
-                this.timeLeft = this.gameTime;
-                this.ghosts = [];
-                this.particles = [];
-                this.spawnRate = 2000;
-                this.shakeAmount = 0;
-                
-                this.updateUi();
-                this.ui.mash.style.display = 'none';
-                this.ui.start.style.display = 'flex';
-                this.ui.gameover.style.display = 'none';
-                this.ui.clear.style.display = 'none';
-                stopBgm();
-            }
+/* =========================
+   이미지 설정
+========================= */
 
-            start() {
-                initAudio(); // 버튼 클릭 시 오디오 초기화
-                this.isRunning = true;
-                this.startTime = Date.now();
-                this.lastSpawnTime = Date.now();
-                this.ui.start.style.display = 'none';
-                this.ui.gameover.style.display = 'none';
-                this.ui.clear.style.display = 'none';
-                playBgm();
-            }
+hero.src=HERO_IMG;
+comboGhost.src=PINK_GHOST;
 
-            gameOver() {
-                this.isRunning = false;
-                this.ui.gameover.style.display = 'flex';
-                sounds.lose();
-                stopBgm();
-            }
 
-            gameClear() {
-                this.isRunning = false;
-                this.ui.clear.style.display = 'flex';
-                sounds.win();
-                stopBgm();
-            }
+/* =========================
+   게임 상태
+========================= */
 
-            updateUi() {
-                const min = Math.floor(this.timeLeft / 60).toString().padStart(2, '0');
-                const sec = Math.floor(this.timeLeft % 60).toString().padStart(2, '0');
-                this.ui.timeDisplay.innerText = `${min}:${sec}`;
-                for (let i = 0; i < 3; i++) {
-                    if (i < this.lives) this.ui.lives[i].classList.remove('lost');
-                    else this.ui.lives[i].classList.add('lost');
-                }
-            }
+let running=false;
+let elapsed=0;
+let lastTime=0;
+let spawnTimer=0;
+let hitCount=0;
 
-            getMousePos(e) {
-                const rect = this.canvas.getBoundingClientRect();
-                const scaleX = this.internalW / rect.width;
-                const scaleY = this.internalH / rect.height;
-                return {
-                    x: (e.clientX - rect.left) * scaleX,
-                    y: (e.clientY - rect.top) * scaleY
-                };
-            }
+let ghosts=[];
+let ghostId=0;
 
-            handleClick(e) {
-                if (!this.isRunning || this.isBossPhase) return;
-                initAudio();
-                const pos = this.getMousePos(e);
-                let hitAny = false;
-                for (let i = this.ghosts.length - 1; i >= 0; i--) {
-                    const ghost = this.ghosts[i];
-                    if (!ghost.dead && ghost.isHit(pos.x, pos.y)) {
-                        hitAny = true;
-                        if (ghost.type === 'blue') {
-                            this.killGhost(ghost, i);
-                        } else {
-                            this.startBossPhase(ghost);
-                        }
-                        break;
-                    }
-                }
-                if(hitAny) sounds.click();
-            }
+let comboActive=false;
+let comboHits=0;
+let comboStart=0;
 
-            killGhost(ghost, index) {
-                ghost.dead = true;
-                this.ghosts.splice(index, 1);
-                sounds.explosion();
-                const color = ghost.type === 'blue' ? '#c7ecee' : '#ff9ff3';
-                for (let i = 0; i < 12; i++) {
-                    this.particles.push(new Particle(ghost.x, ghost.y, color));
-                }
-            }
 
-            startBossPhase(ghost) {
-                this.isBossPhase = true;
-                this.currentBoss = ghost;
-                this.currentBoss.hp = 10;
-                this.ui.mash.style.display = 'block';
-                this.ui.mashCount.innerText = `0 / 10`;
-                sounds.bossAppear();
-                this.shakeAmount = 15;
-            }
+/* =========================
+   Web Audio
+========================= */
 
-            handleMashClick() {
-                if (!this.isRunning || !this.isBossPhase) return;
-                sounds.mash();
-                this.currentBoss.hp--;
-                const hits = 10 - this.currentBoss.hp;
-                this.ui.mashCount.innerText = `${hits} / 10`;
-                this.shakeAmount = 5;
+let audioCtx=null;
 
-                // 보스 타격 시 파티클 조금 생성
-                this.particles.push(new Particle(this.internalW/2 + randomRange(-50,50), this.internalH/2 + randomRange(-50,50), '#ff9ff3'));
+function audio(){
+  if(!audioCtx){
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  }
+  if(audioCtx.state==="suspended") audioCtx.resume();
+}
 
-                if (this.currentBoss.hp <= 0) {
-                    this.endBossPhase(true);
-                }
-            }
+function tone(freq,duration,type="sine",volume=.05){
+  audio();
 
-            endBossPhase(success) {
-                this.isBossPhase = false;
-                this.ui.mash.style.display = 'none';
-                if (success) {
-                    const idx = this.ghosts.indexOf(this.currentBoss);
-                    if(idx > -1) this.killGhost(this.currentBoss, idx);
-                }
-                this.currentBoss = null;
-            }
+  const osc=audioCtx.createOscillator();
+  const gain=audioCtx.createGain();
 
-            update() {
-                if (!this.isRunning) return;
-                const now = Date.now();
-                const elapsed = (now - this.startTime) / 1000;
-                this.timeLeft = this.gameTime - elapsed;
-                
-                // 후반부로 갈수록 스폰 속도 빨라짐 (최소 0.4초)
-                this.spawnRate = Math.max(400, 2000 - (elapsed / 60) * 1600); 
+  osc.type=type;
+  osc.frequency.value=freq;
 
-                if (this.timeLeft <= 0) {
-                    this.timeLeft = 0;
-                    this.updateUi();
-                    this.gameClear();
-                    return;
-                }
-                this.updateUi();
+  gain.gain.setValueAtTime(volume,audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(
+    .001,
+    audioCtx.currentTime+duration
+  );
 
-                if (!this.isBossPhase) {
-                    if (now - this.lastSpawnTime > this.spawnRate) {
-                        const type = Math.random() < 0.12 ? 'pink' : 'blue';
-                        this.ghosts.push(new Ghost(this.internalW, this.internalH, type));
-                        this.lastSpawnTime = now;
-                    }
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
 
-                    const cx = this.internalW / 2;
-                    const cy = this.internalH / 2;
-                    for (let i = this.ghosts.length - 1; i >= 0; i--) {
-                        const ghost = this.ghosts[i];
-                        ghost.update(cx, cy);
-                        const dist = Math.hypot(ghost.x - cx, ghost.y - cy);
-                        if (dist < 45) { // 구슬 반경
-                            this.lives--;
-                            sounds.damage();
-                            this.shakeAmount = 25; 
-                            this.ghosts.splice(i, 1); 
-                            
-                            // 구슬 타격 시 빨간 파티클 튀는 효과
-                            for(let p=0; p<15; p++) {
-                                this.particles.push(new Particle(cx, cy, '#ff4757'));
-                            }
+  osc.start();
+  osc.stop(audioCtx.currentTime+duration);
+}
 
-                            if (this.lives <= 0) {
-                                this.updateUi();
-                                this.gameOver();
-                                return;
-                            }
-                        }
-                    }
-                }
+function soundBlue(){
+  tone(540,.08,"square",.05);
+  setTimeout(()=>tone(820,.1,"sine",.04),35);
+}
 
-                for (let i = this.particles.length - 1; i >= 0; i--) {
-                    this.particles[i].update();
-                    if (this.particles[i].life <= 0) this.particles.splice(i, 1);
-                }
-                if (this.shakeAmount > 0) this.shakeAmount *= 0.85;
-            }
+function soundPink(){
+  tone(260,.12,"sawtooth",.05);
+}
 
-            draw() {
-                this.ctx.save();
-                if (this.shakeAmount > 0.5) {
-                    this.ctx.translate(randomRange(-this.shakeAmount, this.shakeAmount), randomRange(-this.shakeAmount, this.shakeAmount));
-                }
+function soundCombo(){
+  tone(700,.05,"square",.04);
+}
 
-                // 잔디 배경
-                this.ctx.fillStyle = '#92d050'; 
-                this.ctx.fillRect(0, 0, this.internalW, this.internalH);
-                
-                // 귀여운 풀 패턴
-                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-                for(let i=0; i<60; i++) {
-                    const px = (i * 881) % this.internalW;
-                    const py = (i * 997) % this.internalH;
-                    this.ctx.beginPath();
-                    this.ctx.arc(px, py, 4, 0, Math.PI);
-                    this.ctx.fill();
-                }
+function soundDamage(){
+  tone(100,.25,"sawtooth",.08);
+  setTimeout(()=>tone(70,.25,"sawtooth",.05),70);
+}
 
-                const cx = this.internalW / 2;
-                const cy = this.internalH / 2;
+function soundClear(){
+  tone(523,.12,"sine",.06);
+  setTimeout(()=>tone(659,.12,"sine",.06),100);
+  setTimeout(()=>tone(784,.2,"sine",.07),200);
+}
 
-                // 중앙 캐릭터와 구슬
-                this.ctx.drawImage(this.charImg, cx - 60, cy - 70, 110, 110);
-                const pulse = Math.sin(Date.now() * 0.008) * 8;
-                this.ctx.drawImage(this.marbleImg, cx - 35 - pulse/2, cy - 10 - pulse/2, 70 + pulse, 70 + pulse);
+function soundGameOver(){
+  tone(180,.2,"sawtooth",.06);
+  setTimeout(()=>tone(110,.4,"sawtooth",.06),150);
+}
 
-                // 귀신들 
-                this.ghosts.forEach(ghost => ghost.draw(this.ctx));
-                // 파티클
-                this.particles.forEach(p => p.draw(this.ctx));
 
-                // 보스 페이즈 시 화면 붉어지고 거대 보스 등장
-                if (this.isBossPhase) {
-                    this.ctx.fillStyle = 'rgba(255, 159, 243, 0.4)';
-                    this.ctx.fillRect(0, 0, this.internalW, this.internalH);
-                    
-                    if (this.currentBoss) {
-                        const bSize = 350;
-                        const bFloat = Math.sin(Date.now() * 0.01) * 10;
-                        this.ctx.drawImage(this.currentBoss.sprite, cx - bSize/2, cy - bSize/2 - 30 + bFloat, bSize, bSize);
-                    }
-                }
+/* =========================
+   이펙트
+========================= */
 
-                this.ctx.restore();
-            }
-            
-            loop() {
-                this.update();
-                this.draw();
-                requestAnimationFrame(() => this.loop());
-            }
-        }
+function burst(x,y,count=12){
+  for(let i=0;i<count;i++){
+    const s=document.createElement("div");
+    s.className="spark";
 
-        // 전역 객체로 등록하여 HTML 인라인 이벤트에서 접근 가능하게 설정
-        window.onload = () => {
-            window.game = new Game();
-        };
+    s.style.left=x+"px";
+    s.style.top=y+"px";
 
-    </script>
+    const a=Math.random()*Math.PI*2;
+    const d=35+Math.random()*70;
+
+    s.style.setProperty("--x",Math.cos(a)*d+"px");
+    s.style.setProperty("--y",Math.sin(a)*d+"px");
+
+    effects.appendChild(s);
+
+    setTimeout(()=>s.remove(),600);
+  }
+}
+
+
+/* =========================
+   귀신 생성
+========================= */
+
+function spawnGhost(){
+
+  if(!running || comboActive)return;
+
+  const rect=game.getBoundingClientRect();
+
+  const side=Math.floor(Math.random()*4);
+
+  let x;
+  let y;
+
+  const size=82;
+
+  if(side===0){
+    x=Math.random()*(rect.width-size);
+    y=-size;
+  }
+
+  else if(side===1){
+    x=rect.width;
+    y=Math.random()*(rect.height-size);
+  }
+
+  else if(side===2){
+    x=Math.random()*(rect.width-size);
+    y=rect.height;
+  }
+
+  else{
+    x=-size;
+    y=Math.random()*(rect.height-size);
+  }
+
+  const pink=Math.random() < Math.min(.12 + elapsed/600, .32);
+
+  const img=document.createElement("img");
+
+  img.className="ghost";
+  img.src=pink ? PINK_GHOST : BLUE_GHOST;
+  img.draggable=false;
+
+  game.appendChild(img);
+
+  const g={
+    id:ghostId++,
+    el:img,
+    x,
+    y,
+    pink,
+    speed:42 + elapsed*.16 + Math.random()*12,
+    dead:false
+  };
+
+  ghosts.push(g);
+
+  img.style.left=x+"px";
+  img.style.top=y+"px";
+
+  img.addEventListener("click",e=>{
+    e.stopPropagation();
+    clickGhost(g);
+  });
+}
+
+
+/* =========================
+   귀신 클릭
+========================= */
+
+function clickGhost(g){
+
+  if(!running || g.dead || comboActive)return;
+
+  if(g.pink){
+    startCombo(g);
+  }else{
+    killGhost(g);
+    soundBlue();
+  }
+}
+
+
+/* =========================
+   파란 귀신 제거
+========================= */
+
+function killGhost(g){
+
+  if(g.dead)return;
+
+  g.dead=true;
+
+  const r=g.el.getBoundingClientRect();
+  const gr=game.getBoundingClientRect();
+
+  burst(
+    r.left-gr.left+r.width/2,
+    r.top-gr.top+r.height/2,
+    15
+  );
+
+  g.el.classList.add("hit");
+
+  setTimeout(()=>{
+    g.el.remove();
+    ghosts=ghosts.filter(x=>x!==g);
+  },170);
+}
+
+
+/* =========================
+   분홍 귀신 연타
+========================= */
+
+function startCombo(g){
+
+  comboActive=true;
+  comboHits=0;
+  comboStart=performance.now();
+
+  comboGhost.src=PINK_GHOST;
+  comboCount.textContent="0 / 10";
+
+  comboScreen.classList.add("show");
+
+  soundPink();
+
+  g.dead=true;
+}
+
+
+/* =========================
+   연타 처리
+========================= */
+
+comboScreen.addEventListener("click",()=>{
+
+  if(!comboActive)return;
+
+  comboHits++;
+
+  comboCount.textContent=comboHits+" / 10";
+
+  soundCombo();
+
+  comboCount.animate(
+    [
+      {transform:"scale(1)"},
+      {transform:"scale(1.18)"},
+      {transform:"scale(1)"}
+    ],
+    {duration:100}
+  );
+
+  if(comboHits>=10){
+    comboActive=false;
+    comboScreen.classList.remove("show");
+
+    burst(
+      game.clientWidth/2,
+      game.clientHeight/2,
+      28
+    );
+
+    soundBlue();
+  }
+});
+
+
+/* =========================
+   코어 충돌
+========================= */
+
+function damageCore(g){
+
+  if(g.dead)return;
+
+  g.dead=true;
+
+  hitCount++;
+
+  const r=g.el.getBoundingClientRect();
+  const gr=game.getBoundingClientRect();
+
+  burst(
+    r.left-gr.left+r.width/2,
+    r.top-gr.top+r.height/2,
+    20
+  );
+
+  g.el.remove();
+
+  ghosts=ghosts.filter(x=>x!==g);
+
+  flash.classList.remove("show");
+  void flash.offsetWidth;
+  flash.classList.add("show");
+
+  soundDamage();
+
+  updateLives();
+
+  if(hitCount>=3){
+    gameOver();
+  }
+}
+
+
+/* =========================
+   체력 표시
+========================= */
+
+function updateLives(){
+
+  let s="";
+
+  for(let i=0;i<3;i++){
+    s+=i<hitCount ? "♡ " : "♥ ";
+  }
+
+  livesEl.textContent=s.trim();
+}
+
+
+/* =========================
+   귀신 이동
+========================= */
+
+function moveGhost(g,dt){
+
+  const rect=game.getBoundingClientRect();
+
+  const coreX=rect.width/2;
+  const coreY=rect.height/2;
+
+  const dx=coreX-(g.x+41);
+  const dy=coreY-(g.y+41);
+
+  const dist=Math.sqrt(dx*dx+dy*dy);
+
+  if(dist<82){
+    damageCore(g);
+    return;
+  }
+
+  g.x+=(dx/dist)*g.speed*dt;
+  g.y+=(dy/dist)*g.speed*dt;
+
+  g.el.style.left=g.x+"px";
+  g.el.style.top=g.y+"px";
+}
+
+
+/* =========================
+   난이도
+========================= */
+
+function getSpawnInterval(){
+
+  // 시간이 지날수록 등장 간격 감소
+  return Math.max(
+    320,
+    1150 - elapsed*11
+  );
+}
+
+
+/* =========================
+   게임 루프
+========================= */
+
+function loop(t){
+
+  if(!running)return;
+
+  if(!lastTime)lastTime=t;
+
+  const dt=Math.min(
+    .04,
+    (t-lastTime)/1000
+  );
+
+  lastTime=t;
+
+  elapsed+=(dt*1000);
+
+  const remain=Math.max(
+    0,
+    60000-elapsed
+  );
+
+  const sec=Math.ceil(remain/1000);
+
+  const mm=String(
+    Math.floor(sec/60)
+  ).padStart(2,"0");
+
+  const ss=String(
+    sec%60
+  ).padStart(2,"0");
+
+  timerEl.textContent=mm+":"+ss;
+
+  if(elapsed>=60000){
+    clearGame();
+    return;
+  }
+
+  spawnTimer+=dt*1000;
+
+  if(spawnTimer>=getSpawnInterval()){
+
+    spawnTimer=0;
+
+    // 시간이 지날수록 한 번에 나오는 숫자 증가
+    const amount=
+      elapsed>45000 ? 3 :
+      elapsed>30000 ? 2 :
+      elapsed>15000 ? 2 :
+      1;
+
+    for(let i=0;i<amount;i++){
+      spawnGhost();
+    }
+  }
+
+  for(const g of [...ghosts]){
+    if(!g.dead){
+      moveGhost(g,dt);
+    }
+  }
+
+  requestAnimationFrame(loop);
+}
+
+
+/* =========================
+   게임 시작
+========================= */
+
+function startGame(){
+
+  audio();
+
+  running=true;
+  elapsed=0;
+  lastTime=0;
+  spawnTimer=0;
+  hitCount=0;
+  ghosts=[];
+  comboActive=false;
+  comboHits=0;
+
+  document
+    .querySelectorAll(".ghost")
+    .forEach(x=>x.remove());
+
+  comboScreen.classList.remove("show");
+
+  updateLives();
+
+  timerEl.textContent="01:00";
+
+  startScreen.style.display="none";
+  endScreen.style.display="none";
+
+  requestAnimationFrame(loop);
+}
+
+
+/* =========================
+   클리어
+========================= */
+
+function clearGame(){
+
+  if(!running)return;
+
+  running=false;
+
+  comboActive=false;
+  comboScreen.classList.remove("show");
+
+  soundClear();
+
+  endTitle.textContent="🎉 클리어!";
+  endText.innerHTML=
+    "1분 동안 코어를 지켜냈어요!<br>🌟 코어가 안전합니다!";
+
+  endScreen.style.display="flex";
+}
+
+
+/* =========================
+   게임 오버
+========================= */
+
+function gameOver(){
+
+  if(!running)return;
+
+  running=false;
+
+  comboActive=false;
+  comboScreen.classList.remove("show");
+
+  soundGameOver();
+
+  endTitle.textContent="💥 게임 오버";
+  endText.innerHTML=
+    "귀신이 코어에 3번 닿았어요!<br>다시 도전해보세요!";
+
+  endScreen.style.display="flex";
+}
+
+
+/* =========================
+   버튼
+========================= */
+
+startBtn.addEventListener("click",startGame);
+restartBtn.addEventListener("click",startGame);
+
+
+/* =========================
+   초기 상태
+========================= */
+
+updateLives();
+
+</script>
 </body>
 </html>
