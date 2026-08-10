@@ -1,441 +1,2144 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>외계인 | 크리스털 쥐 포획</title>
-  <style>
-    *{box-sizing:border-box}
-    body{margin:0;min-width:320px;min-height:100svh;display:grid;place-items:center;overflow:hidden;background:#061007;font-family:Arial,"Apple SD Gothic Neo",sans-serif;color:#fff;cursor:none}
-    #game{position:relative;width:min(100vw,calc(100svh * 1.325));aspect-ratio:1.325;overflow:hidden;isolation:isolate;background:linear-gradient(#153e23 0 25%,#54823e 33%,#9a7038 48%,#5c3c1d 100%)}
-    .forest{position:absolute;inset:0 0 55%;background:radial-gradient(circle at 8% 45%,#367b37 0 8%,transparent 9%),radial-gradient(circle at 22% 13%,#1e5b2e 0 15%,transparent 16%),radial-gradient(circle at 77% 14%,#245f30 0 19%,transparent 20%),radial-gradient(circle at 94% 45%,#2e7132 0 14%,transparent 15%),radial-gradient(ellipse at 50% 50%,#89b348,transparent 54%)}
-    .fence{position:absolute;z-index:1;top:19%;left:-2%;width:104%;height:24%;display:flex;align-items:end;justify-content:space-around;border-bottom:10px solid #d8ca9d;transform:perspective(300px) rotateX(-9deg)}
-    .fence:before,.fence:after{content:"";position:absolute;left:0;right:0;height:11px;border-radius:9px;background:#e3d4a7;box-shadow:0 3px #8d805f}
-    .fence:before{top:42%}.fence:after{top:70%}
-    .fence i{width:4%;height:86%;background:linear-gradient(90deg,#b7a982,#f4e8bd 45%,#b4a680);clip-path:polygon(50% 0,100% 13%,100% 100%,0 100%,0 13%)}
-    .ground{position:absolute;inset:36% 0 0;background:radial-gradient(ellipse at 17% 18%,#b68a46 0 2%,transparent 3%),radial-gradient(ellipse at 80% 50%,#553616 0 1%,transparent 2%),repeating-radial-gradient(ellipse at 54% 40%,transparent 0 31px,rgba(47,25,5,.15) 32px 34px)}
-    .ground:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,transparent 42%,rgba(3,17,4,.4));pointer-events:none}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>빛나는 구슬을 지켜라!</title>
 
-    .panel{border:2px solid #799842;border-radius:18px;background:linear-gradient(135deg,rgba(8,28,11,.95),rgba(24,45,17,.91));box-shadow:inset 0 0 0 2px rgba(218,255,130,.08),0 4px 9px #0007}
-    .stats{position:absolute;z-index:6;right:2%;top:2%;width:44%;height:14%;display:flex;gap:2%}
-    .stat,.comboStat{width:49%;padding:1%;text-align:center}
-    .stat span{display:block;color:#caff8b;font-size:clamp(10px,1.5cqw,21px);font-weight:bold}
-    .stat strong{display:block;font-size:clamp(28px,4.2cqw,59px);line-height:1.06;text-shadow:0 3px #10200e}
-    .stat:first-child strong{color:#caff8b;text-shadow:0 0 12px #69c53b,0 3px #1c4019}
-    .comboStat strong{font-size:clamp(21px,3.1cqw,43px)}
-    .pips{display:flex;justify-content:center;gap:5%;margin:2% auto 0;width:70%}
-    .pips i{width:14%;aspect-ratio:1;border:2px solid #92968b;border-radius:50%;background:#30352c}
-    .pips i.on{background:#caff8b;border-color:#efffc5;box-shadow:0 0 10px #8fe957}
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
 
-    #holes{position:absolute;z-index:4;left:13%;right:10%;top:37%;bottom:18%;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);align-items:center;justify-items:center}
-    .hole{position:relative;width:61%;height:70%;border:0;padding:0;background:transparent;overflow:visible;cursor:pointer;touch-action:manipulation;filter:drop-shadow(0 6px 4px rgba(45,22,4,.36))}
-    .burrow{position:absolute;z-index:2;left:1%;right:1%;bottom:8%;height:64%;isolation:isolate;overflow:visible;border-radius:50%;background:radial-gradient(ellipse at 50% 50%,#020302 0 49%,#160c06 50% 54%,#d7a45a 55% 60%,#9a5c26 61% 70%,#633512 71% 79%,transparent 80%);box-shadow:0 4px 3px rgba(47,22,3,.4),inset 0 8px 12px rgba(0,0,0,.82);pointer-events:none}
-    .mouse{position:absolute;z-index:3;left:50%;width:68%;height:150%;bottom:22%;transform:translate(-50%,145%) scale(.82,.88);opacity:0;filter:drop-shadow(0 4px 2px rgba(0,0,0,.58));will-change:transform,opacity}
-    .hole.active .mouse{animation:mouse-peek 850ms cubic-bezier(.22,.72,.25,1) both}
-    .hole.crystalMouse.active .mouse{animation-duration:1120ms}
-    .hole.active .burrow{animation:burrow-rustle 380ms ease-out 150ms both}
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #07180d;
+    font-family:
+        "Arial Black",
+        "Pretendard",
+        "Noto Sans KR",
+        sans-serif;
+}
 
-    .mouse .body{position:absolute;bottom:1%;left:12%;width:76%;height:63%;border:3px solid #36393a;border-radius:50% 50% 43% 43%;background:linear-gradient(135deg,#bebeba,#626662 66%);box-shadow:inset 9px 7px #ffffff45}
-    .mouse .ear{position:absolute;z-index:1;top:14%;width:34%;aspect-ratio:1;border:3px solid #414343;border-radius:50%;background:#d4a7b4;box-shadow:inset 0 0 0 6px #e6bcc5}
-    .ear.left{left:9%}.ear.right{right:9%}
-    .eye{position:absolute;z-index:2;top:43%;width:13%;aspect-ratio:1;border:2px solid #fff;border-radius:50%;background:#111;box-shadow:0 0 3px #fff}
-    .eye.left{left:28%}.eye.right{right:28%}
-    .nose{position:absolute;z-index:2;top:57%;left:45%;width:12%;aspect-ratio:1;border-radius:50%;background:#eea6ac}
-    .paw{position:absolute;z-index:3;bottom:4%;width:23%;height:19%;border:2px solid #484945;border-radius:50%;background:#aaa9a2}
-    .paw.left{left:20%}.paw.right{right:20%}
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-    .hole.crystalMouse .body{border-color:#6348a5;background:linear-gradient(135deg,#f2d8ff,#85e8ed 38%,#8b7be4 65%,#214781);box-shadow:inset 10px 7px #ffffff9e,0 0 13px #befbff}
-    .hole.crystalMouse .mouse:before{content:"✦";position:absolute;z-index:5;left:7%;top:13%;font-size:clamp(24px,3.5cqw,46px);color:#fff;text-shadow:0 0 11px #fff,0 0 20px #beefff;animation:twinkle .35s infinite alternate}
+#gameWrap {
+    position: relative;
+    width: min(100vw, 177.777vh);
+    height: min(56.25vw, 100vh);
+    overflow: hidden;
+    background: #7bc94d;
+    box-shadow: 0 0 60px rgba(0,0,0,.5);
+}
 
-    .hammer{--x:50%;--reach:47%;position:absolute;z-index:12;left:var(--x);bottom:-29%;width:12.5%;height:var(--reach);transform:translateX(-50%);pointer-events:none;transition:left .035s linear,height .055s ease-out}
-    .arm{position:absolute;left:32%;bottom:-13%;width:36%;height:86%;border:clamp(6px,1.1cqw,16px) solid #237950;border-radius:48% 48% 0 0;background:linear-gradient(90deg,#1b8657,#77e968 46%,#2a985c);box-shadow:inset 9px 0 #b7ff78,0 0 14px #b8ff6d}
-    .head{position:absolute;left:0;top:1%;width:100%;height:23%;border:clamp(3px,.65cqw,9px) solid #196142;border-radius:34%;background:linear-gradient(135deg,#d4ff7c,#63d958 49%,#21915a);box-shadow:inset 9px 7px #9df56a,0 0 12px #c8ff78;transform-origin:50% 330%}
-    .head b{position:absolute;left:40%;top:8%;font-size:clamp(20px,2.5cqw,38px);color:#236849}
-    .leaf{position:absolute;top:-51%;width:29%;height:68%;border:3px solid #1c653e;border-radius:100% 0 100% 0;background:#8ce767}
-    .leaf.left{left:22%;transform:rotate(-35deg)}.leaf.right{right:22%;transform:scaleX(-1) rotate(-35deg)}
-    .hammer.swing .head{animation:swing .22s ease-out}
+canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+}
 
-    .impact{position:absolute;z-index:15;opacity:0;pointer-events:none;color:#fff8a4;font-size:clamp(35px,5cqw,70px);text-shadow:0 0 10px #fff,0 0 20px #c3ff68}
-    .impact.show{animation:impact .28s ease-out}
-    .feedback{position:absolute;z-index:20;left:50%;top:49%;opacity:0;pointer-events:none;white-space:nowrap;color:#f7ffaf;font-weight:900;font-size:clamp(28px,5cqw,70px);text-shadow:0 4px #2a4d1f,0 0 13px #e3ff84}
-    .feedback.bad{color:#ff9aa1;text-shadow:0 4px #7c2630}.feedback.show{animation:feedback .7s ease-out}
+/* -------------------------
+   UI
+------------------------- */
 
-    .hit-burst{position:absolute;z-index:21;width:1px;height:1px;pointer-events:none}
-    .hit-burst:before{content:"";position:absolute;left:50%;top:50%;width:16px;height:16px;border:4px solid var(--flash);border-radius:50%;transform:translate(-50%,-50%) scale(.3);animation:shockwave .42s ease-out forwards}
-    .hit-burst i{position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:50%;background:var(--spark);box-shadow:0 0 8px var(--spark);transform:translate(-50%,-50%);animation:spark .46s cubic-bezier(.15,.72,.25,1) forwards;animation-delay:var(--delay)}
+#topUI {
+    position: absolute;
+    left: 2%;
+    right: 2%;
+    top: 3%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    pointer-events: none;
+    z-index: 10;
+}
 
-    .modal{position:absolute;z-index:30;inset:0;display:grid;place-items:center;background:#02100599;backdrop-filter:blur(3px);cursor:auto}
-    .modal.hide{display:none}
-    .card{width:min(84%,490px);padding:clamp(24px,4cqw,48px);border:3px solid #b7e572;border-radius:24px;background:linear-gradient(145deg,#15371a,#0d2111);box-shadow:0 15px 0 #061008,0 20px 50px #000;text-align:center;line-height:1.7}
-    .card p{margin:0;color:#c5ff80;font-size:13px;font-weight:bold;letter-spacing:.14em}
-    .card h1{margin:8px 0 14px;font-size:clamp(27px,4cqw,48px);line-height:1.2}
-    .card b{color:#caff8d}
-    .card button{margin-top:23px;border:2px solid #e1ffb6;border-radius:14px;background:linear-gradient(#aefa62,#51a82f);box-shadow:0 5px #27651b;padding:12px 30px;color:#133314;font-weight:900;font-size:18px;cursor:pointer}
+.panel {
+    background: linear-gradient(#fffdf0, #f7e8bd);
+    border: 3px solid #6d4320;
+    border-radius: 17px;
+    box-shadow:
+        0 5px 0 rgba(70,38,12,.3),
+        inset 0 2px 0 white;
+    color: #342314;
+}
 
-    @keyframes twinkle{to{transform:scale(1.2) rotate(18deg);opacity:.55}}
-    @keyframes mouse-peek{0%,14%{transform:translate(-50%,145%) scale(.82,.88);opacity:0}22%{opacity:1}45%{transform:translate(-50%,-18%) scale(1.035,.97);opacity:1}58%{transform:translate(-50%,-10%) scale(.99,1.02);opacity:1}70%{transform:translate(-50%,-13%) scale(1,1);opacity:1}83%{transform:translate(-50%,10%) scale(.97,.99);opacity:1}100%{transform:translate(-50%,145%) scale(.82,.88);opacity:0}}
-    @keyframes burrow-rustle{0%,100%{transform:translateX(0)}35%{transform:translateX(-2.2%)}68%{transform:translateX(1.5%)}}
-    @keyframes swing{50%{transform:rotate(-32deg) scale(.94)}100%{transform:rotate(0)}}
-    @keyframes impact{30%{opacity:1;transform:scale(1.35)}100%{opacity:0;transform:scale(2)}}
-    @keyframes feedback{20%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}100%{opacity:0;transform:translate(-50%,-110%) scale(1)}}
-    @keyframes shockwave{to{transform:translate(-50%,-50%) scale(4.5);opacity:0}}
-    @keyframes spark{to{transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(.05);opacity:0}}
-  </style>
+#timerBox {
+    padding: 7px 17px 9px;
+    min-width: 155px;
+    text-align: center;
+}
+
+#timer {
+    font-size: clamp(20px, 2.5vw, 38px);
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+#timer small {
+    font-size: .55em;
+}
+
+#hearts {
+    padding: 7px 14px;
+    font-size: clamp(20px, 2.5vw, 38px);
+    letter-spacing: 3px;
+}
+
+.heart {
+    color: #ff5667;
+    text-shadow:
+        0 2px 0 #ad293b,
+        0 0 8px rgba(255,60,80,.3);
+}
+
+.heart.empty {
+    filter: grayscale(1);
+    opacity: .25;
+}
+
+#bottomUI {
+    position: absolute;
+    left: 50%;
+    bottom: 4%;
+    transform: translateX(-50%);
+    width: min(52%, 700px);
+    pointer-events: none;
+    z-index: 10;
+}
+
+#progressBack {
+    height: 22px;
+    background: #193617;
+    border: 3px solid #4e351d;
+    border-radius: 15px;
+    padding: 2px;
+    box-shadow:
+        0 4px 0 rgba(0,0,0,.25),
+        inset 0 2px 5px rgba(0,0,0,.4);
+}
+
+#progress {
+    height: 100%;
+    width: 100%;
+    border-radius: 10px;
+    background: linear-gradient(#9cec61, #5bc239);
+    box-shadow:
+        inset 0 2px 0 rgba(255,255,255,.6),
+        0 0 8px rgba(100,255,50,.4);
+    transition: width .15s linear;
+}
+
+#progressText {
+    text-align: center;
+    color: white;
+    text-shadow:
+        0 2px 3px #18330d,
+        0 0 5px #18330d;
+    font-size: clamp(12px, 1.2vw, 20px);
+    margin-top: 5px;
+}
+
+/* -------------------------
+   Start / End Screen
+------------------------- */
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at center,
+            rgba(255,240,150,.2),
+            rgba(0,0,0,.68) 75%);
+}
+
+.modal {
+    width: min(560px, 80%);
+    padding: 34px;
+    text-align: center;
+    border-radius: 28px;
+
+    background:
+        linear-gradient(#fffbea, #f4dfac);
+
+    border: 5px solid #653d1e;
+
+    box-shadow:
+        0 12px 0 rgba(60,30,10,.3),
+        0 20px 60px rgba(0,0,0,.45),
+        inset 0 3px white;
+}
+
+.modal h1 {
+    margin: 0 0 12px;
+    color: #38230e;
+    font-size: clamp(30px, 5vw, 60px);
+    text-shadow: 0 4px 0 #d7b97c;
+}
+
+.modal p {
+    color: #5b4326;
+    font-size: clamp(14px, 1.7vw, 21px);
+    line-height: 1.7;
+    margin: 10px 0 24px;
+}
+
+.mainButton {
+    border: 0;
+    border-radius: 18px;
+    padding: 15px 42px;
+    font-size: clamp(18px, 2vw, 28px);
+    font-weight: 900;
+    color: white;
+    background: linear-gradient(#83df50, #38a92b);
+    border: 4px solid #286f20;
+    box-shadow:
+        0 6px 0 #205819,
+        0 10px 25px rgba(40,120,20,.3);
+    cursor: pointer;
+    transition: transform .1s;
+}
+
+.mainButton:hover {
+    filter: brightness(1.08);
+}
+
+.mainButton:active {
+    transform: translateY(5px);
+    box-shadow: 0 1px 0 #205819;
+}
+
+/* -------------------------
+   Pink Ghost Combo
+------------------------- */
+
+#comboOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    background:
+        radial-gradient(circle at 50% 45%,
+            rgba(255,255,255,.35),
+            rgba(255,116,159,.15) 30%,
+            rgba(255,80,130,.58));
+
+    animation: pinkFlash .2s ease-out;
+}
+
+#comboOverlay::before {
+    content: "";
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    background:
+        repeating-conic-gradient(
+            from 0deg,
+            rgba(255,255,255,.12) 0deg 7deg,
+            transparent 7deg 18deg
+        );
+    animation: spinRays 8s linear infinite;
+}
+
+@keyframes spinRays {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pinkFlash {
+    from { opacity: 0; transform: scale(1.05); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.comboContent {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+#comboGhost {
+    position: relative;
+    width: clamp(170px, 22vw, 310px);
+    height: clamp(170px, 22vw, 310px);
+    margin: auto;
+}
+
+.bigPinkGhost {
+    position: absolute;
+    inset: 10%;
+    border-radius: 45% 45% 38% 38%;
+    background:
+        radial-gradient(circle at 32% 24%,
+            #ffdae6 0 5%,
+            transparent 6%),
+        linear-gradient(150deg, #ff9fbd, #f25c8d);
+
+    box-shadow:
+        inset -18px -18px 0 rgba(190,47,93,.15),
+        0 15px 30px rgba(100,20,45,.25);
+
+    animation: angryBob .35s infinite alternate;
+}
+
+.bigPinkGhost::before,
+.bigPinkGhost::after {
+    content: "";
+    position: absolute;
+    top: 35%;
+    width: 32px;
+    height: 44px;
+    background: #24151c;
+    border-radius: 50%;
+}
+
+.bigPinkGhost::before {
+    left: 23%;
+    transform: rotate(25deg);
+}
+
+.bigPinkGhost::after {
+    right: 23%;
+    transform: rotate(-25deg);
+}
+
+@keyframes angryBob {
+    from { transform: rotate(-2deg) scale(1); }
+    to { transform: rotate(2deg) scale(1.03); }
+}
+
+.comboTitle {
+    position: relative;
+    margin-top: -5px;
+    font-size: clamp(42px, 7vw, 90px);
+    color: #fff;
+    -webkit-text-stroke: 4px #43202a;
+    text-shadow:
+        0 7px 0 #d13e70,
+        0 10px 20px rgba(70,20,40,.3);
+    transform: rotate(-5deg);
+}
+
+#comboCounter {
+    position: relative;
+    margin: 12px auto;
+    width: min(260px, 55vw);
+    padding: 8px 20px;
+    border-radius: 16px;
+    background: rgba(25,18,22,.9);
+    color: white;
+    font-size: clamp(20px, 3vw, 36px);
+    font-weight: 900;
+}
+
+#comboBarBack {
+    position: relative;
+    width: min(320px, 60vw);
+    height: 18px;
+    margin: auto;
+    background: rgba(30,10,20,.65);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#comboBar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #fff16a, #ff4c83);
+    box-shadow: 0 0 15px #ff5a8a;
+}
+
+/* -------------------------
+   Hit flash
+------------------------- */
+
+#flash {
+    position: absolute;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    background: white;
+    opacity: 0;
+}
+
+#damageFlash {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+    background: rgba(255,40,60,.3);
+    opacity: 0;
+}
+
+/* Hidden */
+.hidden {
+    display: none !important;
+}
+
+/* -------------------------
+   Mobile
+------------------------- */
+
+@media (max-width: 700px) {
+    #timerBox {
+        min-width: auto;
+        padding: 5px 10px;
+    }
+
+    #hearts {
+        padding: 5px 8px;
+    }
+
+    #bottomUI {
+        width: 65%;
+        bottom: 3%;
+    }
+
+    .modal {
+        padding: 25px 18px;
+    }
+}
+</style>
 </head>
+
 <body>
-<main id="game">
-  <div class="forest"></div>
-  <div class="fence"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <div class="ground"></div>
 
-  <section class="stats">
-    <div class="panel stat"><span>TIME</span><strong id="time">60</strong></div>
-    <div class="panel stat comboStat"><span>COMBO</span><strong id="combo">0 / 5</strong><div id="topPips" class="pips"></div></div>
-  </section>
+<div id="gameWrap">
 
-  <section id="holes" aria-label="쥐 구멍"></section>
+    <canvas id="game"></canvas>
 
-  <div id="feedback" class="feedback"></div>
-  <div id="hammer" class="hammer">
-    <div class="arm"></div>
-    <div class="head"><i class="leaf left"></i><i class="leaf right"></i><b>✦</b></div>
-  </div>
-  <div id="impact" class="impact">✦</div>
+    <div id="topUI">
+        <div id="timerBox" class="panel">
+            ⏱ <span id="timer">01:00</span>
+        </div>
 
-  <div id="modal" class="modal">
-    <div class="card">
-      <p>MINI GAME 01</p>
-      <h1>크리스털 쥐를 잡아라!</h1>
-      <div>빛나는 크리스털 쥐를 <b>5번 연속</b> 클릭하세요.<br>회색 쥐 또는 빈 구멍을 클릭하면 연속 성공이 초기화됩니다.</div>
-      <button id="start">탐색 시작</button>
+        <div id="hearts" class="panel">
+            <span class="heart">♥</span>
+            <span class="heart">♥</span>
+            <span class="heart">♥</span>
+        </div>
     </div>
-  </div>
-</main>
+
+    <div id="bottomUI">
+        <div id="progressBack">
+            <div id="progress"></div>
+        </div>
+        <div id="progressText">남은 시간: 01:00</div>
+    </div>
+
+    <!-- 시작 화면 -->
+    <div id="startScreen" class="overlay">
+        <div class="modal">
+            <h1>빛나는 구슬을<br>지켜라!</h1>
+            <p>
+                사방에서 몰려오는 귀신을 클릭해서 없애세요!<br>
+                파란 귀신은 한 번 클릭!<br>
+                분홍 귀신은 <b>연타!</b>로 처치하세요.<br><br>
+                <b>1분 동안 구슬을 지키면 성공!</b>
+            </p>
+            <button class="mainButton" id="startBtn">게임 시작</button>
+        </div>
+    </div>
+
+    <!-- 게임 종료 -->
+    <div id="endScreen" class="overlay hidden">
+        <div class="modal">
+            <h1 id="endTitle">게임 오버!</h1>
+            <p id="endText"></p>
+            <button class="mainButton" id="restartBtn">다시 하기</button>
+        </div>
+    </div>
+
+    <!-- 분홍 귀신 연타 -->
+    <div id="comboOverlay">
+        <div class="comboContent">
+
+            <div id="comboGhost">
+                <div class="bigPinkGhost"></div>
+            </div>
+
+            <div class="comboTitle">연타!</div>
+
+            <div id="comboCounter">0 / 10</div>
+
+            <div id="comboBarBack">
+                <div id="comboBar"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="flash"></div>
+    <div id="damageFlash"></div>
+
+</div>
 
 <script>
-  const $=s=>document.querySelector(s);
-  const game=$('#game');
-  const holes=$('#holes');
-  const time=$('#time');
-  const combo=$('#combo');
-  const topPips=$('#topPips');
-  const modal=$('#modal');
-  const feedback=$('#feedback');
-  const hammer=$('#hammer');
-  const impact=$('#impact');
+/* ============================================================
+   빛나는 구슬을 지켜라!
+   Pure Canvas + Web Audio
+============================================================ */
 
-  const state={
-    mode:'intro',
-    seconds:60,
-    combo:0,
-    spawnCount:0,
-    active:null,
-    tick:null,
-    pop:null
-  };
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-  let audioCtx=null;
-  let bgmTimer=null;
-  let bgmStep=0;
+const wrap = document.getElementById("gameWrap");
 
-  function mouseHTML(){
-    return '<span class="burrow"></span><span class="mouse"><i class="ear left"></i><i class="ear right"></i><i class="body"></i><i class="eye left"></i><i class="eye right"></i><i class="nose"></i><i class="paw left"></i><i class="paw right"></i></span>';
-  }
+let W = 1280;
+let H = 720;
 
-  for(let i=0;i<8;i++){
-    const h=document.createElement('button');
-    h.className='hole';
-    h.type='button';
-    h.setAttribute('aria-label',(i+1)+'번 구멍');
-    h.innerHTML=mouseHTML();
-    h.onpointerdown=e=>hit(e,h);
-    holes.append(h);
-  }
+function resize() {
+    const rect = wrap.getBoundingClientRect();
 
-  function draw(){
-    time.textContent=state.seconds;
-    combo.textContent=state.combo+' / 5';
+    W = 1280;
+    H = 720;
 
-    topPips.replaceChildren(...Array.from({length:5},(_,i)=>{
-      const p=document.createElement('i');
-      if(i<state.combo)p.className='on';
-      return p;
-    }));
-  }
+    canvas.width = W;
+    canvas.height = H;
+}
 
-  function clear(){
-    clearTimeout(state.pop);
+resize();
+window.addEventListener("resize", resize);
 
-    if(state.active){
-      state.active.el.classList.remove('active','crystalMouse');
-      state.active=null;
-    }
-  }
+/* ============================================================
+   DOM
+============================================================ */
 
-  function nextDelay(){
-    const acceleration=Math.min(state.spawnCount*14,320);
-    return Math.max(210,500+Math.random()*350-acceleration);
-  }
+const timerEl = document.getElementById("timer");
+const progressEl = document.getElementById("progress");
+const progressText = document.getElementById("progressText");
+const heartsEl = document.getElementById("hearts");
 
-  function schedule(ms=nextDelay()){
-    state.pop=setTimeout(pop,ms);
-  }
+const startScreen = document.getElementById("startScreen");
+const endScreen = document.getElementById("endScreen");
+const endTitle = document.getElementById("endTitle");
+const endText = document.getElementById("endText");
 
-  function pop(){
-    if(state.mode!=='play')return;
+const comboOverlay = document.getElementById("comboOverlay");
+const comboCounter = document.getElementById("comboCounter");
+const comboBar = document.getElementById("comboBar");
 
-    state.spawnCount++;
+const flash = document.getElementById("flash");
+const damageFlash = document.getElementById("damageFlash");
 
-    const el=holes.children[Math.floor(Math.random()*8)];
-    const crystal=Math.random()<.34;
+/* ============================================================
+   Game state
+============================================================ */
 
-    state.active={el,crystal};
-    el.classList.add('active');
-    el.classList.toggle('crystalMouse',crystal);
+const GAME_TIME = 60;
 
-    state.pop=setTimeout(()=>{
-      if(!state.active)return;
+let gameRunning = false;
+let gameOver = false;
+let lastTime = 0;
 
-      if(state.active.crystal){
-        fail('MISS!');
-      }else{
-        clear();
-        schedule();
-      }
-    },crystal?1120:850);
-  }
+let elapsed = 0;
+let remaining = GAME_TIME;
 
-  function hit(e,el){
-    if(state.mode!=='play')return;
+let lives = 3;
 
-    swing(e.clientX,e.clientY);
+let ghosts = [];
+let particles = [];
+let floatingTexts = [];
+let shockwaves = [];
 
-    if(!state.active||state.active.el!==el){
-      strikeEffect(e.clientX,e.clientY,'miss');
-      return fail('MISS!');
+let spawnTimer = 0;
+let shake = 0;
+
+let comboActive = false;
+let comboGhost = null;
+let comboHits = 0;
+let comboTime = 0;
+let comboMaxTime = 2.5;
+
+let audioCtx = null;
+
+/* Central orb */
+
+const orb = {
+    x: W / 2,
+    y: H / 2 + 15,
+    radius: 42,
+    pulse: 0,
+    glow: 0
+};
+
+/* ============================================================
+   Audio
+============================================================ */
+
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
     }
 
-    const crystal=state.active.crystal;
-    clear();
+    if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+    }
+}
 
-    if(crystal){
-      strikeEffect(e.clientX,e.clientY,'crystal');
-      playSfx('crystal');
+function sound(type) {
 
-      state.combo++;
-      flash(state.combo+' COMBO!');
+    if (!audioCtx) return;
 
-      if(state.combo===5)return finish(true);
-    }else{
-      strikeEffect(e.clientX,e.clientY,'gray');
-      playSfx('gray');
+    const now = audioCtx.currentTime;
 
-      state.combo=0;
-      flash('GRAY MOUSE!',true);
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    let freq = 300;
+    let duration = .08;
+    let wave = "sine";
+
+    if (type === "click") {
+        freq = 520;
+        duration = .06;
+        wave = "square";
     }
 
-    draw();
-    schedule();
-  }
-
-  function fail(text){
-    if(state.mode!=='play')return;
-
-    playSfx('miss');
-    clear();
-    state.combo=0;
-    flash(text,true);
-    draw();
-    schedule(430);
-  }
-
-  function flash(text,bad=false){
-    feedback.textContent=text;
-    feedback.className='feedback '+(bad?'bad':'');
-    void feedback.offsetWidth;
-    feedback.className='feedback '+(bad?'bad ':'')+'show';
-  }
-
-  function follow(x,y){
-    const r=game.getBoundingClientRect();
-    const px=Math.max(8,Math.min(92,(x-r.left)/r.width*100));
-    const py=Math.max(10,Math.min(88,(y-r.top)/r.height*100));
-
-    hammer.style.setProperty('--x',px+'%');
-    hammer.style.setProperty('--reach',(129-py)+'%');
-  }
-
-  function swing(x,y){
-    follow(x,y);
-
-    const r=game.getBoundingClientRect();
-    impact.style.left=x-r.left+'px';
-    impact.style.top=y-r.top+'px';
-
-    impact.classList.remove('show');
-    void impact.offsetWidth;
-    impact.classList.add('show');
-
-    hammer.classList.remove('swing');
-    void hammer.offsetWidth;
-    hammer.classList.add('swing');
-  }
-
-  function strikeEffect(x,y,kind){
-    const r=game.getBoundingClientRect();
-    const palette={
-      crystal:['#eaffff','#8eefff'],
-      gray:['#fff5bc','#ffcb68'],
-      miss:['#ffc2bd','#ff7777']
-    }[kind];
-
-    const burst=document.createElement('span');
-    burst.className='hit-burst';
-    burst.style.left=x-r.left+'px';
-    burst.style.top=y-r.top+'px';
-    burst.style.setProperty('--flash',palette[0]);
-    burst.style.setProperty('--spark',palette[1]);
-
-    for(let i=0;i<8;i++){
-      const dot=document.createElement('i');
-      const angle=Math.PI*2*i/8+(Math.random()-.5)*.3;
-      const distance=30+Math.random()*36;
-
-      dot.style.setProperty('--x',Math.cos(angle)*distance+'px');
-      dot.style.setProperty('--y',Math.sin(angle)*distance+'px');
-      dot.style.setProperty('--delay',i%2*25+'ms');
-
-      burst.append(dot);
+    if (type === "pop") {
+        freq = 180;
+        duration = .12;
+        wave = "triangle";
     }
 
-    game.append(burst);
-    setTimeout(()=>burst.remove(),520);
-  }
-
-  function getAudio(){
-    if(!audioCtx){
-      audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if (type === "hit") {
+        freq = 100;
+        duration = .18;
+        wave = "sawtooth";
     }
 
-    if(audioCtx.state==='suspended'){
-      audioCtx.resume();
+    if (type === "combo") {
+        freq = 720 + comboHits * 35;
+        duration = .055;
+        wave = "square";
     }
 
-    return audioCtx;
-  }
-
-  function tone(freq,duration,type='sine',volume=.035,delay=0){
-    const ctx=getAudio();
-    const osc=ctx.createOscillator();
-    const gain=ctx.createGain();
-    const at=ctx.currentTime+delay;
-
-    osc.type=type;
-    osc.frequency.setValueAtTime(freq,at);
-
-    gain.gain.setValueAtTime(.0001,at);
-    gain.gain.exponentialRampToValueAtTime(volume,at+.015);
-    gain.gain.exponentialRampToValueAtTime(.0001,at+duration);
-
-    osc.connect(gain).connect(ctx.destination);
-    osc.start(at);
-    osc.stop(at+duration+.02);
-  }
-
-  function playSfx(kind){
-    if(kind==='crystal'){
-      tone(740,.12,'sine',.055);
-      tone(1047,.18,'sine',.045,.09);
-    }else if(kind==='gray'){
-      tone(150,.1,'triangle',.045);
-      tone(105,.16,'sawtooth',.025,.04);
-    }else{
-      tone(95,.16,'square',.035);
-      tone(72,.18,'triangle',.025,.05);
-    }
-  }
-
-  function startBgm(){
-    stopBgm();
-    getAudio();
-
-    const notes=[262,330,392,330,294,349,440,349];
-    bgmStep=0;
-
-    bgmTimer=setInterval(()=>{
-      tone(notes[bgmStep++%notes.length],.26,'sine',.012);
-
-      if(bgmStep%4===0){
-        tone(notes[(bgmStep+2)%notes.length]/2,.34,'triangle',.007);
-      }
-    },430);
-  }
-
-  function stopBgm(){
-    clearInterval(bgmTimer);
-    bgmTimer=null;
-  }
-
-  function show(title,body,label,action){
-    modal.classList.remove('hide');
-    modal.innerHTML='<div class="card"><p>ENGINE SHARD</p><h1>'+title+'</h1><div>'+body+'</div><button id="action">'+label+'</button></div>';
-    $('#action').onclick=action;
-  }
-
-  function start(){
-    stop();
-    clear();
-    startBgm();
-
-    state.mode='play';
-    state.seconds=60;
-    state.combo=0;
-    state.spawnCount=0;
-
-    modal.classList.add('hide');
-    draw();
-    schedule(350);
-
-    state.tick=setInterval(()=>{
-      state.seconds--;
-      draw();
-
-      if(state.seconds<=0)finish(false);
-    },1000);
-  }
-
-  function finish(win){
-    state.mode='end';
-    stop();
-    stopBgm();
-    clear();
-
-    if(win){
-      tone(523,.15,'sine',.06);
-      tone(659,.15,'sine',.06,.12);
-      tone(784,.3,'sine',.06,.24);
+    if (type === "comboStart") {
+        freq = 300;
+        duration = .35;
+        wave = "sawtooth";
     }
 
-    show(
-      win?'포획 성공!':'시간 초과',
-      win?'크리스털 쥐 5마리를 연속으로 포획했어요!':'크리스털 쥐가 다시 땅속으로 숨어 버렸어요.',
-      '다시 하기',
-      start
+    if (type === "win") {
+        freq = 520;
+        duration = .5;
+        wave = "sine";
+    }
+
+    if (type === "lose") {
+        freq = 110;
+        duration = .6;
+        wave = "sawtooth";
+    }
+
+    osc.type = wave;
+
+    osc.frequency.setValueAtTime(freq, now);
+
+    if (type === "pop") {
+        osc.frequency.exponentialRampToValueAtTime(
+            60,
+            now + duration
+        );
+    }
+
+    if (type === "hit") {
+        osc.frequency.exponentialRampToValueAtTime(
+            45,
+            now + duration
+        );
+    }
+
+    if (type === "win") {
+        osc.frequency.setValueAtTime(520, now);
+        osc.frequency.linearRampToValueAtTime(
+            900,
+            now + duration
+        );
+    }
+
+    gain.gain.setValueAtTime(.001, now);
+    gain.gain.exponentialRampToValueAtTime(
+        .16,
+        now + .01
     );
-  }
+    gain.gain.exponentialRampToValueAtTime(
+        .001,
+        now + duration
+    );
 
-  function stop(){
-    clearInterval(state.tick);
-    clearTimeout(state.pop);
-  }
+    osc.start(now);
+    osc.stop(now + duration + .02);
+}
 
-  $('#start').onclick=start;
+/* ============================================================
+   Background
+============================================================ */
 
-  window.onpointermove=e=>{
-    if(state.mode==='play')follow(e.clientX,e.clientY);
-  };
+function drawBackground() {
 
-  draw();
+    /* grass */
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+
+    grad.addColorStop(0, "#79cf50");
+    grad.addColorStop(.5, "#94dc58");
+    grad.addColorStop(1, "#4e9d3d");
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    /* darker edge */
+    const edge = ctx.createRadialGradient(
+        W / 2,
+        H / 2,
+        120,
+        W / 2,
+        H / 2,
+        800
+    );
+
+    edge.addColorStop(0, "rgba(255,255,150,0)");
+    edge.addColorStop(.65, "rgba(15,70,20,.05)");
+    edge.addColorStop(1, "rgba(5,35,12,.45)");
+
+    ctx.fillStyle = edge;
+    ctx.fillRect(0, 0, W, H);
+
+    /* grass circles */
+    for (let i = 0; i < 120; i++) {
+
+        const x = (i * 137.7) % W;
+        const y = (i * 83.3) % H;
+
+        ctx.fillStyle =
+            i % 3 === 0
+                ? "rgba(40,120,35,.16)"
+                : "rgba(255,255,180,.16)";
+
+        ctx.beginPath();
+        ctx.arc(
+            x,
+            y,
+            2 + (i % 4),
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+    }
+
+    /* flowers */
+    for (let i = 0; i < 35; i++) {
+
+        const x = (i * 317) % W;
+        const y = (i * 193) % H;
+
+        ctx.fillStyle = i % 2
+            ? "#fff8e4"
+            : "#ffd2e3";
+
+        for (let j = 0; j < 5; j++) {
+
+            const a = j * Math.PI * 2 / 5;
+
+            ctx.beginPath();
+            ctx.arc(
+                x + Math.cos(a) * 5,
+                y + Math.sin(a) * 5,
+                3,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+        }
+
+        ctx.fillStyle = "#eebd45";
+        ctx.beginPath();
+        ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+/* ============================================================
+   Central Orb
+============================================================ */
+
+function drawOrb() {
+
+    orb.pulse += .045;
+
+    const pulse =
+        Math.sin(orb.pulse) * 4;
+
+    /* magical rings */
+
+    ctx.save();
+
+    ctx.globalAlpha = .22;
+
+    for (let i = 0; i < 4; i++) {
+
+        ctx.strokeStyle = "#fff56a";
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            orb.x,
+            orb.y,
+            65 + i * 23 + pulse,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.stroke();
+    }
+
+    ctx.restore();
+
+    /* glow */
+
+    const glow = ctx.createRadialGradient(
+        orb.x,
+        orb.y,
+        5,
+        orb.x,
+        orb.y,
+        130 + pulse
+    );
+
+    glow.addColorStop(0, "rgba(255,255,150,.9)");
+    glow.addColorStop(.25, "rgba(255,220,40,.4)");
+    glow.addColorStop(1, "rgba(255,200,0,0)");
+
+    ctx.fillStyle = glow;
+
+    ctx.beginPath();
+    ctx.arc(
+        orb.x,
+        orb.y,
+        130 + pulse,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+
+    /* orb */
+
+    const orbGrad = ctx.createRadialGradient(
+        orb.x - 13,
+        orb.y - 16,
+        3,
+        orb.x,
+        orb.y,
+        orb.radius
+    );
+
+    orbGrad.addColorStop(0, "#fffde0");
+    orbGrad.addColorStop(.22, "#fff36b");
+    orbGrad.addColorStop(.7, "#ffc51c");
+    orbGrad.addColorStop(1, "#e99500");
+
+    ctx.fillStyle = orbGrad;
+
+    ctx.beginPath();
+    ctx.arc(
+        orb.x,
+        orb.y,
+        orb.radius + pulse * .2,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#fff5a3";
+    ctx.stroke();
+
+    /* shine */
+
+    ctx.fillStyle = "rgba(255,255,255,.9)";
+
+    ctx.beginPath();
+    ctx.ellipse(
+        orb.x - 14,
+        orb.y - 18,
+        10,
+        6,
+        -.6,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+
+    ctx.restore();
+}
+
+/* ============================================================
+   Little plant guardian
+============================================================ */
+
+function drawGuardian() {
+
+    const x = orb.x - 68;
+    const y = orb.y + 32;
+
+    /* body */
+    ctx.fillStyle = "#6ecb34";
+
+    ctx.beginPath();
+    ctx.ellipse(
+        x,
+        y,
+        20,
+        30,
+        0,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+
+    ctx.strokeStyle = "#26751d";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    /* head */
+    ctx.fillStyle = "#91e843";
+
+    ctx.beginPath();
+    ctx.arc(
+        x,
+        y - 20,
+        19,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+
+    ctx.strokeStyle = "#26751d";
+    ctx.stroke();
+
+    /* eyes */
+
+    ctx.fillStyle = "#15250e";
+
+    ctx.beginPath();
+    ctx.arc(x - 7, y - 21, 3.5, 0, Math.PI * 2);
+    ctx.arc(x + 7, y - 21, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    /* smile */
+
+    ctx.strokeStyle = "#23451a";
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.arc(
+        x,
+        y - 17,
+        7,
+        0,
+        Math.PI
+    );
+    ctx.stroke();
+
+    /* leaf */
+
+    ctx.fillStyle = "#71cf32";
+
+    ctx.beginPath();
+    ctx.ellipse(
+        x - 10,
+        y - 45,
+        10,
+        20,
+        -.6,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.ellipse(
+        x + 10,
+        y - 45,
+        10,
+        20,
+        .6,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+}
+
+/* ============================================================
+   Ghost creation
+============================================================ */
+
+function createGhost() {
+
+    const side = Math.floor(Math.random() * 4);
+
+    let x, y;
+
+    const margin = 55;
+
+    if (side === 0) {
+        x = Math.random() * W;
+        y = -margin;
+    }
+
+    if (side === 1) {
+        x = W + margin;
+        y = Math.random() * H;
+    }
+
+    if (side === 2) {
+        x = Math.random() * W;
+        y = H + margin;
+    }
+
+    if (side === 3) {
+        x = -margin;
+        y = Math.random() * H;
+    }
+
+    const pinkChance =
+        Math.min(
+            .12 + elapsed / 60 * .13,
+            .25
+        );
+
+    const pink =
+        Math.random() < pinkChance;
+
+    const baseSpeed =
+        35 + elapsed * .75;
+
+    return {
+
+        x,
+        y,
+
+        radius: pink ? 22 : 20,
+
+        speed:
+            baseSpeed *
+            (pink ? .72 : 1) *
+            (0.85 + Math.random() * .35),
+
+        pink,
+
+        rotation:
+            Math.random() * Math.PI * 2,
+
+        bob:
+            Math.random() * Math.PI * 2,
+
+        dead: false,
+
+        hitFlash: 0
+    };
+}
+
+/* ============================================================
+   Draw Ghost
+============================================================ */
+
+function drawGhost(g) {
+
+    const bob =
+        Math.sin(g.bob) * 3;
+
+    ctx.save();
+
+    ctx.translate(
+        g.x,
+        g.y + bob
+    );
+
+    ctx.rotate(
+        Math.sin(g.rotation) * .08
+    );
+
+    if (g.pink) {
+        drawPinkGhost(g);
+    } else {
+        drawBlueGhost(g);
+    }
+
+    ctx.restore();
+}
+
+function drawBlueGhost(g) {
+
+    /* glow */
+
+    ctx.shadowColor = "#55cfff";
+    ctx.shadowBlur = 14;
+
+    const grad = ctx.createLinearGradient(
+        -20,
+        -25,
+        20,
+        25
+    );
+
+    grad.addColorStop(0, "#a8edff");
+    grad.addColorStop(.45, "#61c9ef");
+    grad.addColorStop(1, "#3795c6");
+
+    ctx.fillStyle = grad;
+
+    ctx.beginPath();
+
+    ctx.moveTo(-22, 13);
+
+    ctx.quadraticCurveTo(
+        -30,
+        -15,
+        0,
+        -25
+    );
+
+    ctx.quadraticCurveTo(
+        28,
+        -15,
+        22,
+        13
+    );
+
+    ctx.lineTo(13, 24);
+    ctx.lineTo(4, 15);
+    ctx.lineTo(-5, 25);
+    ctx.lineTo(-14, 15);
+
+    ctx.closePath();
+
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+
+    /* face */
+
+    ctx.fillStyle = "#153c5d";
+
+    ctx.beginPath();
+    ctx.ellipse(-7, -4, 4, 7, -.25, 0, Math.PI * 2);
+    ctx.ellipse(7, -4, 4, 7, .25, 0, Math.PI * 2);
+    ctx.fill();
+
+    /* angry brows */
+
+    ctx.strokeStyle = "#153c5d";
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.moveTo(-12, -13);
+    ctx.lineTo(-4, -10);
+    ctx.moveTo(12, -13);
+    ctx.lineTo(4, -10);
+    ctx.stroke();
+
+    /* blush */
+
+    ctx.fillStyle = "rgba(255,120,150,.45)";
+
+    ctx.beginPath();
+    ctx.arc(-15, 5, 4, 0, Math.PI * 2);
+    ctx.arc(15, 5, 4, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawPinkGhost(g) {
+
+    ctx.shadowColor = "#ff4e91";
+    ctx.shadowBlur = 18;
+
+    const grad = ctx.createLinearGradient(
+        -20,
+        -25,
+        20,
+        25
+    );
+
+    grad.addColorStop(0, "#ffd0df");
+    grad.addColorStop(.5, "#ff8eae");
+    grad.addColorStop(1, "#ed527d");
+
+    ctx.fillStyle = grad;
+
+    ctx.beginPath();
+
+    ctx.moveTo(-23, 13);
+
+    ctx.quadraticCurveTo(
+        -30,
+        -15,
+        0,
+        -25
+    );
+
+    ctx.quadraticCurveTo(
+        30,
+        -15,
+        23,
+        13
+    );
+
+    ctx.lineTo(14, 25);
+    ctx.lineTo(4, 15);
+    ctx.lineTo(-5, 26);
+    ctx.lineTo(-14, 15);
+
+    ctx.closePath();
+
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+
+    /* eyes */
+
+    ctx.fillStyle = "#391c27";
+
+    ctx.beginPath();
+    ctx.ellipse(-8, -4, 5, 8, -.35, 0, Math.PI * 2);
+    ctx.ellipse(8, -4, 5, 8, .35, 0, Math.PI * 2);
+    ctx.fill();
+
+    /* angry eyebrows */
+
+    ctx.strokeStyle = "#391c27";
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.moveTo(-14, -14);
+    ctx.lineTo(-4, -10);
+    ctx.moveTo(14, -14);
+    ctx.lineTo(4, -10);
+    ctx.stroke();
+
+    /* mouth */
+
+    ctx.fillStyle = "#391c27";
+
+    ctx.beginPath();
+    ctx.ellipse(
+        0,
+        10,
+        7,
+        5,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+}
+
+/* ============================================================
+   Particles
+============================================================ */
+
+function spawnParticles(
+    x,
+    y,
+    color,
+    amount = 15
+) {
+
+    for (let i = 0; i < amount; i++) {
+
+        const angle =
+            Math.random() * Math.PI * 2;
+
+        const speed =
+            60 + Math.random() * 180;
+
+        particles.push({
+            x,
+            y,
+
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+
+            life: .45 + Math.random() * .5,
+            maxLife: .9,
+
+            size: 2 + Math.random() * 5,
+
+            color
+        });
+    }
+}
+
+function updateParticles(dt) {
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+
+        const p = particles[i];
+
+        p.life -= dt;
+
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+
+        p.vx *= .97;
+        p.vy *= .97;
+
+        p.vy += 50 * dt;
+
+        if (p.life <= 0) {
+            particles.splice(i, 1);
+        }
+    }
+}
+
+function drawParticles() {
+
+    for (const p of particles) {
+
+        ctx.globalAlpha =
+            Math.max(0, p.life / p.maxLife);
+
+        ctx.fillStyle = p.color;
+
+        ctx.beginPath();
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+}
+
+/* ============================================================
+   Shockwave
+============================================================ */
+
+function addShockwave(x, y, color) {
+
+    shockwaves.push({
+        x,
+        y,
+        radius: 10,
+        life: .35,
+        color
+    });
+}
+
+function updateShockwaves(dt) {
+
+    for (let i = shockwaves.length - 1; i >= 0; i--) {
+
+        const s = shockwaves[i];
+
+        s.radius += 240 * dt;
+        s.life -= dt;
+
+        if (s.life <= 0) {
+            shockwaves.splice(i, 1);
+        }
+    }
+}
+
+function drawShockwaves() {
+
+    for (const s of shockwaves) {
+
+        ctx.globalAlpha =
+            s.life / .35;
+
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = 5;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            s.x,
+            s.y,
+            s.radius,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.stroke();
+    }
+
+    ctx.globalAlpha = 1;
+}
+
+/* ============================================================
+   Floating Text
+============================================================ */
+
+function addText(text, x, y, color) {
+
+    floatingTexts.push({
+        text,
+        x,
+        y,
+        life: .8,
+        color
+    });
+}
+
+function updateTexts(dt) {
+
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+
+        const t = floatingTexts[i];
+
+        t.y -= 30 * dt;
+        t.life -= dt;
+
+        if (t.life <= 0) {
+            floatingTexts.splice(i, 1);
+        }
+    }
+}
+
+function drawTexts() {
+
+    for (const t of floatingTexts) {
+
+        ctx.globalAlpha =
+            Math.min(1, t.life * 2);
+
+        ctx.fillStyle = t.color;
+        ctx.strokeStyle = "rgba(0,0,0,.5)";
+        ctx.lineWidth = 5;
+
+        ctx.font =
+            "900 28px Arial Black, sans-serif";
+
+        ctx.textAlign = "center";
+
+        ctx.strokeText(
+            t.text,
+            t.x,
+            t.y
+        );
+
+        ctx.fillText(
+            t.text,
+            t.x,
+            t.y
+        );
+    }
+
+    ctx.globalAlpha = 1;
+}
+
+/* ============================================================
+   Ghost update
+============================================================ */
+
+function updateGhosts(dt) {
+
+    if (comboActive) return;
+
+    for (let i = ghosts.length - 1; i >= 0; i--) {
+
+        const g = ghosts[i];
+
+        if (g.dead) {
+            ghosts.splice(i, 1);
+            continue;
+        }
+
+        g.bob += dt * 5;
+        g.rotation += dt * 2;
+
+        const dx = orb.x - g.x;
+        const dy = orb.y - g.y;
+
+        const distance =
+            Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < orb.radius + g.radius) {
+
+            hitOrb(g);
+
+            ghosts.splice(i, 1);
+
+            continue;
+        }
+
+        const nx = dx / distance;
+        const ny = dy / distance;
+
+        g.x += nx * g.speed * dt;
+        g.y += ny * g.speed * dt;
+
+        if (g.hitFlash > 0) {
+            g.hitFlash -= dt;
+        }
+    }
+}
+
+/* ============================================================
+   Orb damage
+============================================================ */
+
+function hitOrb(g) {
+
+    lives--;
+
+    shake = 14;
+
+    damageFlash.style.opacity = ".8";
+
+    setTimeout(() => {
+        damageFlash.style.opacity = "0";
+    }, 120);
+
+    spawnParticles(
+        orb.x,
+        orb.y,
+        "#fff24f",
+        30
+    );
+
+    addShockwave(
+        orb.x,
+        orb.y,
+        "#ff6b3b"
+    );
+
+    addText(
+        "-1",
+        orb.x,
+        orb.y - 70,
+        "#ff5c5c"
+    );
+
+    sound("hit");
+
+    updateHearts();
+
+    if (lives <= 0) {
+        finishGame(false);
+    }
+}
+
+function updateHearts() {
+
+    const hearts =
+        heartsEl.querySelectorAll(".heart");
+
+    hearts.forEach((heart, i) => {
+
+        if (i < lives) {
+            heart.classList.remove("empty");
+        } else {
+            heart.classList.add("empty");
+        }
+    });
+}
+
+/* ============================================================
+   Spawn difficulty
+============================================================ */
+
+function getSpawnInterval() {
+
+    /*
+        처음에는 약 0.9초
+        마지막에는 약 0.25초
+    */
+
+    return Math.max(
+        .24,
+        .95 - elapsed * .012
+    );
+}
+
+function updateSpawner(dt) {
+
+    if (comboActive) return;
+
+    spawnTimer -= dt;
+
+    if (spawnTimer <= 0) {
+
+        const count =
+            elapsed > 45
+                ? (Math.random() < .35 ? 2 : 1)
+                : 1;
+
+        for (let i = 0; i < count; i++) {
+            ghosts.push(createGhost());
+        }
+
+        spawnTimer =
+            getSpawnInterval() *
+            (.7 + Math.random() * .6);
+    }
+}
+
+/* ============================================================
+   Mouse / Touch
+============================================================ */
+
+function getCanvasPosition(e) {
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+    let clientX;
+    let clientY;
+
+    if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
+
+    return {
+        x:
+            (clientX - rect.left)
+            / rect.width * W,
+
+        y:
+            (clientY - rect.top)
+            / rect.height * H
+    };
+}
+
+canvas.addEventListener("pointerdown", function(e) {
+
+    if (!gameRunning) return;
+
+    initAudio();
+
+    const pos = getCanvasPosition(e);
+
+    if (comboActive) {
+
+        comboClick();
+
+        return;
+    }
+
+    for (let i = ghosts.length - 1; i >= 0; i--) {
+
+        const g = ghosts[i];
+
+        const dx = pos.x - g.x;
+        const dy = pos.y - g.y;
+
+        const dist =
+            Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < g.radius + 16) {
+
+            if (g.pink) {
+
+                startCombo(g);
+
+            } else {
+
+                killGhost(g);
+
+            }
+
+            break;
+        }
+    }
+});
+
+/* ============================================================
+   Normal Ghost kill
+============================================================ */
+
+function killGhost(g) {
+
+    const index =
+        ghosts.indexOf(g);
+
+    if (index !== -1) {
+        ghosts.splice(index, 1);
+    }
+
+    g.dead = true;
+
+    spawnParticles(
+        g.x,
+        g.y,
+        "#7de7ff",
+        22
+    );
+
+    spawnParticles(
+        g.x,
+        g.y,
+        "#ffffff",
+        8
+    );
+
+    addShockwave(
+        g.x,
+        g.y,
+        "#8deaff"
+    );
+
+    addText(
+        "팡!",
+        g.x,
+        g.y - 30,
+        "#ffffff"
+    );
+
+    flash.style.opacity = ".35";
+
+    setTimeout(() => {
+        flash.style.opacity = "0";
+    }, 50);
+
+    sound("pop");
+}
+
+/* ============================================================
+   Pink Combo
+============================================================ */
+
+function startCombo(g) {
+
+    comboActive = true;
+
+    comboGhost = g;
+
+    comboHits = 0;
+
+    comboTime = comboMaxTime;
+
+    const index =
+        ghosts.indexOf(g);
+
+    if (index !== -1) {
+        ghosts.splice(index, 1);
+    }
+
+    comboOverlay.style.display = "flex";
+
+    comboCounter.textContent = "0 / 10";
+
+    comboBar.style.width = "0%";
+
+    sound("comboStart");
+
+    shake = 8;
+}
+
+function comboClick() {
+
+    if (!comboActive) return;
+
+    comboHits++;
+
+    comboTime -= .12;
+
+    comboCounter.textContent =
+        comboHits + " / 10";
+
+    comboBar.style.width =
+        (comboHits / 10 * 100) + "%";
+
+    sound("combo");
+
+    spawnParticles(
+        W / 2 + (Math.random() - .5) * 250,
+        H / 2 + (Math.random() - .5) * 180,
+        "#fff16b",
+        7
+    );
+
+    shake = 5;
+
+    if (comboHits >= 10) {
+
+        comboActive = false;
+
+        comboOverlay.style.display = "none";
+
+        spawnParticles(
+            W / 2,
+            H / 2,
+            "#ff6d9c",
+            45
+        );
+
+        addShockwave(
+            W / 2,
+            H / 2,
+            "#fff08a"
+        );
+
+        addText(
+            "처치!",
+            W / 2,
+            H / 2 + 190,
+            "#ffffff"
+        );
+
+        sound("pop");
+    }
+}
+
+/* ============================================================
+   Combo update
+============================================================ */
+
+function updateCombo(dt) {
+
+    if (!comboActive) return;
+
+    comboTime -= dt;
+
+    if (comboTime <= 0) {
+
+        comboActive = false;
+
+        comboOverlay.style.display = "none";
+
+        /*
+            연타 실패하면 귀신이 구슬 근처로
+            순간이동하여 큰 위협을 주지 않고
+            다시 등장하도록 처리
+        */
+
+        const g = createGhost();
+
+        g.pink = true;
+        g.speed *= .8;
+
+        /* 화면 바깥에서 재진입 */
+        ghosts.push(g);
+
+        addText(
+            "실패!",
+            W / 2,
+            H / 2 + 180,
+            "#ff507c"
+        );
+
+        sound("hit");
+    }
+}
+
+/* ============================================================
+   Game Start
+============================================================ */
+
+function startGame() {
+
+    initAudio();
+
+    startScreen.classList.add("hidden");
+    endScreen.classList.add("hidden");
+
+    elapsed = 0;
+    remaining = GAME_TIME;
+
+    lives = 3;
+
+    ghosts = [];
+    particles = [];
+    floatingTexts = [];
+    shockwaves = [];
+
+    spawnTimer = .5;
+
+    comboActive = false;
+    comboGhost = null;
+    comboHits = 0;
+
+    gameRunning = true;
+    gameOver = false;
+
+    updateHearts();
+
+    lastTime = performance.now();
+
+    sound("click");
+}
+
+/* ============================================================
+   Game End
+============================================================ */
+
+function finishGame(win) {
+
+    if (!gameRunning) return;
+
+    gameRunning = false;
+    gameOver = true;
+
+    comboActive = false;
+    comboOverlay.style.display = "none";
+
+    if (win) {
+
+        endTitle.textContent = "클리어! ✨";
+
+        endText.innerHTML =
+            "대단해요!<br>" +
+            "<b>1분 동안 노란 구슬을 지켜냈어요!</b><br>" +
+            "숲의 빛이 안전하게 보호되었습니다.";
+
+        sound("win");
+
+        spawnParticles(
+            orb.x,
+            orb.y,
+            "#fff36a",
+            100
+        );
+
+    } else {
+
+        endTitle.textContent = "게임 오버! 💥";
+
+        endText.innerHTML =
+            "귀신이 노란 구슬에<br>" +
+            "<b>3번이나 닿았어요!</b><br>" +
+            "다시 도전해보세요.";
+
+        sound("lose");
+    }
+
+    setTimeout(() => {
+        endScreen.classList.remove("hidden");
+    }, 700);
+}
+
+/* ============================================================
+   Timer
+============================================================ */
+
+function updateTimer(dt) {
+
+    elapsed += dt;
+
+    remaining =
+        Math.max(0, GAME_TIME - elapsed);
+
+    const seconds =
+        Math.ceil(remaining);
+
+    const min =
+        Math.floor(seconds / 60);
+
+    const sec =
+        seconds % 60;
+
+    timerEl.textContent =
+        String(min).padStart(2, "0") +
+        ":" +
+        String(sec).padStart(2, "0");
+
+    progressEl.style.width =
+        (remaining / GAME_TIME * 100) + "%";
+
+    progressText.textContent =
+        "남은 시간: " +
+        String(min).padStart(2, "0") +
+        ":" +
+        String(sec).padStart(2, "0");
+
+    if (remaining <= 0) {
+        finishGame(true);
+    }
+}
+
+/* ============================================================
+   Main update
+============================================================ */
+
+function update(dt) {
+
+    if (!gameRunning) {
+
+        updateParticles(dt);
+        updateShockwaves(dt);
+        updateTexts(dt);
+
+        return;
+    }
+
+    updateTimer(dt);
+
+    if (!gameRunning) return;
+
+    updateSpawner(dt);
+    updateGhosts(dt);
+    updateCombo(dt);
+
+    updateParticles(dt);
+    updateShockwaves(dt);
+    updateTexts(dt);
+
+    shake *= .88;
+
+    if (shake < .2) {
+        shake = 0;
+    }
+}
+
+/* ============================================================
+   Draw
+============================================================ */
+
+function draw() {
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+    ctx.save();
+
+    if (shake > 0) {
+
+        ctx.translate(
+            (Math.random() - .5) * shake,
+            (Math.random() - .5) * shake
+        );
+    }
+
+    drawBackground();
+
+    /* Magic circle */
+
+    ctx.save();
+
+    ctx.strokeStyle =
+        "rgba(255,242,100,.25)";
+
+    ctx.lineWidth = 3;
+
+    ctx.setLineDash([10, 10]);
+
+    ctx.beginPath();
+
+    ctx.arc(
+        orb.x,
+        orb.y,
+        105,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+
+    ctx.restore();
+
+    drawOrb();
+    drawGuardian();
+
+    /* Ghosts */
+
+    for (const g of ghosts) {
+        drawGhost(g);
+    }
+
+    drawShockwaves();
+    drawParticles();
+    drawTexts();
+
+    ctx.restore();
+}
+
+/* ============================================================
+   Main Loop
+============================================================ */
+
+function loop(now) {
+
+    let dt =
+        (now - lastTime) / 1000;
+
+    if (!lastTime) dt = 0;
+
+    /*
+        브라우저가 잠깐 멈췄을 때
+        귀신이 순간이동하지 않도록 제한
+    */
+    dt = Math.min(dt, .05);
+
+    lastTime = now;
+
+    update(dt);
+    draw();
+
+    requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+
+/* ============================================================
+   Buttons
+============================================================ */
+
+document
+    .getElementById("startBtn")
+    .addEventListener(
+        "click",
+        startGame
+    );
+
+document
+    .getElementById("restartBtn")
+    .addEventListener(
+        "click",
+        startGame
+    );
+
+/* ============================================================
+   Prevent accidental scrolling on touch
+============================================================ */
+
+document.addEventListener(
+    "touchmove",
+    function(e) {
+        e.preventDefault();
+    },
+    { passive: false }
+);
 </script>
+
 </body>
 </html>
