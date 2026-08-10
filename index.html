@@ -31,15 +31,12 @@ body {
   justify-content: center;
 }
 
-/* =========================
-   GAME
-========================= */
-
 #game {
   position: relative;
   width: min(100vw, 177.777vh);
   height: min(56.25vw, 100vh);
   overflow: hidden;
+
   background:
     radial-gradient(
       circle at 50% 50%,
@@ -50,7 +47,6 @@ body {
     );
 }
 
-/* 잔디 느낌 */
 #game::before {
   content: "";
   position: absolute;
@@ -58,8 +54,16 @@ body {
   pointer-events: none;
 
   background-image:
-    radial-gradient(circle, rgba(255,255,255,.22) 0 2px, transparent 3px),
-    radial-gradient(circle, rgba(255,255,255,.15) 0 2px, transparent 3px);
+    radial-gradient(
+      circle,
+      rgba(255,255,255,.22) 0 2px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle,
+      rgba(255,255,255,.15) 0 2px,
+      transparent 3px
+    );
 
   background-size:
     130px 110px,
@@ -75,6 +79,7 @@ body {
 .hud {
   position: absolute;
   z-index: 50;
+
   top: 18px;
 
   padding: 10px 18px;
@@ -87,6 +92,7 @@ body {
     0 5px 16px rgba(0,0,0,.2);
 
   color: #392b1b;
+
   font-size: 24px;
   font-weight: 900;
 }
@@ -97,9 +103,12 @@ body {
 
 #lives {
   right: 18px;
+
   color: #ef5965;
+
   letter-spacing: 4px;
 }
+
 
 /* =========================
    CORE
@@ -107,6 +116,7 @@ body {
 
 #core {
   position: absolute;
+
   z-index: 8;
 
   left: 50%;
@@ -140,42 +150,60 @@ body {
     0 0 45px #ffd52c,
     0 0 100px rgba(255,210,40,.7);
 
-  animation: corePulse 1.3s infinite ease-in-out;
+  animation:
+    corePulse 1.3s infinite ease-in-out;
 }
 
 #core::before {
   content: "";
+
   position: absolute;
+
   inset: -25px;
 
-  border: 3px solid rgba(255,244,125,.55);
+  border:
+    3px solid rgba(255,244,125,.55);
+
   border-radius: 50%;
 
-  animation: coreRing 2s linear infinite;
+  animation:
+    coreRing 2s linear infinite;
 }
 
 #core::after {
   content: "";
+
   position: absolute;
+
   inset: -50px;
 
-  border: 2px dashed rgba(255,244,125,.35);
+  border:
+    2px dashed rgba(255,244,125,.35);
+
   border-radius: 50%;
 
-  animation: coreRing 4s linear infinite reverse;
+  animation:
+    coreRing 4s linear infinite reverse;
 }
 
 @keyframes corePulse {
+
   50% {
-    transform: translate(-50%, -50%) scale(1.08);
+    transform:
+      translate(-50%, -50%)
+      scale(1.08);
   }
+
 }
 
 @keyframes coreRing {
+
   to {
     transform: rotate(360deg);
   }
+
 }
+
 
 /* =========================
    CHARACTER
@@ -199,8 +227,11 @@ body {
   pointer-events: none;
 
   filter:
-    drop-shadow(0 8px 5px rgba(0,0,0,.25));
+    drop-shadow(
+      0 8px 5px rgba(0,0,0,.25)
+    );
 }
+
 
 /* =========================
    GHOST
@@ -214,49 +245,73 @@ body {
   width: 82px;
   height: 82px;
 
-  transform: translate(-50%, -50%);
+  transform:
+    translate(-50%, -50%);
 
   object-fit: contain;
 
   cursor: pointer;
 
   user-select: none;
+
   -webkit-user-drag: none;
 
   filter:
-    drop-shadow(0 7px 5px rgba(0,0,0,.28));
+    drop-shadow(
+      0 7px 5px rgba(0,0,0,.28)
+    );
 
-  transition: transform .08s;
+  transition:
+    transform .08s;
 }
 
 .ghost:hover {
+
   transform:
     translate(-50%, -50%)
     scale(1.08);
+
 }
 
 .ghost.pink {
-  animation: pinkGlow .7s infinite alternate;
+
+  animation:
+    pinkGlow .7s infinite alternate;
+
 }
 
 @keyframes pinkGlow {
+
   from {
+
     filter:
-      drop-shadow(0 7px 5px rgba(0,0,0,.28));
+      drop-shadow(
+        0 7px 5px rgba(0,0,0,.28)
+      );
+
   }
 
   to {
+
     filter:
-      drop-shadow(0 7px 5px rgba(0,0,0,.28))
-      drop-shadow(0 0 15px rgba(255,100,140,.8));
+      drop-shadow(
+        0 7px 5px rgba(0,0,0,.28)
+      )
+      drop-shadow(
+        0 0 15px rgba(255,100,140,.8)
+      );
+
   }
+
 }
 
+
 /* =========================
-   EFFECT
+   PARTICLE
 ========================= */
 
 .particle {
+
   position: absolute;
 
   z-index: 60;
@@ -270,20 +325,35 @@ body {
 
   background: #fff5a0;
 
-  animation: particle .65s forwards;
+  animation:
+    particle .65s forwards;
+
 }
 
 @keyframes particle {
+
   to {
+
     opacity: 0;
 
     transform:
-      translate(var(--x), var(--y))
+      translate(
+        var(--x),
+        var(--y)
+      )
       scale(.1);
+
   }
+
 }
 
+
+/* =========================
+   POP TEXT
+========================= */
+
 .popText {
+
   position: absolute;
 
   z-index: 70;
@@ -291,6 +361,7 @@ body {
   color: white;
 
   font-size: 34px;
+
   font-weight: 1000;
 
   text-shadow:
@@ -299,48 +370,66 @@ body {
 
   pointer-events: none;
 
-  animation: popText .55s forwards;
+  animation:
+    popText .55s forwards;
+
 }
 
 @keyframes popText {
+
   0% {
+
     opacity: 1;
+
     transform:
       translate(-50%, -50%)
       scale(.5);
+
   }
 
   100% {
+
     opacity: 0;
 
     transform:
       translate(-50%, -100%)
       scale(1.3);
+
   }
+
 }
+
 
 /* =========================
    DAMAGE
 ========================= */
 
 #damageFlash {
+
   position: absolute;
+
   inset: 0;
 
   z-index: 80;
 
-  background: rgba(255,50,50,.35);
+  background:
+    rgba(255,50,50,.35);
 
   pointer-events: none;
 
   opacity: 0;
+
 }
 
 #damageFlash.show {
-  animation: damageFlash .45s;
+
+  animation:
+    damageFlash .45s;
+
 }
 
 @keyframes damageFlash {
+
   0% {
     opacity: 1;
   }
@@ -348,13 +437,16 @@ body {
   100% {
     opacity: 0;
   }
+
 }
 
+
 /* =========================
-   START / END
+   OVERLAY
 ========================= */
 
 .overlay {
+
   position: absolute;
 
   inset: 0;
@@ -369,13 +461,18 @@ body {
   background:
     rgba(7,27,18,.62);
 
-  backdrop-filter: blur(5px);
+  backdrop-filter:
+    blur(5px);
+
 }
 
 .card {
-  width: min(570px, 88%);
 
-  padding: 36px 38px;
+  width:
+    min(570px, 88%);
+
+  padding:
+    36px 38px;
 
   text-align: center;
 
@@ -387,47 +484,65 @@ body {
       #fff3c9
     );
 
-  border: 5px solid #77572b;
+  border:
+    5px solid #77572b;
 
   box-shadow:
     0 20px 60px rgba(0,0,0,.35);
 
   color: #342515;
+
 }
 
 .card h1 {
-  margin: 0 0 15px;
+
+  margin:
+    0 0 15px;
 
   font-size:
-    clamp(34px, 5vw, 58px);
+    clamp(
+      34px,
+      5vw,
+      58px
+    );
 
-  line-height: 1.15;
+  line-height:
+    1.15;
+
 }
 
 .card p {
-  margin: 10px 0;
+
+  margin:
+    10px 0;
 
   font-size: 18px;
 
   line-height: 1.7;
 
   font-weight: 700;
+
 }
 
 .startButton {
+
   margin-top: 20px;
 
-  padding: 14px 36px;
+  padding:
+    14px 36px;
 
   border: 0;
 
   border-radius: 18px;
 
-  background: #f5bd31;
+  background:
+    #f5bd31;
 
-  color: #422b08;
+  color:
+    #422b08;
 
   font-size: 21px;
+
   font-weight: 1000;
 
   cursor: pointer;
@@ -436,20 +551,26 @@ body {
     0 6px 0 #a66c12;
 
   transition: .1s;
+
 }
 
 .startButton:active {
-  transform: translateY(5px);
+
+  transform:
+    translateY(5px);
 
   box-shadow:
     0 1px 0 #a66c12;
+
 }
+
 
 /* =========================
    PINK COMBO
 ========================= */
 
 #combo {
+
   position: absolute;
 
   inset: 0;
@@ -467,67 +588,93 @@ body {
       rgba(255,190,205,.96),
       rgba(236,96,130,.92)
     );
+
 }
 
 #combo.show {
+
   display: flex;
+
 }
 
 .comboBox {
+
   text-align: center;
 
-  width: min(620px, 90%);
+  width:
+    min(620px, 90%);
+
 }
 
 #comboGhost {
-  width: min(350px, 58vw);
+
+  width:
+    min(350px, 58vw);
+
   max-height: 48vh;
 
   object-fit: contain;
 
   filter:
-    drop-shadow(0 14px 10px rgba(0,0,0,.25));
+    drop-shadow(
+      0 14px 10px rgba(0,0,0,.25)
+    );
+
 }
 
 #comboTitle {
+
   margin-top: -5px;
 
-  color: #ff5e63;
+  color:
+    #ff5e63;
 
   font-size:
-    clamp(55px, 9vw, 95px);
+    clamp(
+      55px,
+      9vw,
+      95px
+    );
 
   font-weight: 1000;
 
   line-height: 1;
 
-  -webkit-text-stroke: 4px white;
+  -webkit-text-stroke:
+    4px white;
 
   text-shadow:
     5px 6px #572628;
 
-  transform: rotate(-4deg);
+  transform:
+    rotate(-4deg);
+
 }
 
 #comboCount {
+
   display: inline-block;
 
   margin-top: 10px;
 
   min-width: 150px;
 
-  padding: 9px 24px;
+  padding:
+    9px 24px;
 
   border-radius: 14px;
 
-  background: #211b1b;
+  background:
+    #211b1b;
 
   color: white;
 
   font-size: 30px;
 
   font-weight: 1000;
+
 }
+
 
 /* =========================
    MOBILE
@@ -536,37 +683,53 @@ body {
 @media(max-width:700px) {
 
   .hud {
+
     top: 10px;
 
-    padding: 7px 12px;
+    padding:
+      7px 12px;
 
     font-size: 19px;
+
   }
 
   #core {
+
     width: 90px;
     height: 90px;
+
   }
 
   #character {
+
     width: 95px;
     height: 135px;
 
-    top: calc(50% + 48px);
+    top:
+      calc(50% + 48px);
+
   }
 
   .ghost {
+
     width: 62px;
     height: 62px;
+
   }
 
   .card {
-    padding: 28px 22px;
+
+    padding:
+      28px 22px;
+
   }
 
   .card p {
+
     font-size: 15px;
+
   }
+
 }
 </style>
 </head>
@@ -575,21 +738,36 @@ body {
 
 <div id="game">
 
-  <!-- HUD -->
-  <div id="timer" class="hud">
+  <!-- =========================
+       HUD
+  ========================== -->
+
+  <div
+    id="timer"
+    class="hud"
+  >
     ⏱️ 01:00
   </div>
 
-  <div id="lives" class="hud">
+  <div
+    id="lives"
+    class="hud"
+  >
     ❤️❤️❤️
   </div>
 
 
-  <!-- 중앙 코어 -->
+  <!-- =========================
+       CORE
+  ========================== -->
+
   <div id="core"></div>
 
 
-  <!-- 두 번째 새싹 캐릭터 -->
+  <!-- =========================
+       CHARACTER
+  ========================== -->
+
   <img
     id="character"
     src="character.png"
@@ -597,19 +775,24 @@ body {
   >
 
 
-  <!-- 귀신이 생성되는 공간 -->
+  <!-- 귀신 생성 영역 -->
+
   <div id="arena"></div>
 
 
   <!-- 피격 효과 -->
+
   <div id="damageFlash"></div>
 
 
   <!-- =========================
-       시작 화면
+       START SCREEN
   ========================== -->
 
-  <div id="startScreen" class="overlay">
+  <div
+    id="startScreen"
+    class="overlay"
+  >
 
     <div class="card">
 
@@ -641,7 +824,7 @@ body {
 
 
   <!-- =========================
-       분홍 귀신 연타
+       PINK GHOST
   ========================== -->
 
   <div id="combo">
@@ -668,7 +851,7 @@ body {
 
 
   <!-- =========================
-       종료 화면
+       END SCREEN
   ========================== -->
 
   <div
@@ -702,11 +885,14 @@ body {
 <script>
 
 /* =====================================================
-   이미지
+   IMAGE FILES
 ===================================================== */
 
-const BLUE_GHOST = "blue-ghost.png";
-const PINK_GHOST = "pink-ghost.png";
+const BLUE_GHOST =
+  "blue-ghost.png";
+
+const PINK_GHOST =
+  "pink-ghost.png";
 
 
 /* =====================================================
@@ -714,50 +900,78 @@ const PINK_GHOST = "pink-ghost.png";
 ===================================================== */
 
 const game =
-  document.getElementById("game");
+  document.getElementById(
+    "game"
+  );
 
 const arena =
-  document.getElementById("arena");
+  document.getElementById(
+    "arena"
+  );
 
 const timer =
-  document.getElementById("timer");
+  document.getElementById(
+    "timer"
+  );
 
 const lives =
-  document.getElementById("lives");
+  document.getElementById(
+    "lives"
+  );
 
 const startScreen =
-  document.getElementById("startScreen");
+  document.getElementById(
+    "startScreen"
+  );
 
 const startButton =
-  document.getElementById("startButton");
+  document.getElementById(
+    "startButton"
+  );
 
 const endScreen =
-  document.getElementById("endScreen");
+  document.getElementById(
+    "endScreen"
+  );
 
 const endTitle =
-  document.getElementById("endTitle");
+  document.getElementById(
+    "endTitle"
+  );
 
 const endText =
-  document.getElementById("endText");
+  document.getElementById(
+    "endText"
+  );
 
 const restartButton =
-  document.getElementById("restartButton");
+  document.getElementById(
+    "restartButton"
+  );
 
 const combo =
-  document.getElementById("combo");
+  document.getElementById(
+    "combo"
+  );
 
 const comboGhost =
-  document.getElementById("comboGhost");
+  document.getElementById(
+    "comboGhost"
+  );
 
 const comboCount =
-  document.getElementById("comboCount");
+  document.getElementById(
+    "comboCount"
+  );
 
 const damageFlash =
-  document.getElementById("damageFlash");
+  document.getElementById(
+    "damageFlash"
+  );
 
 
 /* =====================================================
-   상태
+   GAME STATE
 ===================================================== */
 
 let running = false;
@@ -778,10 +992,11 @@ let pinkClicks = 0;
 
 
 /* =====================================================
-   사운드
+   AUDIO
 ===================================================== */
 
 let audioContext = null;
+
 
 function initAudio() {
 
@@ -795,9 +1010,15 @@ function initAudio() {
 
   }
 
-  if (audioContext.state === "suspended") {
+  if (
+    audioContext.state ===
+    "suspended"
+  ) {
+
     audioContext.resume();
+
   }
+
 }
 
 
@@ -816,7 +1037,8 @@ function sound(
   const gain =
     audioContext.createGain();
 
-  oscillator.type = type;
+  oscillator.type =
+    type;
 
   oscillator.frequency.value =
     frequency;
@@ -828,36 +1050,46 @@ function sound(
 
   gain.gain.exponentialRampToValueAtTime(
     .001,
-    audioContext.currentTime + duration
+    audioContext.currentTime +
+      duration
   );
 
   oscillator.connect(gain);
 
-  gain.connect(audioContext.destination);
+  gain.connect(
+    audioContext.destination
+  );
 
   oscillator.start();
 
   oscillator.stop(
-    audioContext.currentTime + duration
+    audioContext.currentTime +
+      duration
   );
+
 }
 
 
 /* =====================================================
-   유틸
+   RANDOM
 ===================================================== */
 
-function random(min, max) {
+function random(
+  min,
+  max
+) {
 
-  return Math.random() *
+  return (
+    Math.random() *
     (max - min) +
-    min;
+    min
+  );
 
 }
 
 
 /* =====================================================
-   파티클
+   PARTICLES
 ===================================================== */
 
 function burst(
@@ -876,7 +1108,9 @@ function burst(
   ) {
 
     const particle =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     particle.className =
       "particle";
@@ -898,34 +1132,38 @@ function burst(
       2;
 
     const distance =
-      random(40, 110);
+      random(40,110);
 
     particle.style.setProperty(
       "--x",
       Math.cos(angle) *
-      distance +
-      "px"
+        distance +
+        "px"
     );
 
     particle.style.setProperty(
       "--y",
       Math.sin(angle) *
-      distance +
-      "px"
+        distance +
+        "px"
     );
 
-    game.appendChild(particle);
+    game.appendChild(
+      particle
+    );
 
     setTimeout(
       () => particle.remove(),
       700
     );
+
   }
+
 }
 
 
 /* =====================================================
-   팝 텍스트
+   POP TEXT
 ===================================================== */
 
 function popText(
@@ -935,7 +1173,9 @@ function popText(
 ) {
 
   const el =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   el.className =
     "popText";
@@ -955,43 +1195,62 @@ function popText(
     () => el.remove(),
     600
   );
+
 }
 
 
 /* =====================================================
-   귀신 등장 간격
+   SPAWN RATE
 ===================================================== */
 
 function spawnRate() {
 
   /*
     초반:
-    약 1.1초
+    약 1.15초
 
     후반:
-    약 0.45초
+    약 0.65초
 
-    시간이 갈수록 많이 등장하지만
-    너무 정신없지 않도록 제한
+    너무 빠르게 증가하지 않도록
+    제한합니다.
   */
 
   return Math.max(
-    450,
+    650,
     1150 -
-    (60 - timeLeft) * 12
+      (60 - timeLeft) * 8
   );
+
 }
 
 
 /* =====================================================
-   귀신 생성
+   CREATE GHOST
 ===================================================== */
 
-function createGhost(type) {
+function createGhost(
+  type
+) {
 
-  if (!running || pinkGhost) {
+  if (!running) {
     return;
   }
+
+
+  /*
+    동시에 6마리 이상
+    생성하지 않음
+  */
+
+  if (
+    ghosts.length >= 6
+  ) {
+
+    return;
+
+  }
+
 
   const rect =
     game.getBoundingClientRect();
@@ -1008,7 +1267,7 @@ function createGhost(type) {
 
 
   /*
-    위
+    TOP
   */
 
   if (side === 0) {
@@ -1024,12 +1283,13 @@ function createGhost(type) {
 
 
   /*
-    오른쪽
+    RIGHT
   */
 
   else if (side === 1) {
 
-    x = rect.width + size;
+    x =
+      rect.width + size;
 
     y = random(
       size,
@@ -1040,7 +1300,7 @@ function createGhost(type) {
 
 
   /*
-    아래
+    BOTTOM
   */
 
   else if (side === 2) {
@@ -1050,13 +1310,14 @@ function createGhost(type) {
       rect.width - size
     );
 
-    y = rect.height + size;
+    y =
+      rect.height + size;
 
   }
 
 
   /*
-    왼쪽
+    LEFT
   */
 
   else {
@@ -1072,13 +1333,17 @@ function createGhost(type) {
 
 
   const ghost =
-    document.createElement("img");
+    document.createElement(
+      "img"
+    );
 
   ghost.className =
     "ghost " +
-    (type === "pink"
-      ? "pink"
-      : "");
+    (
+      type === "pink"
+        ? "pink"
+        : ""
+    );
 
   ghost.src =
     type === "pink"
@@ -1090,7 +1355,8 @@ function createGhost(type) {
       ? "분홍 귀신"
       : "파란 귀신";
 
-  ghost.draggable = false;
+  ghost.draggable =
+    false;
 
   ghost.style.left =
     x + "px";
@@ -1098,22 +1364,24 @@ function createGhost(type) {
   ghost.style.top =
     y + "px";
 
-  arena.appendChild(ghost);
-
 
   /*
-    이전 버전보다 빠르지만
-    너무 빠르지 않게 설정
+    귀신 속도
 
-    초반: 약 31~35
-    후반: 약 40~45
+    이전보다 빠르게 설정.
+
+    초반:
+    약 37~42
+
+    후반:
+    약 44~49
   */
 
   const speed =
-    31 +
+    39 +
     (60 - timeLeft) *
-    .16 +
-    random(-2, 3);
+      0.12 +
+    random(-2,3);
 
 
   const data = {
@@ -1133,7 +1401,14 @@ function createGhost(type) {
   };
 
 
-  ghosts.push(data);
+  ghosts.push(
+    data
+  );
+
+
+  arena.appendChild(
+    ghost
+  );
 
 
   ghost.addEventListener(
@@ -1151,25 +1426,28 @@ function createGhost(type) {
 
 
 /* =====================================================
-   귀신 클릭
+   HIT GHOST
 ===================================================== */
 
 function hitGhost(g) {
 
   if (
     !running ||
-    g.dead ||
-    pinkGhost
+    g.dead
   ) {
+
     return;
+
   }
 
 
   /*
-    분홍 귀신
+    PINK
   */
 
-  if (g.type === "pink") {
+  if (
+    g.type === "pink"
+  ) {
 
     startPinkCombo(g);
 
@@ -1179,7 +1457,7 @@ function hitGhost(g) {
 
 
   /*
-    파란 귀신
+    BLUE
   */
 
   removeGhost(
@@ -1209,7 +1487,7 @@ function hitGhost(g) {
 
 
 /* =====================================================
-   귀신 제거
+   REMOVE GHOST
 ===================================================== */
 
 function removeGhost(
@@ -1233,13 +1511,13 @@ function removeGhost(
 
   const x =
     rect.left -
-    gameRect.left +
-    rect.width / 2;
+      gameRect.left +
+      rect.width / 2;
 
   const y =
     rect.top -
-    gameRect.top +
-    rect.height / 2;
+      gameRect.top +
+      rect.height / 2;
 
 
   if (effect) {
@@ -1266,14 +1544,15 @@ function removeGhost(
 
   ghosts =
     ghosts.filter(
-      ghost => ghost !== g
+      ghost =>
+        ghost !== g
     );
 
 }
 
 
 /* =====================================================
-   분홍 귀신 연타 시작
+   PINK COMBO START
 ===================================================== */
 
 function startPinkCombo(g) {
@@ -1299,7 +1578,7 @@ function startPinkCombo(g) {
 
 
 /* =====================================================
-   분홍 귀신 연타
+   PINK COMBO
 ===================================================== */
 
 combo.addEventListener(
@@ -1310,8 +1589,11 @@ combo.addEventListener(
       !running ||
       !pinkGhost
     ) {
+
       return;
+
     }
+
 
     event.preventDefault();
 
@@ -1327,7 +1609,8 @@ combo.addEventListener(
 
 
     sound(
-      650 + pinkClicks * 20,
+      650 +
+        pinkClicks * 20,
       .045,
       "square",
       .035
@@ -1357,7 +1640,9 @@ combo.addEventListener(
     );
 
 
-    if (pinkClicks >= 10) {
+    if (
+      pinkClicks >= 10
+    ) {
 
       const g =
         pinkGhost;
@@ -1386,7 +1671,7 @@ combo.addEventListener(
 
 
 /* =====================================================
-   코어 피격
+   DAMAGE CORE
 ===================================================== */
 
 function damageCore(g) {
@@ -1394,6 +1679,7 @@ function damageCore(g) {
   if (g.dead) {
     return;
   }
+
 
   g.dead = true;
 
@@ -1425,17 +1711,21 @@ function damageCore(g) {
 
   ghosts =
     ghosts.filter(
-      ghost => ghost !== g
+      ghost =>
+        ghost !== g
     );
 
 
   /*
-    체력 표시
+    HP
   */
 
   lives.textContent =
     "❤️".repeat(
-      3 - damageCount
+      Math.max(
+        0,
+        3 - damageCount
+      )
     ) +
     "🖤".repeat(
       damageCount
@@ -1462,10 +1752,12 @@ function damageCore(g) {
 
 
   /*
-    3번 닿으면 실패
+    3회 피격
   */
 
-  if (damageCount >= 3) {
+  if (
+    damageCount >= 3
+  ) {
 
     endGame(false);
 
@@ -1475,10 +1767,12 @@ function damageCore(g) {
 
 
 /* =====================================================
-   게임 업데이트
+   UPDATE
 ===================================================== */
 
-function update(timestamp) {
+function update(
+  timestamp
+) {
 
   if (!running) {
     return;
@@ -1486,14 +1780,20 @@ function update(timestamp) {
 
 
   if (!lastTime) {
-    lastTime = timestamp;
+
+    lastTime =
+      timestamp;
+
   }
 
 
   const delta =
     Math.min(
       0.04,
-      (timestamp - lastTime) / 1000
+      (
+        timestamp -
+        lastTime
+      ) / 1000
     );
 
 
@@ -1504,7 +1804,9 @@ function update(timestamp) {
   timeLeft -= delta;
 
 
-  if (timeLeft <= 0) {
+  if (
+    timeLeft <= 0
+  ) {
 
     timeLeft = 0;
 
@@ -1520,9 +1822,9 @@ function update(timestamp) {
   updateTimer();
 
 
-  /*
-    귀신 생성
-  */
+  /* =========================
+     SPAWN
+  ========================== */
 
   spawnTimer +=
     delta * 1000;
@@ -1537,27 +1839,84 @@ function update(timestamp) {
 
 
     /*
-      시간이 갈수록
-      여러 마리 등장
+      최대 6마리
     */
+
+    const MAX_GHOSTS =
+      6;
+
 
     let amount = 1;
 
 
-    if (timeLeft < 40) {
-      amount = 2;
-    }
+    /*
+      초반
+    */
 
-    if (timeLeft < 20) {
-      amount = 2;
+    if (
+      timeLeft < 42
+    ) {
 
       if (
-        Math.random() < .35
+        Math.random() < .45
       ) {
-        amount = 3;
+
+        amount = 2;
+
       }
+
     }
 
+
+    /*
+      후반
+    */
+
+    if (
+      timeLeft < 20
+    ) {
+
+      if (
+        Math.random() < .65
+      ) {
+
+        amount = 2;
+
+      }
+
+    }
+
+
+    /*
+      최대 마릿수 제한
+    */
+
+    if (
+      ghosts.length >=
+      MAX_GHOSTS
+    ) {
+
+      amount = 0;
+
+    }
+
+
+    if (
+      ghosts.length +
+        amount >
+      MAX_GHOSTS
+    ) {
+
+      amount =
+        MAX_GHOSTS -
+        ghosts.length;
+
+    }
+
+
+    /*
+      실제 생성
+    */
 
     for (
       let i = 0;
@@ -1566,21 +1925,27 @@ function update(timestamp) {
     ) {
 
       /*
-        분홍 귀신은
-        가끔 등장
+        핑크 귀신 확률
+
+        시간이 지나도
+        너무 자주 나오지 않음
       */
 
       const pinkChance =
         Math.min(
-          .20,
+          .18,
           .07 +
-          (60 - timeLeft) * .002
+            (
+              60 -
+              timeLeft
+            ) *
+            .0015
         );
 
 
       createGhost(
         Math.random() <
-        pinkChance
+          pinkChance
           ? "pink"
           : "blue"
       );
@@ -1590,9 +1955,9 @@ function update(timestamp) {
   }
 
 
-  /*
-    귀신 이동
-  */
+  /* =========================
+     MOVE GHOSTS
+  ========================== */
 
   const rect =
     game.getBoundingClientRect();
@@ -1605,23 +1970,37 @@ function update(timestamp) {
     rect.height / 2;
 
 
+  /*
+    중요:
+
+    여기에서 절대로
+    "pinkGhost가 있으면 continue"
+    를 하지 않습니다.
+
+    따라서 핑크 귀신 연타 중에도
+    다른 귀신들이 계속 이동합니다.
+  */
+
   for (
     const g of [...ghosts]
   ) {
 
     if (
-      g.dead ||
-      pinkGhost
+      g.dead
     ) {
+
       continue;
+
     }
 
 
     const dx =
-      coreX - g.x;
+      coreX -
+      g.x;
 
     const dy =
-      coreY - g.y;
+      coreY -
+      g.y;
 
 
     const distance =
@@ -1631,7 +2010,13 @@ function update(timestamp) {
       );
 
 
-    if (distance < 78) {
+    /*
+      코어 도착
+    */
+
+    if (
+      distance < 78
+    ) {
 
       damageCore(g);
 
@@ -1641,10 +2026,12 @@ function update(timestamp) {
 
 
     const directionX =
-      dx / distance;
+      dx /
+      distance;
 
     const directionY =
-      dy / distance;
+      dy /
+      distance;
 
 
     g.x +=
@@ -1675,7 +2062,7 @@ function update(timestamp) {
 
 
 /* =====================================================
-   타이머
+   TIMER
 ===================================================== */
 
 function updateTimer() {
@@ -1708,7 +2095,7 @@ function updateTimer() {
 
 
 /* =====================================================
-   게임 시작
+   START GAME
 ===================================================== */
 
 function startGame() {
@@ -1717,11 +2104,12 @@ function startGame() {
 
 
   /*
-    기존 귀신 삭제
+    귀신 전부 제거
   */
 
   ghosts.forEach(
-    g => g.el.remove()
+    g =>
+      g.el.remove()
   );
 
   ghosts = [];
@@ -1745,6 +2133,7 @@ function startGame() {
   lives.textContent =
     "❤️❤️❤️";
 
+
   updateTimer();
 
 
@@ -1767,7 +2156,7 @@ function startGame() {
 
 
 /* =====================================================
-   게임 종료
+   END GAME
 ===================================================== */
 
 function endGame(win) {
@@ -1780,8 +2169,13 @@ function endGame(win) {
   running = false;
 
 
+  /*
+    귀신 제거
+  */
+
   ghosts.forEach(
-    g => g.el.remove()
+    g =>
+      g.el.remove()
   );
 
   ghosts = [];
@@ -1792,6 +2186,10 @@ function endGame(win) {
   combo.style.display =
     "none";
 
+
+  /*
+    SUCCESS
+  */
 
   if (win) {
 
@@ -1834,6 +2232,11 @@ function endGame(win) {
 
   }
 
+
+  /*
+    FAIL
+  */
+
   else {
 
     endTitle.textContent =
@@ -1872,7 +2275,7 @@ function endGame(win) {
 
 
 /* =====================================================
-   버튼
+   BUTTONS
 ===================================================== */
 
 startButton.addEventListener(
@@ -1887,7 +2290,7 @@ restartButton.addEventListener(
 
 
 /* =====================================================
-   초기
+   INITIAL
 ===================================================== */
 
 updateTimer();
